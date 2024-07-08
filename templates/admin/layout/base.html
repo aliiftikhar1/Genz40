@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+{% include 'admin/layout/header.html' %}
+{% block header %}
+
+{% endblock %}
+
+<!-- <body class="hold-transition sidebar-mini sidebar-collapse"> -->
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+{% include 'admin/layout/navigation.html' %}
+
+{% block content %}
+
+ </div>
+
+{% endblock %}
+{% include 'admin/layout/footer.html' %}
+
+<!-- jQuery -->
+<script src="{% static 'admin/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'admin/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="{% static 'admin/plugins/moment/moment.min.js' %}"></script>
+<!-- <script src="{% static 'js/token.js' %}"></script> -->
+
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+<!-- overlayScrollbars -->
+<script src="{% static 'admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'admin/js/adminlte.js' %}"></script>
+{% block javascript %}
+
+{% endblock %}
+</body>
+</html>

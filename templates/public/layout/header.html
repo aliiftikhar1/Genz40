@@ -1,0 +1,47 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="{{ meta.meta_title }}" content="genz40" />
+        <meta name="keywords" content="{{ metas.meta_keywords }}"/>
+        <meta name="description" content="{{ metas.meta_keywords }}" />
+        <meta name="author" content="genz40" />
+        <meta name="email" content="genz40@genz40.com" />
+        <meta name="website" content="https://www.genz40.com" />
+        <meta name="Version" content="v3.0.0" />
+        <!-- <meta name="msvalidate.01" content="C4CF4801C9EFD50B757BDB919781E082" /> -->
+        <h1 hidden>{{ metas.meta_desc }}</h1>
+        <title>{{metas.meta_title}}</title>
+
+        <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'public/css/open-iconic-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/animate.css' %}">
+
+    <link rel="stylesheet" href="{% static 'public/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/magnific-popup.css' %}">
+
+    <link rel="stylesheet" href="{% static 'public/css/aos.css' %}">
+
+    <link rel="stylesheet" href="{% static 'public/css/ionicons.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'public/css/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/jquery.timepicker.css' %}">
+
+    <link rel="stylesheet" href="{% static 'public/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/icomoon.css' %}">
+    <link rel="stylesheet" href="{% static 'public/css/style.css' %}">
+
+        <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'web/img/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'web/img/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'web/img/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'web/img/site.webmanifest' %}">
+        {% block stylesheets %} 
+        
+        {% endblock stylesheets %}
+    </head>
