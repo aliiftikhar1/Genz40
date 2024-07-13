@@ -377,6 +377,7 @@ class PostLandingPageImages(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
+
     def __str__(self):
         return self.title
 
@@ -385,6 +386,19 @@ class PostLandingPageImages(models.Model):
         db_table = 'landing_pages_images'
 
 
+
+class PostTest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+    
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        db_table = 'test'
 # image = models.ImageField(upload_to='images/')
 #     thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
 #
