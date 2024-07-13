@@ -1,216 +1,99 @@
 {% extends "public/layout/base.html" %}
 {% load static %}
 {% block header %}
-<style>
-    .hero-wrap {
-        height: 100vh !important;
-    }
-    .hero-section {
-            height: 100vh; /* Full viewport height */
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            text-align: center;
-            background-image: url('static/public/images/genz/home.jpeg'); /* Path to your full-screen image */
-            background-size: cover;
-            background-position: center;
-            color: #fff; /* Text color for better contrast */
-            padding: 20px; /* Adjust as needed */
-        }
-            .hero-section1 {
-            height: 100vh; /* Full viewport height */
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            text-align: center;
-            background-image: url('static/public/images/genz/mark-i.jpeg'); /* Path to your full-screen image */
-            background-size: cover;
-            background-position: center;
-            color: #fff; /* Text color for better contrast */
-            padding: 20px; /* Adjust as needed */
-        }
-            .hero-section2 {
-            height: 100vh; /* Full viewport height */
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            text-align: center;
-            background-image: url('static/public/images/genz/mark-iv.jpeg'); /* Path to your full-screen image */
-            background-size: cover;
-            background-position: center;
-            color: #fff; /* Text color for better contrast */
-            padding: 20px; /* Adjust as needed */
-        }
-
-           .hero-section3 {
-            height: 100vh; /* Full viewport height */
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            text-align: center;
-            background-image: url('static/public/images/genz/mark-iv.jpeg'); /* Path to your full-screen image */
-            background-size: cover;
-            background-position: center;
-            color: #fff; /* Text color for better contrast */
-            padding: 20px; /* Adjust as needed */
-        }
-</style>
 {% endblock %}
 
 {% block content %}
-<!--    <div class="hero-wrap" style="background-image: url('static/public/images/bg_1.jpg');" data-stellar-background-ratio="0.5">-->
-<!--&lt;!&ndash;      <div class="overlay"></div>&ndash;&gt;-->
-<!--      <div class="container">-->
-<!--        <div class="row no-gutters slider-text justify-content-start align-items-center justify-content-center">-->
-<!--          <div class="col-lg-8 ftco-animate">-->
-<!--          	<div class="text w-100 text-center mb-md-5 pb-md-5">-->
-<!--	            <h1 class="mb-4">Fast &amp; Easy Way To Rent A Car</h1>-->
-<!--	            <p style="font-size: 18px;">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts</p>-->
-<!--	            <a href="https://vimeo.com/45830194" class="icon-wrap popup-vimeo d-flex align-items-center mt-4 justify-content-center">-->
-<!--	            	<div class="icon d-flex align-items-center justify-content-center">-->
-<!--	            		<span class="ion-ios-play"></span>-->
-<!--	            	</div>-->
-<!--	            	<div class="heading-title ml-5">-->
-<!--		            	<span>Easy steps for renting a car</span>-->
-<!--	            	</div>-->
-<!--	            </a>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
 
-<!--<section class="top-section py-5">-->
-<!--        <div class="container">-->
-<!--            <h1 class="display-4">Welcome to My Website</h1>-->
-<!--        </div>-->
-<!--    </section>-->
+<!-- 1st Hero Start -->
+<section class="bg-home d-flex align-items-center" style="background: url('{{section_1.image.url}}') center center;">
+  <!-- <div class="bg-overlay bg-gradient-overlay"></div> -->
+  <div class="container">
+      <div class="row mt-5 justify-content-center">
+          <div class="col-12">
+              <div class="title-heading">
+                  <h5 class="text-primary fw-bold">{{ section_1.tag }}</h5>
+                  <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark">{{ section_1.title }}  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span></h4>
+                  <p class="para-desc text-white-50">{{ section_1.subtitle }}</p>
+                  <div class="mt-4 pt-2">
+                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
+                  </div>
+              </div>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+</section><!--end section-->
+<!-- Hero End -->
 
-<section class="hero-section">
-     <div class="container">
-         <div class="row" style="margin-bottom: 460px;">
-            <div class="col-lg-12">
-                <h1 class="text-dark">MARK I</h1>
-                <p class="lead text-dark">Builder Package Starting at $28,490 </p>
-            </div>
-        </div>
-         <div class="row mb-4">
-            <div class="col-lg-12 mb-4">
-                <a href="#" class="btn btn-success mb-4 mr-4">Reserve Now</a>
-                <a href="#" class="btn btn-success mb-4 ml-4">Learn More</a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="hero-section1">
-     <div class="container">
-         <div class="row" style="margin-bottom: 460px;">
-            <div class="col-lg-12">
-                <h1 class="text-dark">MARK II</h1>
-                <p class="lead text-dark">Builder Package Starting at $28,490 </p>
-            </div>
-        </div>
-         <div class="row mb-4">
-            <div class="col-lg-12 mb-4">
-                <a href="#" class="btn btn-success mb-4 mr-4">Reserve Now</a>
-                <a href="#" class="btn btn-success mb-4 ml-4">Learn More</a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="hero-section2">
-     <div class="container">
-         <div class="row" style="margin-bottom: 460px;">
-            <div class="col-lg-12">
-                <h1 class="text-dark">MARK III</h1>
-                <p class="lead text-dark">Builder Package Starting at $28,490 </p>
-            </div>
-        </div>
-         <div class="row mb-4">
-            <div class="col-lg-12 mb-4">
-                <a href="#" class="btn btn-success mb-4 mr-4">Reserve Now</a>
-                <a href="#" class="btn btn-success mb-4 ml-4">Learn More</a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="hero-section3">
-     <div class="container">
-         <div class="row" style="margin-bottom: 460px;">
-            <div class="col-lg-12">
-                <h1 class="text-dark">MARK IV</h1>
-                <p class="lead text-dark">Builder Package Starting at $28,490 </p>
-            </div>
-        </div>
-         <div class="row mb-4">
-            <div class="col-lg-12 mb-4">
-                <a href="#" class="btn btn-success mb-4 mr-4">Reserve Now</a>
-                <a href="#" class="btn btn-success mb-4 ml-4">Learn More</a>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- 2nd Hero Start -->
+<section class="bg-home d-flex align-items-center" style="background: url('{{section_2.image.url}}') center center;">
+  <div class="bg-overlay bg-gradient-overlay"></div>
+  <div class="container">
+      <div class="row mt-5 justify-content-center">
+          <div class="col-12">
+              <div class="title-heading text-center">
+                  <h5 class="text-primary fw-bold">{{ section_2.tag }}</h5>
+                  <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark">{{ section_2.title }}</h4>
+                  <p class="para-desc text-white-50 mx-auto">{{ section_2_subtitle }}</p>
+                  <div class="mt-4 pt-2">
+                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
+                  </div>
+              </div>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+</section><!--end section-->
+<!-- Hero End -->
 
-    <section class="ftco-section contact-section" style="padding: 2em !important;">
-      <div class="container">
-          <div class="row">
-          <div class="col-md-12">
-            <h1 class="mb-3 text-center">Contact</h1>
-          </div>
-        </div>
-        <div class="row d-flex mb-5 contact-info">
-        	<div class="col-md-4">
-        		<div class="row mb-5">
-		          <div class="col-md-12">
-		          	<div class="border w-100 p-4 rounded mb-2 d-flex">
-			          	<div class="icon mr-3">
-			          		<span class="icon-map-o"></span>
-			          	</div>
-			            <p><span>Address:</span> 198 West 21th Street, Suite 721 New York NY 10016</p>
-			          </div>
-		          </div>
-		          <div class="col-md-12">
-		          	<div class="border w-100 p-4 rounded mb-2 d-flex">
-			          	<div class="icon mr-3">
-			          		<span class="icon-mobile-phone"></span>
-			          	</div>
-			            <p><span>Phone:</span> <a href="tel://1234567920">+ 1235 2355 98</a></p>
-			          </div>
-		          </div>
-		          <div class="col-md-12">
-		          	<div class="border w-100 p-4 rounded mb-2 d-flex">
-			          	<div class="icon mr-3">
-			          		<span class="icon-envelope-o"></span>
-			          	</div>
-			            <p><span>Email:</span> <a href="mailto:info@yoursite.com">info@yoursite.com</a></p>
-			          </div>
-		          </div>
-		        </div>
-          </div>
-          <div class="col-md-8 block-9 mb-md-5">
-            <form action="#" class="bg-light p-5 contact-form">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Your Name">
+<!-- 3rd Hero Start -->
+<section class="bg-home d-flex align-items-center" style="background: url('{{section_3.image.url}}') center center;">
+  <div class="bg-overlay bg-gradient-overlay"></div>
+  <div class="container">
+      <div class="row mt-5">
+          <div class="col-12">
+              <div class="title-heading float-end">
+                  <h5 class="text-primary fw-bold text-end">{{ section_3.tag }}</h5>
+                  <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark text-end">{{ section_3.title }}</h4>
+                  <p class="para-desc text-white-50 mx-auto text-end">{{ section_3.subtitle }}</p>
+                  <div class="mt-4 pt-2 text-end">
+                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
+                  </div>
               </div>
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Your Email">
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Subject">
-              </div>
-              <div class="form-group">
-                <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="Message"></textarea>
-              </div>
-              <div class="form-group">
-                <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
-              </div>
-            </form>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+</section><!--end section-->
+<!-- Hero End -->
 
-          </div>
-        </div>
+<!-- Testi Subscribe Start -->
+<section class="section bg-dark bg-gradient">
+  <div class="bg-overlay bg-overlay-light"></div>
+  <div class="container position-relative">
+      <div class="row justify-content-center">
+          <div class="col-12 text-center">
+              <div class="section-title mb-4 pb-2">
+                  <h4 class="title  text-white title-dark mb-4">Sign up for our Newsletter</h4>
+                  <p class="text-white-50 para-dark">Start working with <span class="text-primary fw-bold">Landrick</span> that can provide everything you need to generate awareness, drive traffic, connect.</p>
+              </div>
+          </div><!--end col-->
+      </div><!--end row-->
 
-      </div>
-    </section>
+      <div class="row justify-content-center mt-4 pt-2">
+          <div class="col-lg-7 col-md-10">
+              <div class="text-center subcribe-form">
+                  <form>
+                      <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required aria-describedby="newssubscribebtn">
+                      <button type="submit" class="btn btn-pills btn-primary" id="newssubscribebtn">Subscribe</button>
+                  </form><!--end form-->
+              </div>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+</section><!--end section-->
+<!-- Testi Subscribe End -->
 
 {% endblock content %}
 

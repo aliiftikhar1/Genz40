@@ -362,6 +362,29 @@ class PostWheels(models.Model):
         ordering = ['position']
         db_table = 'wheels'
 
+
+class PostLandingPageImages(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nav_item = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='landing_images')
+    title = models.CharField(max_length=100)
+    title_data = models.CharField(max_length=100, blank=True)
+    subtitle = models.CharField(max_length=400)
+    section = models.IntegerField(blank=True, default=0)
+    tag = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to='landing_pages_images/', null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    position = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['position']
+        db_table = 'landing_pages_images'
+
+
 # image = models.ImageField(upload_to='images/')
 #     thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
 #

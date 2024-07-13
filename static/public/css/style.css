@@ -72,7 +72,7 @@ body {
 
 .logo-font {
     font-family: 'TESLA' !important;
-    color: #fff !important;
+    color: #000 !important;
 }
 
 hr {
@@ -8180,7 +8180,6 @@ h1, h2, h3, h4, h5,
 .ftco-navbar-light {
   background: transparent !important;
   position: absolute;
-  top: 20px;
   left: 0;
   right: 0;
   z-index: 3; }

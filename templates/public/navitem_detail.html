@@ -8,7 +8,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px 0;
-<!--            border-bottom: 1px solid #eee;-->
+/* <!--            border-bottom: 1px solid #eee;--> */
         }
         .item-list:last-child {
             border-bottom: none;
@@ -104,10 +104,10 @@
         font-size: 13px;
         }
     .pills .tab-pane {
-        border-top: 1px solid darkgray !important;
+        border-top: 1px solid #000 !important;
     }
         .nav-pills li a {
-        color: darkgray !important;
+        color: #000 !important;
     }
 
 
@@ -157,6 +157,11 @@
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+video {
+            max-width: 100%;
+            height: auto;
+        }
 
 </style>
 <style>
@@ -230,11 +235,6 @@
             background-color: #ff0000;
         }
 
-</style>
-<style>
-    body {
-    background-color: #000;
-    }
 </style>
 
 {% endblock %}
@@ -407,8 +407,12 @@
         <div class="row">
             <div class="col-md-8 col-xs-8 fixed-content">
                 <div style="position:relative; width:100%; height:0%;">
-
-                                <div class="carousel slide" data-ride="carousel" id="carouselExampleFade">
+                    <video controls>
+                        <source src="{% static 'public/images/genz/TurntableWhite.mpeg' %}" type="video/mp4">
+                        <!-- <source src="path-to-your-video.ogg" type="video/ogg"> -->
+                        Your browser does not support the video tag.
+                    </video>
+                                <!-- <div class="carousel slide" data-ride="carousel" id="carouselExampleFade">
                                     <div class="carousel-inner">
                                         <div class="carousel-item active">
                                             <img alt="..." class="d-block w-100" src="{% static 'public/images/genz/home.jpeg' %}">
@@ -430,15 +434,15 @@
                                         <span aria-hidden="true" class="carousel-control-next-icon"></span>
                                         <span class="sr-only">Next</span>
                                     </a>
-                                </div>
-                            </div>
+                                </div> -->
+                </div>
             </div>
 
             <div class="col-md-4 scrollable-content">
                 <div class="row justify-content-center">
                 <div class="col-md-12 heading-section text-center">
-                    <h2 class="mb-2 text-darkgray" style="color: darkgray !important;">{{ items.title }}</h2>
-                    <p class="text-darkgray text-uppercase">ESTIMATED DELIVERY  {{ items.estimated_delivery|date:"F Y" }}</p>
+                    <h2 class="mb-2 text-dark" style="color: #000 !important;">{{ items.title }}</h2>
+                    <p class="text-dark text-uppercase">ESTIMATED DELIVERY  {{ items.estimated_delivery|date:"F Y" }}</p>
                     <!--                        <span class="subheading">Choose Your Package</span>-->
                 </div>
                 <div class="col-md-12 pills mt-0">
@@ -471,7 +475,7 @@
                             {% for package in packages %}
 
                             <div aria-labelledby="pills-{{ package.id }}-tab"
-                                 class="tab-pane fade {% if forloop.first %}show active{% endif %} text-darkgray"
+                                 class="tab-pane fade {% if forloop.first %}show active{% endif %} text-dark"
                                  id="pills-{{ package.id }}"
                                  role="tabpanel"
                                  style="padding: 1em !important;">
@@ -501,14 +505,14 @@
                                 {% if package.package_details.all %}
                                 <h5>Package Details</h5>
                                 {% for detail in package.package_details.all %}
-                                <p class="text-darkgray text-sm">{{ detail.description|safe }}</p>
+                                <p class="text-dark text-sm">{{ detail.description|safe }}</p>
                                 {% endfor %}
                                 <a class="btn btn-secondary" data-target="#exampleModal" data-toggle="modal"
                                    href="#">Feature Details</a>
                                 {% endif %}
 
                                 {% if package.wheels_details.all %}
-                                <h3 class="text-center mt-4" style="color: darkgray !important;">WHEELS</h3>
+                                <h3 class="text-center mt-4" style="color: #000 !important;">WHEELS</h3>
                                 {% endif %}
                                   <div id="buttons-container">
                                     {% for wheel in package.wheels_details.all %}
@@ -521,7 +525,7 @@
                                     {% endfor %}
                                   </div>
                                 {% if package.part_details.all %}
-                                <h3 class="text-center mt-4" style="color: darkgray !important;">ADDITIONAL OPTIONS</h3>
+                                <h3 class="text-center mt-4" style="color: #000 !important;">ADDITIONAL OPTIONS</h3>
                                 {% for part in package.part_details.all %}
                                 <div class="item-list">
                                     <div class="d-flex align-items-center">
@@ -560,7 +564,7 @@
 <!--                            {% for packag in packages %}-->
 <!--                            {% if forloop.counter == 2 and packag.name == "Roller" %}-->
 <!--                            <div class="col-md-12">-->
-<!--                                <label class="mt-1 text-darkgray">Make it a roller -&ndash;&gt;</label>-->
+<!--                                <label class="mt-1 text-dark">Make it a roller -&ndash;&gt;</label>-->
 <!--                                <div class="custom-control custom-switch float-right">-->
 <!--                                    <input type="checkbox" class="custom-control-input" id="checkbox-{{ packag.id }}" data-target="#pills-{{ packag.id }}">-->
 <!--                                    <label class="custom-control-label" for="checkbox-{{ packag.id }}"></label>-->
@@ -571,13 +575,13 @@
 
                             <div class="col-md-12">
                                 <div class="text text-center mt-1">
-                                    <h3 class="text-darkgray" style="color: darkgray !important;">RESERVE NOW</h3>
+                                    <h3 class="text-dark" style="color: #000 !important;">RESERVE NOW</h3>
                                 </div>
                             </div>
 
                             <div class="col-md-12">
-                                <label class="mt-1 mr-4 text-darkgray">Due Today</label>
-                                <strong class="text-darkgray float-right mr-3 mt-1">${{ package.amount_due }}</strong>
+                                <label class="mt-1 mr-4 text-dark">Due Today</label>
+                                <strong class="text-dark float-right mr-3 mt-1">${{ package.amount_due }}</strong>
                             </div>
 
 </div>
