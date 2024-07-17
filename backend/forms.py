@@ -17,17 +17,18 @@ class RegisterForm(UserCreationForm):
 class PostPackageForm(forms.ModelForm):
     class Meta:
         model = PostPackage
-        fields = ['name', 'amount', 'description', 'image', 'is_active', 'nav_item']
+        fields = ['name', 'amount', 'description', 'image', 'is_active']
 
     image = forms.ImageField(required=False)
+    # nav_item = forms.CharField(required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        vehicles_parent = PostNavItem.objects.filter(title="Vehicles").first()
-        if vehicles_parent:
-            self.fields['nav_item'].queryset = PostNavItem.objects.filter(parent=vehicles_parent)
-        else:
-            self.fields['nav_item'].queryset = PostNavItem.objects.none()
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     vehicles_parent = PostNavItem.objects.filter(title="Vehicles").first()
+    #     if vehicles_parent:
+    #         self.fields['nav_item'].queryset = PostNavItem.objects.filter(parent=vehicles_parent)
+    #     else:
+    #         self.fields['nav_item'].queryset = PostNavItem.objects.none()
     # nav_item = forms.ModelChoiceField(queryset=PostNavItem.objects.filter(related_name='children'), required=True)
 
 

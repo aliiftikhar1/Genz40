@@ -1,6 +1,9 @@
 {% extends "public/layout/base.html" %}
 {% load static %}
 {% block header %}
+<style>
+
+</style>
 {% endblock %}
 
 {% block content %}
@@ -16,7 +19,7 @@
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark">{{ section_1.title }}  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span></h4>
                   <p class="para-desc text-white-50">{{ section_1.subtitle }}</p>
                   <div class="mt-4 pt-2">
-                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="btn btn-secondary me-4">Reserve Now</a>
                       <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
                   </div>
               </div>
@@ -37,7 +40,7 @@
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark">{{ section_2.title }}</h4>
                   <p class="para-desc text-white-50 mx-auto">{{ section_2_subtitle }}</p>
                   <div class="mt-4 pt-2">
-                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="btn btn-secondary me-4">Reserve Now</a>
                       <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
                   </div>
               </div>
@@ -58,7 +61,7 @@
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark text-end">{{ section_3.title }}</h4>
                   <p class="para-desc text-white-50 mx-auto text-end">{{ section_3.subtitle }}</p>
                   <div class="mt-4 pt-2 text-end">
-                      <a href="javascript:void(0)" class="btn btn-secondary me-4">Reserve Now</a>
+                      <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="btn btn-secondary me-4">Reserve Now</a>
                       <a href="javascript:void(0)" class="btn btn-light ms-4">Learn More</a>
                   </div>
               </div>

@@ -4,7 +4,11 @@
 {% endblock header %}
 
 <body>
-    {% include 'public/layout/navbar.html' %}
+    {% if navbar_style == 'dark' %}
+        {% include 'public/layout/navbar_light.html' %}
+    {% else %}
+        {% include 'public/layout/navbar.html' %}
+    {% endif %}
     {% block content %}
     {% endblock content %}
     {% include 'public/layout/footer.html' %}

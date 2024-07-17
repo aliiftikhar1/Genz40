@@ -56,15 +56,6 @@
                     {% csrf_token %}
                     <div class="card-body">
                         <div class="row">
-                            {% if form.instance.pk %}
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="{{ form.nav_item.id_for_label }}">Nav Item</label>
-                                    {{ form.nav_item|add_class:'form-control select2bs4' }}
-                                </div>
-                            </div>
-
-                            {% endif %}
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="{{ form.name.id_for_label }}">Name</label>
@@ -148,6 +139,8 @@
 <script>
  $(document).ready(function() {
             $('#summernote').summernote({
+            fontNames: ['Nunito', 'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+            fontNamesIgnoreCheck: ['Nunito'],
             lineHeights: ['0.5', '1.0'],
                 fontSizes: ['8', '9', '10', '11', '12', '14', '13', '15', '16', '17', '18', '24', '36', '48' , '64', '82', '150'],
                 toolbar: [

@@ -11,7 +11,10 @@ def index(request):
     section_1 = get_object_or_404(PostLandingPageImages, section=1)
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
-    return render(request, 'public/index.html', { 'section_1': section_1, 'section_2': section_2, 'section_3':section_3 })
+    return render(request, 'public/index.html', {'section_1': section_1,
+                                                 'section_2': section_2,
+                                                 'section_3': section_3,
+                                                 'navbar_style': 'dark'})
 
 
 def navitem_detail(request, slug):
@@ -22,10 +25,10 @@ def navitem_detail(request, slug):
                    'packages': package})
 
 
-def about(request, slug):
-    items = get_object_or_404(PostNavItem, slug=slug)
-    return render(request, 'public/about.html',
-                  {'items': items})
+def about(request):
+    return render(request, 'public/about.html', {
+        'navbar_style': 'dark'
+    })
 
 
 def blog(request, slug):
