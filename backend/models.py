@@ -436,7 +436,7 @@ class PostContactUs(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(unique=True)
-    phone_number = models.IntegerField(max_length=10, blank=True, null=True)
+    phone_number = models.IntegerField(blank=True, null=True)
     car = models.CharField(max_length=30, blank=True, null=True)
     comments = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
