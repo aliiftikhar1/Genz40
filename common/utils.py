@@ -27,3 +27,12 @@ def validate_file_extension(value):
 
 def message_content(first_name, last_name, message):
     return first_name+' '+last_name+' '+message
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

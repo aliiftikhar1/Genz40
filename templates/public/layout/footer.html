@@ -15,7 +15,7 @@
 
                       <div class="col-sm-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                           <div class="text-center">
-                              <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> <span class="l-dark logo-font">GEN-Z</span> <a href="#" target="_blank" class="text-reset">Terms</a> | <a href="#" target="_blank" class="text-reset">Privacy Policy</a></p>
+                              <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> <span class="l-dark logo-font">GEN-Z</span> <a href="{% url 'terms_conditions' %}" target="_blank" class="text-reset">Terms</a> | <a href="{% url 'privacy_policy' %}" target="_blank" class="text-reset">Privacy Policy</a></p>
                           </div>
                       </div>
 
@@ -58,14 +58,15 @@
                     <div class="card border-0 mt-4" style="z-index: 1">
                         <div class="card-body p-0">
                             <h4 class="card-title text-center">Login</h4>
-                            <form class="login-form mt-4">
+                            <form class="login-form mt-4" method="post" id="login-form">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label class="form-label">Your Email <span class="text-danger">*</span></label>
                                             <div class="form-icon position-relative">
-                                                <i data-feather="user" class="fea icon-sm icons"></i>
-                                                <input type="email" class="form-control ps-5" placeholder="Email" name="email" required="">
+                                                <i data-feather="user" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                                <input type="text" class="form-control ps-5" placeholder="Email" name="username" required="" style="color: #000 !important;">
                                             </div>
                                         </div>
                                     </div><!--end col-->
@@ -74,8 +75,8 @@
                                         <div class="mb-3">
                                             <label class="form-label">Password <span class="text-danger">*</span></label>
                                             <div class="form-icon position-relative">
-                                                <i data-feather="key" class="fea icon-sm icons"></i>
-                                                <input type="password" class="form-control ps-5" placeholder="Password" required="">
+                                                <i data-feather="key" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                                <input type="password" name="password" class="form-control ps-5" placeholder="Password" required="" style="color: #000 !important;">
                                             </div>
                                         </div>
                                     </div><!--end col-->
@@ -83,18 +84,20 @@
                                     <div class="col-lg-12">
                                         <div class="d-flex justify-content-between">
                                             <div class="mb-3">
-                                                <div class="form-check">
+                                                <!-- <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                                                     <label class="form-check-label" for="flexCheckDefault">Remember me</label>
-                                                </div>
+                                                </div> -->
                                             </div>
-                                            <p class="forgot-pass mb-0"><a href="auth-cover-re-password.html" class="text-dark fw-bold">Forgot password ?</a></p>
+                                            <p class="forgot-pass mb-3"><a href="auth-cover-re-password.html" class="text-dark fw-bold float-end">Forgot password ?</a></p>
                                         </div>
                                     </div><!--end col-->
 
                                     <div class="col-lg-12 mb-0">
                                         <div class="d-grid">
-                                            <button class="btn btn-primary">Sign in</button>
+                                            <button type="submit" class="btn btn-success">Sign in
+                                                <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
+                                            </button>
                                         </div>
                                     </div><!--end col-->
 
@@ -111,21 +114,129 @@
 
         <div class="offcanvas-footer p-4 border-top text-center">
             <ul class="list-unstyled social-icon social mb-0">
-                <li class="list-inline-item mb-0"><a href="https://1.envato.market/landrick" target="_blank" class="rounded"><i class="uil uil-shopping-cart align-middle" title="Buy Now"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://dribbble.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-dribbble align-middle" title="dribbble"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://www.behance.net/shreethemes" target="_blank" class="rounded"><i class="uil uil-behance align-middle" title="behance"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://www.facebook.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-facebook-f align-middle" title="facebook"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://www.instagram.com/shreethemes/" target="_blank" class="rounded"><i class="uil uil-instagram align-middle" title="instagram"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://twitter.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-twitter align-middle" title="twitter"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="mailto:support@shreethemes.in" class="rounded"><i class="uil uil-envelope align-middle" title="email"></i></a></li>
-                <li class="list-inline-item mb-0"><a href="https://shreethemes.in" target="_blank" class="rounded"><i class="uil uil-globe align-middle" title="website"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li>
             </ul><!--end icon-->
         </div>
     </div>
     <!-- Offcanvas End -->
 
+     <!-- Switcher Start -->
+     <a href="javascript:void(0)" class="card switcher-btn shadow-md text-success z-index-1 d-md-inline-flex d-none" data-bs-toggle="offcanvas" data-bs-target="#switcher-sidebar">
+        <i class="mdi mdi-human-greeting-proximity mdi-24px align-middle"></i>
+        <!-- mdi-spin -->
+    </a>
+
+    <div class="offcanvas offcanvas-start shadow border-0" tabindex="-1" id="switcher-sidebar" aria-labelledby="offcanvasLeftLabel">
+        <div class="offcanvas-header p-4 border-bottom">
+            <h5 id="offcanvasLeftLabel" class="mb-0">
+                <span class="l-dark logo-font">GEN-Z</span>
+                <span class="l-light logo-font text-white-50">GEN-Z</span>
+            </h5>
+            <button type="button" class="btn-close d-flex align-items-center text-dark" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
+        </div>
+        <div class="offcanvas-body p-3 pb-0">
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center">
+                        <h6 class="fw-bold">Get in Touch</h6>
+                        <ul class="pattern mb-0 mt-3">
+                            <li>
+                                <a class="btn btn-primary" href="#" title="Call Us"><i class="mdi mdi-phone mdi-16px align-middle"></i> Call Us</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-success btn-block" href="#" title="WhatsApp"><i class="mdi mdi-whatsapp mdi-16px align-middle"></i> WhatsApp</a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    <div class="text-center mt-4 pt-4 border-top">
+                        <h6 class="fw-bold">GET FREE QUOTATION FOR YOUR CAR</h6>
+                        <p>Fill in your details below to request a call back.</p>
+
+                        <form class="login-form mt-4" method="post" id="contact-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label">Your Email <span class="text-danger">*</span></label> -->
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                            <input type="text" class="form-control ps-5" placeholder="Full Name *" name="name" required="" style="color: #000 !important;">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label">Password <span class="text-danger">*</span></label> -->
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                            <input type="email" name="email" class="form-control ps-5" placeholder="Email *" required="" style="color: #000 !important;">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label">Password <span class="text-danger">*</span></label> -->
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="phone" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                            <input type="number" name="phone_number" class="form-control ps-5" placeholder="Phone Number" style="color: #000 !important;">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <select class="form-select form-control" name="car" aria-label="Default select example" style="color: #000 !important;" required>
+                                            <option value="" selected>Select Car *</option>
+                                            {% for item in nav_items %}
+                                                <option value="{{item}}">{{ item }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="message-circle" class="fea icon-sm icons" style="color: #000 !important;"></i>
+                                            <textarea name="comments" id="comments" rows="4" class="form-control ps-5" placeholder="Message" style="color: #000 !important;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">Enquiry
+                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </div><!--end col-->
+
+                            </div><!--end row-->
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas-footer p-4 border-top text-center">
+            <ul class="list-unstyled social-icon social mb-0">
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li>
+            </ul><!--end icon-->
+        </div>
+    </div>
+    <!-- Switcher End -->
+     
       <!-- Back to top -->
-      <a href="#" onclick="topFunction()" id="back-to-top" class="back-to-top fs-5"><i data-feather="arrow-up" class="fea icon-sm icons align-middle"></i></a>
+      <a href="#" onclick="topFunction()" id="back-to-top" class="back-to-top fs-5 bg-success"><i data-feather="arrow-up" class="fea icon-sm icons align-middle"></i></a>
       <!-- Back to top -->
   {% block script %}
     <!-- JAVASCRIPT -->
@@ -169,7 +280,70 @@
 
 {% endblock script %}
 
+<script>
+    $("#login-form").submit(function (e) {
+    event.preventDefault();
+    var data = new FormData($('#login-form').get(0));
+    $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_login' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    location.href = "{% url 'admin_dashboard' %}"
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#login-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        })
+    })
 
+</script>
+
+<script>
+    $("#contact-form").submit(function (e) {
+    event.preventDefault();
+    var data = new FormData($('#contact-form').get(0));
+    $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'save_contact' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#contact-form')[0].reset();
+                $('#pro').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro').hide();
+            }
+        })
+    })
+
+</script>
 
 <!--COMPLETE SPACE FRAME-->
 

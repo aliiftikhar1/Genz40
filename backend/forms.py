@@ -1,17 +1,18 @@
 # backend/forms.py
-from .models import PostPackage, PostNavItem, PostPaint, PostCharging, PostPart, PostPackageFeature, PostPackageDetail, \
-    PostImage
+from .models import CustomUser, PostPackage, PostNavItem, PostPaint, PostCharging, PostPart, PostPackageFeature, PostPackageDetail, \
+    PostImage, PostSubscribers
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
 
 class RegisterForm(UserCreationForm):
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'id_first_name'}))
+    last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'password1', 'password2', 'country']
 
 
 class PostPackageForm(forms.ModelForm):

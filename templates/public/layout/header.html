@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>GENZ40</title>
+        <title class="l-dark logo-font">GEN-Z</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 5 Landing Page Template">
         <meta name="keywords" content="Saas, Software, multi-uses, HTML, Clean, Modern">
@@ -14,7 +14,10 @@
         <meta name="Version" content="v4.8.0">
 
         <!-- favicon -->
-        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'public/images/genz/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'public/images/genz/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'public/images/genz/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'public/images/genz/site.webmanifest' %}">
         
         <!-- Style Css-->
         <link href="{% static 'libs/tiny-slider/tiny-slider.css' %}" rel="stylesheet">
@@ -26,5 +29,6 @@
         <link href="{% static 'libs/@iconscout/unicons/css/line.css' %}" type="text/css" rel="stylesheet">
         <!-- Style Css-->
         <link href="{% static 'css/style.min.css' %}" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
-
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
     </head>

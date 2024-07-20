@@ -11,13 +11,13 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from .models import PostPackageDetail, PostPackageFeature, PostPart, PostCharging, PostPaint, PostImage
+from .models import PostCommunity, PostPackageDetail, PostPackageFeature, PostPart, PostCharging, PostPaint
 from .forms import PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
 from .models import PostPackage, PostNavItem
-from django.forms import modelformset_factory
-
+import string
+import random
 
 # Create your views here.
 @method_decorator(csrf_exempt, name='dispatch')
@@ -27,12 +27,23 @@ class CustomSortableUpdateView(View):
         # This is just an example, you'll need to implement the actual sorting logic
         return JsonResponse({'status': 'ok'})
 
+def generate_random_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for i in range(length))
+    return password
+
 
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            random_password = generate_random_password()
+            user.set_password(random_password)
+
+            # user = form.save()
+             # Create a new UserProfile record
+            PostCommunity.objects.create(user=user, name='GENZ40', description='community_description')  # Modify or add fields as necessary
             login(request, user)
             return redirect(settings.LOGIN_REDIRECT_URL)
     else:

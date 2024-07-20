@@ -386,34 +386,65 @@ class PostLandingPageImages(models.Model):
         db_table = 'landing_pages_images'
 
 
-
-class PostTest(models.Model):
+class PostSubscribers(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=100)
+    email = models.EmailField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
-    
+
 
     def __str__(self):
-        return self.title
+        return self.id
 
     class Meta:
-        db_table = 'test'
-# image = models.ImageField(upload_to='images/')
-#     thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
-#
-#     def save(self, *args, **kwargs):
-#         super().save(*args, **kwargs)
-#         if not self.thumbnail:
-#             self.thumbnail = self.make_thumbnail(self.image)
-#             super().save(*args, **kwargs)
-#
-#     def make_thumbnail(self, image, size=(300, 200)):
-#         img = PILImage.open(image)
-#         img.convert('RGB')
-#         img.thumbnail(size)
-#
-#         thumb_io = BytesIO()
-#         img.save(thumb_io, format='JPEG')
-#         thumb_file = ContentFile(thumb_io.getvalue(), 'thumb_' + image.name)
-#         return thumb_file
+        db_table = 'subscribers'
+
+
+class PostCommunity(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='communities')
+    name = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'community'
+
+
+class PostCommunityJoiners(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='community_joiners')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'community_joiners'
+
+
+class PostContactUs(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=30, blank=True, null=True)
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField( max_length=10, blank=True, null=True)
+    car = models.CharField(max_length=30, blank=True, null=True)
+    comments = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'contact_us'
