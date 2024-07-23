@@ -7,10 +7,11 @@ class RegisterForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
+    role = forms.CharField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'country']
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'country', 'role']
 
 
 class LoginForm(forms.ModelForm):

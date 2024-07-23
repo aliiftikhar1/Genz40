@@ -39,7 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                     blank=True, null=True,
                                     error_messages={
                                         'unique': _("A user with this Phone Number already Registered"), }, )
-    role = models.CharField(max_length=20, choices=[('admin', 'Admin'), ('user', 'User'), ('business', 'Business')])
+    role = models.CharField(max_length=20, blank=True, null=True)
     street_address_1 = models.CharField(max_length=250, null=True, blank=True)
     street_address_2 = models.CharField(max_length=250, null=True, blank=True)
     city = models.CharField(max_length=250, null=True, blank=True)

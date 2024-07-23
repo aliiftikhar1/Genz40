@@ -24,22 +24,22 @@
 <!-- 1st Hero Start -->
 <section class="bg-home d-flex align-items-end" style="background: url('{{section_1.image.url}}') center center;">
   <!-- <div class="bg-overlay bg-gradient-overlay"></div> -->
-<!--  <div class="container">-->
-      <div class="row mt-5 mb-4">
-          <div class="col-12">
-              <div class="title-heading ms-5 mb-5">
+ <div class="container-fluid">
+      <div class="row mb-4 mt-100">
+          <div class="col-12 mt-100">
+              <div class="title-heading mb-5 mt-100">
                   <h5 class="text-success fw-bold">{{ section_1.tag }}</h5>
 <!--                  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span>-->
                   <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark">{{ section_1.title }}</h4>
                   <!-- <p class="para-desc text-white-50">{{ section_1.subtitle }}</p> -->
-                  <div class="mt-1 pt-2">
-                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="btn btn-outline-light text-light btn-lg text-uppercase me-2">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-light btn-lg text-light ms-4 text-uppercase">Learn More</a>
+                  <div class="pt-2">
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase">Learn More</a>
                   </div>
               </div>
           </div><!--end col-->
       </div><!--end row-->
-<!--  </div>-->
+ </div>
     <!--end container-->
 
     
@@ -64,16 +64,16 @@
 <!-- 2nd Hero Start -->
 <section class="bg-home d-flex align-items-end" style="background: url('{{section_2.image.url}}') center center;">
 <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
-  <div class="container">
-      <div class="row mt-5 mb-5 justify-content-center">
-          <div class="col-12">
-              <div class="title-heading text-center mb-5">
+  <div class="container-fluid">
+      <div class="row mt-100 mb-5 justify-content-center">
+          <div class="col-12 mt-100">
+              <div class="title-heading text-center mb-5 mt-100">
                   <h5 class="text-success fw-bold">{{ section_2.tag }}</h5>
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark">{{ section_2.title }}</h4>
                   <!-- <p class="para-desc text-white-50 mx-auto">{{ section_2_subtitle }}</p> -->
                   <div class="mt-1 pt-2">
-                    <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="btn btn-outline-light text-light btn-lg text-uppercase me-2">Reserve Now</a>
-                    <a href="javascript:void(0)" class="btn btn-outline-light btn-lg text-light text-uppercase ms-4">Learn More</a>
+                    <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                    <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase">Learn More</a>
                 </div>
               </div>
           </div><!--end col-->
@@ -99,16 +99,16 @@
 <!-- 3rd Hero Start -->
 <section class="bg-home d-flex align-items-end" style="background: url('{{section_3.image.url}}') center center;">
 <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
-  <div class="container" style="max-width: 100% !important;">
-      <div class="row mt-5 mb-5">
-          <div class="col-12">
-              <div class="title-heading me-5 float-end mb-5">
+  <div class="container-fluid">
+      <div class="row mt-100 mb-5">
+          <div class="col-12 mt-100">
+              <div class="title-heading float-end mb-5 mt-100">
                   <h5 class="text-success fw-bold text-end">{{ section_3.tag }}</h5>
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark text-end">{{ section_3.title }}</h4>
                   <!-- <p class="para-desc text-white-50 mx-auto text-end">{{ section_3.subtitle }}</p> -->
                   <div class="mt-1 pt-2">
-                    <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="btn btn-outline-light text-light btn-lg me-2 text-uppercase">Reserve Now</a>
-                    <a href="javascript:void(0)" class="btn btn-outline-light btn-lg text-light text-uppercase ms-4">Learn More</a>
+                    <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="btn btn-outline-light text-light text-uppercase float-end ">Reserve Now</a>
+                    <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase float-end me-2">Learn More</a>
                 </div>
               </div>
           </div><!--end col-->
@@ -132,109 +132,111 @@
     </div>
 </div>
 
-        <!-- Start Form -->
-        <section class="section bg-black">
-            <!-- <div class="bg-overlay"></div> -->
-            <!-- <div class="container"> -->
-                <div class="row align-items-center ms-5">
-                    <div class="col-lg-7 col-md-6">
-                        <div class="section-title me-lg-4">
-                            <h4 class="title title-dark text-light mb-4">JOIN OUR GROUP PRESENTATION</h4>
-                            <p class="text-white-50 para-dark text-light para-desc mb-0">Are you interested in the GENZ40? Book your spot in our group presentation and learn why the GENZ40 will be better than your current CAR.</p>
-                            <div class="mt-4 pt-2">
-                                <h6 class="title-dark text-light mb-4">JOIN OUR GROUP PRESENTATION</h6>
-                                <ul class="list-unstyled text-light">
-                                    <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Digital Marketing Solutions for Tomorrow</li>
-                                    <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Our Talented &amp; Experienced Marketing Agency</li>
-                                    <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Create your own skin to match your brand</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div><!--end col-->
+<!-- Start Form -->
+<section class="section bg-black">
+    <!-- <div class="bg-overlay"></div> -->
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="section-title me-lg-4">
+                    <h4 class="title title-dark text-light mb-4">JOIN OUR GROUP PRESENTATION</h4>
+                    <p class="text-white-50 para-dark text-light para-desc mb-0">Are you interested in the GENZ40? Book your spot in our group presentation and learn why the GENZ40 will be better than your current CAR.</p>
+                    <div class="mt-4 pt-2">
+                        <h6 class="title-dark text-light mb-4">JOIN OUR GROUP PRESENTATION</h6>
+                        <ul class="list-unstyled text-light">
+                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Digital Marketing Solutions for Tomorrow</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Our Talented &amp; Experienced Marketing Agency</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Create your own skin to match your brand</li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!--end col-->
 
-                    <div class="col-lg-5 col-md-4 mt-4">
-                        <div class="card rounded shadow border-0 bg-black me-5">
-                            <div class="card-body">
-                                <h5 class="text-center text-white">Become A Member</h5>
+            <div class="col-md-4 mt-4">
+                <div class="card rounded shadow border-0 bg-black">
+                    <div class="card-body p-0">
+                        <h5 class="text-center text-white">Become A Member</h5>
 
-                                <form method="post" id="community-form" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{ random_password }}" name="password1">
-                                    <input type="hidden" value="{{ random_password }}" name="password2">
-                                    <input type="hidden" value="{{ country_code }}" name="country">
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
-                                               
+                        <form method="post" id="community-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ random_password }}" name="password1">
+                            <input type="hidden" value="{{ random_password }}" name="password2">
+                            <input type="hidden" value="{{ country_code }}" name="country">
+                            <input type="hidden" value="customer" name="role">
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
+                                        
 
-                                                <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="user" class="fea icon-sm icons text-white"></i>
-                                                    <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
-                                                </div>
-                                            </div>
-                                        </div><!--end col-->
-
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
-                                                
-                                                <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="user" class="fea icon-sm icons"></i>
-                                                    <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
-                                                </div>
-                                            </div>
-                                        </div><!--end col-->
-    
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
-                                                
-                                                <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="mail" class="fea icon-sm icons"></i>
-                                                    <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
-                                                </div>
-                                            </div>
-                                        </div><!--end col-->
-    
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                                                <div class="form-icon position-relative">
-                                                    <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
-                                                    <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
-                                                </div>
-                                            </div> 
-                                        </div><!--end col-->
-                                        <div class="col-md-12 mb-2">
-                                            <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="#" class="text-primary">Privacy Policy</a></label>
+                                        <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-white"></i>
+                                            <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
                                         </div>
-    
-                                        <div class="col-md-12 mb-0">
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-success">Join now
-                                                    <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
-                                                </button>
-                                            </div>
-                                        </div><!--end col-->
-                                    </div><!--end row-->
-                                </form><!--end form-->
-                            </div>
-                        </div>                             
-                    </div><!--end col-->
-                </div><!--end row-->
-            <!-- </div> -->
-            <!--end container-->
-        </section><!--end section-->
-        <!-- End Form -->
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
+                                        
+                                        <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons"></i>
+                                            <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
+                                        
+                                        <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons"></i>
+                                            <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
+                                        </div>
+                                    </div> 
+                                </div><!--end col-->
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
+                                </div>
+
+                                <div class="col-md-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">Join now
+                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                        </form><!--end form-->
+                    </div>
+                </div>                             
+            </div><!--end col-->
+        </div><!--end row-->
+    </div>
+    <!--end container-->
+</section><!--end section-->
+<!-- End Form -->
 
 <!-- Testi Subscribe Start -->
 
 <section class="section bg-black" style="border-top: 0.9px solid #cacaca;">
-      <div class="row justify-content-center ms-5">
+    <div class="container-fluid">
+        <div class="row align-items-center">
           <div class="col-lg-6">
               <div class="section-title mb-4 pb-2">
                   <h4 class="title text-white title-dark mb-4 text-uppercase">Be a part of our journey</h4>
@@ -242,8 +244,8 @@
               </div>
           </div><!--end col-->
 
-          <div class="col-lg-6 col-md-8 justify-content-center mt-4 pt-2">
-            <div class="text-center subcribe-form">
+          <div class="col-lg-6 col-md-8 mt-4">
+            <div class="subcribe-form">
                 <form method="POST" id="subscribe-form">
                   {% csrf_token %}
                     <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required style="background-color: #fff !important;">
@@ -255,7 +257,7 @@
         </div><!--end col-->
       </div><!--end row-->
 
-  <!-- </div> -->
+  </div>
   <!--end container-->
 </section><!--end section-->
 <!-- Testi Subscribe End -->
