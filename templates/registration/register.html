@@ -1,15 +1,200 @@
 <!-- templates/registration/register.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-</head>
-<body>
-    <h2>Register</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-</body>
-</html>
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load frontend_custom_filters %}
+{% block header %}
+<style>
+    #id_phone_number {
+        padding-left: 50px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+ <!-- Hero Start -->
+ <section class="bg-home d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 col-md-6">
+                <div class="me-lg-5">   
+                    <img src="{% static 'images/user/recovery.svg' %}" class="img-fluid d-block mx-auto" alt="">
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-6">
+                <div class="card shadow rounded border-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Sign Up</h4>  
+                        <form method="post" id="register-form1" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="text" value="{{ random_password }}" name="password1">
+                            <input type="text" value="{{ random_password }}" name="password2">
+                            <input type="text" value="{{ country_code }}" name="country">
+                            <input type="text" value="customer" name="role">
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            {{ form.first_name|without_label }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            {{ form.last_name|without_label }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            {{ form.email|without_label }}
+                                            {% if form.email.errors %}
+                                                <div class="alert alert-danger mt-2">
+                                                    {% for error in form.email.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                        {{form.phone_number.errors}}
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
+                                            {{ form.phone_number|without_label }}
+                                            {% if form.phone_number.errors %}
+                                                <div class="alert alert-danger mt-2">
+                                                    {% for error in form.phone_number.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                <!-- <div class="col-md-12">
+                                    <div class="mb-3">
+                                    
+                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons"></i>
+                                            <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent" placeholder="First Name" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                       
+                                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons"></i>
+                                            <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                    
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons"></i>
+                                            <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
+                                        </div>
+                                    </div> 
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
+                                </div> -->
+
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
+                                </div>
+
+                                <div class="col-md-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">Sign Up
+                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                    <div class="mx-auto">
+                                        <p class="mb-0 mt-3"><small class="text-dark me-2">Already have an account ?</small><a href="{% url 'login' %}" class="text-center">Login</a></p>
+                                    </div>
+                                </div><!--end col-->
+                            </div>
+                            <!--end row-->
+                        </form><!--end form-->
+                    </div>
+                </div>
+            </div> <!--end col-->
+        </div><!--end row-->
+    </div> <!--end container-->
+</section><!--end section-->
+<!-- Hero End -->
+{% endblock content %}
+
+{% block script %}
+<script>
+$(document).ready(function() {
+    setTimeout(function() {
+        document.querySelector('.alert').remove();
+    }, 5000);
+});
+</script>
+
+<script>
+    $("#register-form").submit(function (e) {
+    event.preventDefault();
+    var data = new FormData($('#register-form').get(0));
+    $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'register' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    location.href = "{% url 'login' %}";
+                    $('#login-form')[0].reset();
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro').hide();
+            }
+        })
+    })
+
+</script>
+
+{% endblock script %}

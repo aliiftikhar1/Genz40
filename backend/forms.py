@@ -3,6 +3,7 @@ from .models import CustomUser, PostPackage, PostNavItem, PostPaint, PostChargin
     PostImage, PostSubscribers
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
 
 class RegisterForm(UserCreationForm):
@@ -10,11 +11,34 @@ class RegisterForm(UserCreationForm):
     last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     role = forms.CharField(required=True)
-
+      
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'password1', 'password2', 'country', 'role']
 
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email address'})
+    )
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not CustomUser.objects.filter(email=email).exists():
+            raise forms.ValidationError("There is no user registered with the specified email address.")
+        return email
+    
+
+class CustomPasswordResetConfirmForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='',
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='',
+    )
+    
 
 class PostPackageForm(forms.ModelForm):
     class Meta:

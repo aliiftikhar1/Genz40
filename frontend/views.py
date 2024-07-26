@@ -58,8 +58,24 @@ def generate_random_password(length=12):
     password = ''.join(random.choice(characters) for i in range(length))
     return password
 
+def register_page(request):
+    random_password = generate_random_password()
+    # ip = get_country_info(request)
+    ip = '103.135.189.214'
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    context = {
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+        'random_password': random_password
+    }
+    return render(request, 'registration/register.html', context)
 
-def get_register(request):
+
+def get_register_community(request):
     if request.method == 'POST':
         if not CustomUser.objects.filter(email=request.POST['email']).exists():
             form = RegisterForm(request.POST)
@@ -79,7 +95,20 @@ def get_register(request):
                 else:
                     return JsonResponse({"message": 'Already joined.', 'is_success': False})
         return JsonResponse({"message": 'Already joined.', 'is_success': False})
-    
+
+def get_register(request):
+    if request.method == 'POST':
+        if not CustomUser.objects.filter(email=request.POST['email']).exists():
+            form = RegisterForm(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                random_password = generate_random_password()
+                user.set_password(random_password)
+                user.save()
+                return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
+        else:
+            return JsonResponse({"message": 'Already joined.', 'is_success': False})
+      
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('admin_dashboard')

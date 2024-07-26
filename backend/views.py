@@ -12,12 +12,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from .models import PostCommunity, PostPackageDetail, PostPackageFeature, PostPart, PostCharging, PostPaint
-from .forms import PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
+from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm, PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
 from .models import PostPackage, PostNavItem
 import string
 import random
+from common.utils import get_client_ip, send_custom_email
+import requests
 
 # Create your views here.
 @method_decorator(csrf_exempt, name='dispatch')
@@ -32,23 +34,64 @@ def generate_random_password(length=12):
     password = ''.join(random.choice(characters) for i in range(length))
     return password
 
+def get_country_info(request):
+    ip = get_client_ip(request)
 
 def register(request):
+    # ip = get_country_info(request)
+    ip = '103.135.189.214'
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    form = RegisterForm()
+    random_password = generate_random_password()
+    context = {
+            'country_code': country_code,
+            'country_flag_url': country_flag_url,
+            'random_password': random_password,
+            'form': form
+        }
+
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            random_password = generate_random_password()
             user.set_password(random_password)
 
-            # user = form.save()
+            user = form.save()
              # Create a new UserProfile record
-            PostCommunity.objects.create(user=user, name='GENZ40', description='community_description')  # Modify or add fields as necessary
-            login(request, user)
+            # PostCommunity.objects.create(user=user, name='GENZ40', description='community_description')  # Modify or add fields as necessary
+            # login(request, user)
+
+            template_name = "email/welcome_email.html"
+            subject = request.POST.get('subject', 'Default Subject')
+            # message = request.POST.get('message', 'No message provided.')
+            recipient_email = request.POST.get('email', 'arvind.blues@gmail.com')
+            context = {
+                'user': user,
+                'password': random_password
+            }
+            send_custom_email(
+                template_name,
+                subject=subject,
+                message=context,
+                recipient_list=[recipient_email],
+            )
+
+
             return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = RegisterForm()
-    return render(request, 'registration/register.html', {'form': form})
+        # # ip = get_country_info(request)
+        # ip = '103.135.189.214'
+        # response = requests.get(f'https://ipinfo.io/{ip}/json')
+        # data = response.json()
+        # country_code = data.get('country')
+        # # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+        # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    return render(request, 'registration/register.html', context)
 
 
 def custom_login(request):
@@ -71,12 +114,14 @@ def custom_login(request):
 class CustomPasswordResetView(SuccessMessageMixin, PasswordResetView):
     template_name = 'registration/password_reset.html'
     email_template_name = 'registration/password_reset_email.html'
+    form_class = CustomPasswordResetForm
     success_message = "An email with instructions to reset your password has been sent to %(email)s."
     success_url = reverse_lazy('password_reset_done')
 
 
 class CustomPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = 'registration/password_reset_confirm.html'
+    form_class = CustomPasswordResetConfirmForm
     success_message = "Your password has been reset successfully. You can now log in with the new password."
     success_url = reverse_lazy('login')
 

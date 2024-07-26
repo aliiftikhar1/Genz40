@@ -2,6 +2,10 @@ import threading
 from django.core.mail import EmailMessage
 from django.core.exceptions import ValidationError
 import os
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 class EmailThread(threading.Thread):
@@ -36,3 +40,29 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def send_custom_email(template_name, subject, message, recipient_list, from_email=None, html_message=None):
+    """
+    Sends an email using Django's send_mail function.
+
+    Parameters:
+    - subject: Subject of the email
+    - message: Plain text message of the email
+    - recipient_list: List of recipient email addresses
+    - from_email: Sender's email address (defaults to settings.ADMIN_EMAIL)
+    - html_message: HTML message of the email (optional)
+    """
+    if from_email is None:
+        from_email = settings.ADMIN_EMAIL
+        html_message = render_to_string(template_name, message)
+        plain_message = strip_tags(html_message)
+    send_mail(
+        template_name,
+        subject,
+        plain_message,
+        from_email,
+        recipient_list,
+        fail_silently=False,
+        html_message=html_message,
+    )

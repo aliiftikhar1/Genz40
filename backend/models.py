@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{10,10}$',
                                  message="Phone number must be entered Up to 10 digits allowed")
     phone_number = models.CharField(validators=[phone_regex], max_length=10,
-                                    blank=True, null=True,
+                                    blank=True, null=True, unique=True,
                                     error_messages={
                                         'unique': _("A user with this Phone Number already Registered"), }, )
     role = models.CharField(max_length=20, blank=True, null=True)
