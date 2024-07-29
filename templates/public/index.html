@@ -31,37 +31,63 @@
 
 {% block content %}
 
+<div class="container-fluid bg-black d-none d-lg-block">
+    <div class="rounded py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-title align-items-end">
+                        <!-- <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- 1st Hero Start -->
-<section class="bg-home d-flex align-items-end" style="background: url('{{section_1.image.url}}') center center;">
+<section class="bg-home d-flex align-items-start" style="background: url('{{section_1.image.url}}') center center;">
   <!-- <div class="bg-overlay bg-gradient-overlay"></div> -->
+   
  <div class="container">
-      <div class="row mb-4 mt-100">
-          <div class="col-12 mt-100">
+      <div class="row mb-4 justify-content-center mt-100 d-none d-lg-block ">
+          <div class="col-12">
             <!-- Web -->
-              <div class="title-heading mb-5 mt-100 d-none d-lg-block">
+              <div class="title-heading mb-5 text-center">
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+                  <p class="fw-bold text-white">{{ section_1.subtitle }}</p>
 <!--                  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span>-->
                   <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
-                  <!-- <p class="para-desc text-white-50">{{ section_1.subtitle }}</p> -->
-                  <div class="pt-2">
-                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 me-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
+                  
+                  <div class="pt-2 align-items-end"  style="margin-top: 360px;">
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 me-2 btn-lg btn btn-warning text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-warning text-uppercase mt-2 btn-lg">Learn More </a>
                   </div>
               </div>
-
+            </div>
+            </div>
+            <div class="row mb-4 justify-content-center d-lg-none">
+                <div class="col-12">
             <!-- Mobile -->
-              <div class="title-heading text-center mb-5 mt-100 d-lg-none">
+              <div class="title-heading text-center">
                 <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
 <!--                  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span>-->
-                <h4 class="mb-1 fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
-                <!-- <p class="para-desc text-white-50">{{ section_1.subtitle }}</p> -->
-                <div class="pt-2 d-grid gap-2">
+                <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
+                <p class="para-desc text-white">{{ section_1.subtitle }}</p>
+                <!-- <div class="pt-2 d-grid gap-2 .mt-n5">
                     <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
                     <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
-                </div>
+                </div> -->
             </div>
 
           </div><!--end col-->
+          </div>
+          <div class="row mb-4 justify-content-center d-lg-none  mt-100">
+          <div class="col-12">
+            <div class="pt-2 d-grid gap-2 mt-100">
+                <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
+            </div>
+          </div>
       </div>
 
       <!--end row-->
@@ -86,7 +112,7 @@
 </div> -->
 
 <!-- 2nd Hero Start -->
-<section class="bg-home d-flex align-items-end" style="background: url('{{section_2.image.url}}') center center;">
+<section class="bg-home d-flex align-items-center" style="background: url('{{section_2.image.url}}') center center;">
 <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
   <div class="container">
       <div class="row mt-100 mb-5">
@@ -94,7 +120,7 @@
               <div class="title-heading mb-5 mt-100 d-none d-lg-block">
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
-                  <!-- <p class="para-desc text-white-50 mx-auto">{{ section_2_subtitle }}</p> -->
+                  <p class="para-desc text-white mx-auto">{{ section_2_subtitle }}</p>
                   <div class="pt-2">
                     <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 me-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
                     <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
@@ -106,7 +132,7 @@
                 <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
 <!--                  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span>-->
                 <h4 class="heading mb-1 fw-bold text-white title-dark text-uppercase title-font">{{ section_2.title }}</h4>
-                <!-- <p class="para-desc text-white-50">{{ section_1.subtitle }}</p> -->
+                <p class="para-desc text-white">{{ section_2.subtitle }}</p>
                 <div class="pt-2 d-grid gap-2">
                     <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
                     <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
@@ -142,7 +168,7 @@
               <div class="title-heading mb-5 mt-100 d-none d-lg-block">
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
                   <h4 class="heading heading-lg mb-4 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
-                  <!-- <p class="para-desc text-white-50 mx-auto text-end">{{ section_3.subtitle }}</p> -->
+                  <p class="para-desc text-white mx-auto text-end">{{ section_3.subtitle }}</p>
                   <div class="pt-2">
                     <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 me-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
                     <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
@@ -154,7 +180,7 @@
                 <h5 class="heading text-success fw-bold">{{ section_3.tag }}</h5>
 <!--                  <span class="text-primary typewrite" data-period="2000" data-type='["Design", "Paint"]'> <span class="wrap"></span> </span>-->
                 <h4 class="heading mb-1 fw-bold text-white title-dark title-font">{{ section_3.title }}</h4>
-                <!-- <p class="para-desc text-white-50">{{ section_1.subtitle }}</p> -->
+                <p class="para-desc text-white">{{ section_3.subtitle }}</p>
                 <div class="pt-2 d-grid gap-2">
                     <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 btn-lg btn btn-outline-light text-light text-uppercase">Reserve Now</a>
                     <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2 btn-lg">Learn More </a>
