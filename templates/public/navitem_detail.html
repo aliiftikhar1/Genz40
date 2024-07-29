@@ -1,7 +1,181 @@
 {% extends "public/layout/base.html" %}
 {% load static %}
 {% block header %}
+<style>
+    .cd-product-viewer-wrapper {
+  text-align: center;
+  padding: 2em 0;
+}
+.cd-product-viewer-wrapper > div {
+  display: inline-block;
+}
+.cd-product-viewer-wrapper .product-viewer {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  overflow: hidden;
+}
+.cd-product-viewer-wrapper img {
+  /* this is the image visible before the image sprite is loaded */
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+.cd-product-viewer-wrapper .product-sprite {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* our image sprite is composed by 16 frames */
+  width: 1600%;
+  background: url(https://codyhouse.co/demo/360-degrees-product-viewer/img/alfa.png) no-repeat center center;
+  background-size: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s;
+  -moz-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+.cd-product-viewer-wrapper.loaded .product-sprite {
+  /* image sprite has been loaded */
+  opacity: 1;
+  cursor: ew-resize;
+}
 
+.cd-product-viewer-handle {
+  position: relative;
+  z-index: 2;
+  width: 60%;
+  max-width: 300px;
+  border-radius: 50em;
+  margin: 1em auto 3em;
+  height: 4px;
+  background: #4d4d4d;
+}
+.cd-product-viewer-handle .fill {
+  /* this is used to create the loading fill effect */
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2eca8b;
+  -webkit-transform: scaleX(0);
+  -moz-transform: scaleX(0);
+  -ms-transform: scaleX(0);
+  -o-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -ms-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+  -webkit-transition: -webkit-transform 0.5s;
+  -moz-transition: -moz-transform 0.5s;
+  transition: transform 0.5s;
+}
+.no-csstransitions .cd-product-viewer-handle .fill {
+  display: none;
+}
+.loaded .cd-product-viewer-handle .fill {
+  /* image sprite has been loaded */
+  opacity: 0;
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.2s 0.3s;
+  -moz-transition: -moz-transform 0.3s, opacity 0.2s 0.3s;
+  transition: transform 0.3s, opacity 0.2s 0.3s;
+}
+.cd-product-viewer-handle .handle {
+  position: absolute;
+  z-index: 2;
+  display: inline-block;
+  height: 44px;
+  width: 44px;
+  left: 0;
+  top: -20px;
+  background: #2eca8b url(https://codyhouse.co/demo/360-degrees-product-viewer/img/cd-arrows.svg) no-repeat center center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(125, 246, 110, 0.3), 0 0 20px rgba(0, 0, 0, 0.2);
+  /* replace text with image */
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  color: transparent;
+  -webkit-transform: translateX(-50%) scale(0);
+  -moz-transform: translateX(-50%) scale(0);
+  -ms-transform: translateX(-50%) scale(0);
+  -o-transform: translateX(-50%) scale(0);
+  transform: translateX(-50%) scale(0);
+  -webkit-transition: box-shadow 0.2s;
+  -moz-transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s;
+}
+.cd-product-viewer-handle .handle:active {
+  box-shadow: 0 0 0 0 rgba(181, 66, 64, 0), 0 0 20px rgba(0, 0, 0, 0.2);
+}
+.loaded .cd-product-viewer-handle .handle {
+  /* image sprite has been loaded */
+  -webkit-transform: translateX(-50%) scale(1);
+  -moz-transform: translateX(-50%) scale(1);
+  -ms-transform: translateX(-50%) scale(1);
+  -o-transform: translateX(-50%) scale(1);
+  transform: translateX(-50%) scale(1);
+  -webkit-animation: cd-bounce 0.3s 0.3s;
+  -moz-animation: cd-bounce 0.3s 0.3s;
+  animation: cd-bounce 0.3s 0.3s;
+  -webkit-animation-fill-mode: both;
+  -moz-animation-fill-mode: both;
+  animation-fill-mode: both;
+  cursor: ew-resize;
+}
+
+@-webkit-keyframes cd-bounce {
+  0% {
+    -webkit-transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -webkit-transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -webkit-transform: translateX(-50%) scale(1);
+  }
+}
+@-moz-keyframes cd-bounce {
+  0% {
+    -moz-transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -moz-transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -moz-transform: translateX(-50%) scale(1);
+  }
+}
+@keyframes cd-bounce {
+  0% {
+    -webkit-transform: translateX(-50%) scale(0);
+    -moz-transform: translateX(-50%) scale(0);
+    -ms-transform: translateX(-50%) scale(0);
+    -o-transform: translateX(-50%) scale(0);
+    transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -webkit-transform: translateX(-50%) scale(1.1);
+    -moz-transform: translateX(-50%) scale(1.1);
+    -ms-transform: translateX(-50%) scale(1.1);
+    -o-transform: translateX(-50%) scale(1.1);
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -webkit-transform: translateX(-50%) scale(1);
+    -moz-transform: translateX(-50%) scale(1);
+    -ms-transform: translateX(-50%) scale(1);
+    -o-transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1);
+  }
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -9,7 +183,7 @@
 
         <!-- Start -->
         <section class="bg-half-100 d-table w-100">
-<!--            <div class="container">-->
+           <div class="container-fluid">
                 <div class="row">
 
                     <!-- START VIDEO -->
@@ -26,9 +200,23 @@
                                 <small class="fw-bold logo-font"><i class="mdi mdi-circle-medium text-success"></i> GEN-Z</small>
                             </div>
                             <div class="bg-light px-2 position-relative">
-                                <video class="w-100 rounded" controls autoplay loop>
+
+                                <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
+                                    <div>
+                                      <figure class="product-viewer">
+                                        <img src="{% static 'images/genz/alfa-loading.jpg' %}" alt="Product Preview">
+                                        <div class="product-sprite" data-image="{% static 'images/genz/alfa.png' %}"></div>
+                                      </figure>
+                                      <div class="cd-product-viewer-handle">
+                                        <span class="fill"></span>
+                                        <span class="handle">Handle</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                <!-- <video class="w-100 rounded" controls autoplay loop>
                                     <source src="{% static 'public/images/genz/TurntableWhite.mpeg' %}" type="video/mpeg">
-                                </video>
+                                </video> -->
 
 <!--                                <div class="position-absolute top-0 start-0">-->
 <!--                                    <div class="mt-2 ms-3">-->
@@ -38,9 +226,9 @@
 <!--                                </div>-->
                             </div>
 
-                            <div class="p-2 bg-light">
+                            <!-- <div class="p-2 bg-light">
                                 <p class="text-muted mb-0"><b>Note:</b> This video is only for demo purposes.</p>
-                            </div>
+                            </div> -->
                         </div>
                     </div><!--end col-->
 
@@ -53,7 +241,7 @@
                             <div class="row justify-content-center">
                                 <div class="col-12 text-center">
                                     <div class="section-title pb-2 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                                        <h4 class="title mb-1 mt-4">{{ items.title }}</h4>
+                                        <h4 class="title mb-1 mt-4 text-uppercase">{{ items.title }}</h4>
                                         <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-primary fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small>
                                     </div>
                                 </div><!--end col-->
@@ -91,13 +279,22 @@
                                                             <div class="section-title wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
 <!--                                                                <h4 class="title mb-4">User Community</h4>-->
                                                                 <p class="text-dark text-small">{{ package.description|safe }}</p>
-                                                                <div class="mt-4">
-                                                                    <a href="javascript:void(0)" class="text-primary p-1 px-2 shadow rounded me-3">Read More <i class="uil uil-angle-right-b"></i></a>
-                                                                    <a href="javascript:void(0)" class="text-warning p-1 px-2 shadow rounded">Blogs</a>
-                                                                </div>
+                                                               
                                                             </div>
                                                         </div><!--end col-->
+                                                        <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <h4 class="mb-0">Due Today</h4>
+                                                            <small>Fully refundable</small>
+                                                        </div>
+                                                        <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <h4 class="mb-0 float-end">${{ package.amount_due }}</h4>
+                                                        </div>
                                                     </div><!--end row-->
+                                                    <div class="row">
+                                                        <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <a href="" class="mt-5 btn d-grid btn-outline-dark text-uppercase">Reserve Now</a>
+                                                        </div>
+                                                    </div>
                                                 </div><!--end teb pane-->
                                             {% endfor %}
                                             <div class="tab-pane fade" id="pills-self" role="tabpanel" aria-labelledby="selfservice-tab">
@@ -150,7 +347,7 @@
                     <!-- END SIDEBAR -->
 
                 </div><!--end row-->
-<!--            </div>-->
+           </div>
             <!--end container-->
         </section><!--end section-->
         <!-- End -->
@@ -180,5 +377,5 @@
 {% endblock content %}
 
 {% block script %}
-
+<script src="{% static 'js/image_slider.js' %}"></script>
 {% endblock script %}
