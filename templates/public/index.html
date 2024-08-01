@@ -455,10 +455,10 @@
           </div><!--end col-->
 
           <div class="col-lg-6 col-md-8 mt-4">
-            <div class="subcribe-form" style="float: right;">
+            <div class="subcribe-form">
                 <form method="POST" id="subscribe-form">
                   {% csrf_token %}
-                    <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required style="background-color: #fff !important;padding-right: 300px;">
+                    <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required style="background-color: #fff !important;">
                     <button type="submit" class="btn btn-pills btn-success" id="newssubscribebtn">Subscribe
                         <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
                     </button>
