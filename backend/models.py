@@ -372,6 +372,7 @@ class PostLandingPageImages(models.Model):
     section = models.IntegerField(blank=True, default=0)
     tag = models.CharField(max_length=100, blank=True)
     image = models.ImageField(upload_to='landing_pages_images/', null=True, blank=True)
+    web_image = models.ImageField(upload_to='web_landing_pages_images/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
     position = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)

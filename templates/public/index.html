@@ -26,26 +26,20 @@
     .title-font {
         font-size: 25px !important;
     }
-     .bottom-center-text {
-            position: absolute;
-            bottom: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-bottom: 10px; /* Optional margin for spacing */
-            text-align: center; /* Center the text itself */
+     .mt-160 {
+            margin-top: 160px !important; 
         }
 </style>
 {% endblock %}
 
 {% block content %}
-
 <div class="container-fluid bg-black">
     <div class="rounded py-5">
-        <div class="container">
+        <div class="container bg-black">
             <div class="row">
                 <div class="col-md-12">
                     <div class="section-title align-items-end">
-                        <!-- <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4> -->
+                        <!-- <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2> -->
                     </div>
                 </div>
             </div>
@@ -53,233 +47,161 @@
     </div>
 </div>
 
-<!-- 1st Hero Start web-->
-<div class="container-fluid bg-black d-none d-lg-block">
-    <div class="rounded py-5 pb-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title align-items-end">
-                         <div class="title-heading mb-5 text-center">
-                            <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
-                            <p class="fw-bold text-white">{{ section_1.subtitle }}</p>
-                            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
-                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_1.image.url}}') center center;">
-  <!-- <div class="bg-overlay bg-gradient-overlay"></div> -->
- <div class="container">
-        <div class="row mb-4 text-end d-none d-lg-block bottom-center-text">
-            <div class="col-12">
-            <!-- Web -->
-              <div class="title-heading mb-5 text-center">
-                <div class="row mb-4 text-center">
-                    <div class="col-12">
-                        <div class="pt-2 align-items-center gap-2">
-                            <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="btn btn-lg me-2 btn-outline-light text-light text-uppercase">Reserve Now</a>
-                            <a href="javascript:void(0)" class="btn btn-lg btn-outline-light text-light text-uppercase">Learn More </a>
-                        </div>
-                    </div>
-                </div>
-                  <!-- <div class="pt-2 align-items-end">
-                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-2 me-2 btn-lg btn btn-warning text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-warning text-uppercase mt-2 btn-lg">Learn More </a>
-                  </div> -->
-              </div>
-            </div>
-        </div>
-      <!--end row-->
- </div>
-    <!--end container-->
-
-</section><!--end section-->
-<!-- Hero End -->
-
- <!-- 1st Hero Start Mobile -->
-<section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
-    <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
+<!-- 1st Hero Start web -->
+<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_1.web_image.url}}') center center;">
     <div class="container">
-               <!-- Mobile -->
-              <div class="row mb-4 justify-content-center d-lg-none">
-                <div class="col-12">
-              <div class="title-heading text-center">
-                <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
-                <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
-                <p class="para-desc text-white">{{ section_1.subtitle }}</p>
-            </div>
-    
-          </div><!--end col-->
-          </div>
-          <div class="row mb-4 justify-content-center d-lg-none mt-100">
-            <div class="col-12 mt-60">
-                <div class="pt-2 d-grid gap-2 mt-100">
-                    <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                    <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
-                </div>
-            </div>
-        </div>
-    
-        <!--end row-->
-    </div>
-      <!--end container-->
-</section><!--end section-->
-<!-- Hero End -->
-
-
-<!-- 2nd Hero Start web-->
-<div class="container-fluid bg-black d-none d-lg-block">
-    <div class="rounded py-5 pb-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title align-items-end">
-                         <div class="title-heading mb-5 text-center">
-                            <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
-                            <p class="fw-bold text-white">{{ section_2.subtitle }}</p>
-                            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
-                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_2.image.url}}') center center;">
- <div class="container">
-        <div class="row mb-4 text-end d-none d-lg-block bottom-center-text">
-            <div class="col-12">
-            <!-- Web -->
-              <div class="title-heading mb-5 text-center">
-                <div class="row mb-4 text-center">
-                    <div class="col-12">
-                        <div class="pt-2 align-items-center gap-2">
-                            <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="btn btn-lg me-2 btn-outline-light text-light text-uppercase">Reserve Now</a>
-                            <a href="javascript:void(0)" class="btn btn-lg btn-outline-light text-light text-uppercase">Learn More </a>
-                        </div>
-                    </div>
-                </div>
+        <div class="row justify-content-start">
+            <div class="col-6 mt-160">
+              <div class="title-heading text-start mt-100">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+                              <p class="fw-bold text-white">{{ section_1.subtitle }}</p>
+                              <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
+                  <div class="pt-2 align-items-center gap-2">
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="btn btn-lg me-2 btn-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-lg btn-light text-uppercase">Learn More </a>
+                  </div>
               </div>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+  
+  </section><!--end section-->
+  <!-- Hero End -->
+  
+   <!-- 1st Hero Start Mobile -->
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+      <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
+      <div class="container">
+                 <!-- Mobile -->
+                <div class="row mb-4 justify-content-center d-lg-none">
+                  <div class="col-12">
+                <div class="title-heading text-center">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+                  <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
+                  <p class="para-desc text-white">{{ section_1.subtitle }}</p>
+              </div>
+      
+            </div><!--end col-->
             </div>
-        </div>
-      <!--end row-->
- </div>
-    <!--end container-->
-
-</section><!--end section-->
-<!-- Hero End -->
-
-<!-- 2nd Hero Start Mobile -->
-<section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_2.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
-<!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
-<div class="container">
-           <!-- Mobile -->
-          <div class="row mb-4 justify-content-center d-lg-none">
-            <div class="col-12">
-          <div class="title-heading text-center">
-            <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
-            <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_2.title }}</h4>
-            <p class="para-desc text-white">{{ section_2.subtitle }}</p>
-        </div>
-
-      </div><!--end col-->
+            <div class="row mb-4 justify-content-center d-lg-none mt-100">
+              <div class="col-12 mt-60">
+                  <div class="pt-2 d-grid gap-2 mt-100">
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                  </div>
+              </div>
+          </div>
+      
+          <!--end row-->
       </div>
-      <div class="row mb-4 justify-content-center d-lg-none mt-100">
-        <div class="col-12 mt-60">
-            <div class="pt-2 d-grid gap-2 mt-100">
-                <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
-            </div>
-        </div>
-    </div>
-
-    <!--end row-->
-</div>
-  <!--end container-->
-</section><!--end section-->
-<!-- Hero End -->
+        <!--end container-->
+  </section><!--end section-->
+  <!-- Hero End -->
 
 
-<!-- 3rd Hero Start web-->
-<div class="container-fluid bg-black d-none d-lg-block">
-    <div class="rounded py-5 pb-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title align-items-end">
-                         <div class="title-heading mb-5 text-center">
-                            <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
-                            <p class="fw-bold text-white">{{ section_3.subtitle }}</p>
-                            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
-                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_3.image.url}}') center center;">
- <div class="container">
-        <div class="row mb-4 text-end d-none d-lg-block bottom-center-text">
-            <div class="col-12">
-            <!-- Web -->
-              <div class="title-heading mb-5 text-center">
-                <div class="row mb-4 text-center">
-                    <div class="col-12">
-                        <div class="pt-2 align-items-center gap-2">
-                            <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="btn btn-lg me-2 btn-outline-light text-light text-uppercase">Reserve Now</a>
-                            <a href="javascript:void(0)" class="btn btn-lg btn-outline-light text-light text-uppercase">Learn More </a>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-        </div>
-      <!--end row-->
- </div>
-    <!--end container-->
-
-</section><!--end section-->
-<!-- Hero End -->
- 
-<!-- 3rd Hero Start Mobile -->
-<section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_3.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
-    <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
+  <!-- 2nd Hero Start web -->
+<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_2.web_image.url}}') center center;">
     <div class="container">
-               <!-- Mobile -->
-              <div class="row mb-4 justify-content-center d-lg-none">
-                <div class="col-12">
-              <div class="title-heading text-center">
-                <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
-                <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_3.title }}</h4>
-                <p class="para-desc text-white">{{ section_3.subtitle }}</p>
-            </div>
-    
+        <div class="row justify-content-start">
+            <div class="col-6 mt-160">
+              <div class="title-heading text-start mt-100">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
+                              <p class="fw-bold text-white">{{ section_2.subtitle }}</p>
+                              <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
+                  <div class="pt-2 align-items-center gap-2">
+                      <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="btn btn-lg me-2 btn-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-lg btn-light text-uppercase">Learn More </a>
+                  </div>
+              </div>
           </div><!--end col-->
-          </div>
-          <div class="row mb-4 justify-content-center d-lg-none mt-100">
-            <div class="col-12 mt-60">
-                <div class="pt-2 d-grid gap-2 mt-100">
-                    <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                    <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
-                </div>
+      </div><!--end row-->
+  </div><!--end container-->
+  
+  </section><!--end section-->
+  <!-- Hero End -->
+  
+   <!-- 2nd Hero Start Mobile -->
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_2.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+      <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
+      <div class="container">
+                 <!-- Mobile -->
+                <div class="row mb-4 justify-content-center d-lg-none">
+                  <div class="col-12">
+                <div class="title-heading text-center">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
+                  <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_2.title }}</h4>
+                  <p class="para-desc text-white">{{ section_2.subtitle }}</p>
+              </div>
+      
+            </div><!--end col-->
             </div>
-        </div>
-    
-        <!--end row-->
-    </div>
-      <!--end container-->
-    </section><!--end section-->
-    <!-- Hero End -->
+            <div class="row mb-4 justify-content-center d-lg-none mt-100">
+              <div class="col-12 mt-60">
+                  <div class="pt-2 d-grid gap-2 mt-100">
+                      <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                  </div>
+              </div>
+          </div>
+      
+          <!--end row-->
+      </div>
+        <!--end container-->
+  </section><!--end section-->
+  <!-- Hero End -->
 
-<!-- <div class="container-fluid bg-black">
+    <!-- 3rd Hero Start web -->
+<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_3.web_image.url}}') center center;">
+    <div class="container">
+        <div class="row justify-content-start">
+            <div class="col-6 mt-160">
+              <div class="title-heading text-start mt-100">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
+                              <p class="fw-bold text-white">{{ section_3.subtitle }}</p>
+                              <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
+                  <div class="pt-2 align-items-center gap-2">
+                      <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="btn btn-lg me-2 btn-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-lg btn-light text-uppercase">Learn More </a>
+                  </div>
+              </div>
+          </div><!--end col-->
+      </div><!--end row-->
+  </div><!--end container-->
+  
+  </section><!--end section-->
+  <!-- Hero End -->
+  
+   <!-- 3rd Hero Start Mobile -->
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_3.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+      <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
+      <div class="container">
+                 <!-- Mobile -->
+                <div class="row mb-4 justify-content-center d-lg-none">
+                  <div class="col-12">
+                <div class="title-heading text-center">
+                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
+                  <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_3.title }}</h4>
+                  <p class="para-desc text-white">{{ section_3.subtitle }}</p>
+              </div>
+      
+            </div><!--end col-->
+            </div>
+            <div class="row mb-4 justify-content-center d-lg-none mt-100">
+              <div class="col-12 mt-60">
+                  <div class="pt-2 d-grid gap-2 mt-100">
+                      <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                  </div>
+              </div>
+          </div>
+      
+          <!--end row-->
+      </div>
+        <!--end container-->
+  </section><!--end section-->
+  <!-- Hero End -->
+
+  <!-- <div class="container-fluid bg-black">
     <div class="rounded py-5">
         <div class="container">
             <div class="row">
