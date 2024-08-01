@@ -17,6 +17,6 @@ urlpatterns = [
     path('save-contact/', views.save_contact, name='save_contact'),
     
     path('genz-blog/', views.blog, name='blog'),
-    
+    path('genz-blog-details/', views.blog_details, name='blog_details'),
     path('<slug:slug>/', navitem_detail, name='navitem_detail'),
 ]

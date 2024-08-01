@@ -153,9 +153,18 @@ def about(request):
     })
 
 
-def blog(request, slug):
-    items = get_object_or_404(PostNavItem, slug=slug)
-    return render(request, 'public/blog.html')
+def blog(request):
+    # items = get_object_or_404(PostNavItem, slug=slug)
+    return render(request, 'public/blog.html', {
+        'navbar_style': 'dark'
+    })
+
+def blog_details(request):
+    # items = get_object_or_404(PostNavItem, slug=slug)
+    return render(request, 'public/blog_details.html', {
+        'navbar_style': 'dark',
+        # 'details': items
+    })
 
 def contact_us(request):
     return render(request, 'public/contact_us.html')
