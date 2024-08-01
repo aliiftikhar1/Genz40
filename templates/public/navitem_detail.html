@@ -2,7 +2,7 @@
 {% load static %}
 {% block header %}
 <style>
-    .cd-product-viewer-wrapper {
+  .cd-product-viewer-wrapper {
   text-align: center;
   padding: 2em 0;
 }
@@ -189,50 +189,25 @@
                     <!-- START VIDEO -->
                     <div class="col-lg-8 col-md-6 col-12 mt-sm-0 pt-2 pt-sm-0">
                         <div class="col-lg-12 mt-4 pt-2 mt-lg-0 pt-lg-0 sidebar sticky-bar">
+
                         <div class="card border-0 shadow rounded ms-lg-4 overflow-hidden">
-                            <div class="d-flex p-2 bg-light justify-content-between align-items-center">
-<!--                                <div>-->
-<!--                                    <a href="javascript:void(0)" class="text-danger"><i class="mdi mdi-circle"></i></a>-->
-<!--                                    <a href="javascript:void(0)" class="text-warning"><i class="mdi mdi-circle"></i></a>-->
-<!--                                    <a href="javascript:void(0)" class="text-success"><i class="mdi mdi-circle"></i></a>-->
-<!--                                </div>-->
-
-                                <small class="fw-bold logo-font"><i class="mdi mdi-circle-medium text-success"></i> GEN-Z</small>
+                          <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
+                            <div>
+                              <figure class="product-viewer">
+                                <img src="{% static 'images/genz/alfa-loading.jpg' %}" class="img-fluid" alt="Product Preview">
+                                <div class="product-sprite" data-image="{% static 'images/genz/alfa.png' %}"></div>
+                              </figure>
+                              <div class="cd-product-viewer-handle">
+                                <span class="fill"></span>
+                                <span class="handle">Handle</span>
+                              </div>
                             </div>
-                            <div class="bg-light px-2 position-relative">
-
-                                <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
-                                    <div>
-                                      <figure class="product-viewer">
-                                        <img src="{% static 'images/genz/alfa-loading.jpg' %}" alt="Product Preview">
-                                        <div class="product-sprite" data-image="{% static 'images/genz/alfa.png' %}"></div>
-                                      </figure>
-                                      <div class="cd-product-viewer-handle">
-                                        <span class="fill"></span>
-                                        <span class="handle">Handle</span>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                <!-- <video class="w-100 rounded" controls autoplay loop>
-                                    <source src="{% static 'public/images/genz/TurntableWhite.mpeg' %}" type="video/mpeg">
-                                </video> -->
-
-<!--                                <div class="position-absolute top-0 start-0">-->
-<!--                                    <div class="mt-2 ms-3">-->
-<!--                                        <span class="badge text-bg-danger">LIVE</span>-->
-<!--                                        <small class="mb-0 text-white title-dark">4 Attendance</small>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-                            </div>
-
-                            <!-- <div class="p-2 bg-light">
-                                <p class="text-muted mb-0"><b>Note:</b> This video is only for demo purposes.</p>
-                            </div> -->
+                          </div>
                         </div>
                     </div><!--end col-->
 
-                    </div><!--end col-->
+                    </div>
+                    <!--end col-->
                     <!-- END VIDEO -->
 
                     <!-- START SIDEBAR -->
