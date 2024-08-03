@@ -3,12 +3,8 @@
 {% block header %}
 {% endblock header %}
 
-<body>
-    {% if navbar_style == 'dark' %}
-        {% include 'public/layout/navbar_light.html' %}
-    {% else %}
-        {% include 'public/layout/navbar.html' %}
-    {% endif %}
+<body>    
+    {% include 'public/layout/navbar.html' %}
     {% block content %}
     {% endblock content %}
     {% include 'public/layout/footer.html' %}
