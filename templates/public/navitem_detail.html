@@ -231,7 +231,7 @@
                                                     <a class="nav-link rounded {% if forloop.first %}active{% endif %}" id="community-{{ package.id }}-tab" data-bs-toggle="pill" href="#pills-community-{{ package.id }}" role="tab" aria-controls="pills-community-{{ package.id }}" aria-selected="false">
                                                         <div class="text-center py-2">
                                                             <h6 class="mb-0">{{ package.name }}</h6>
-                                                            <span class="d-flex justify-content-center"><s>Original ${{ package.amount }}</s></span>
+                                                            <!-- <span class="d-flex justify-content-center"><s>Original ${{ package.amount }}</s></span> -->
                                                         </div>
                                                     </a><!--end nav link-->
                                                 </li><!--end nav item-->
@@ -251,11 +251,41 @@
                                                              <small class="text-dark mb-0 fst-italic">"Reserve now For ${{ package.amount_reserve }} until {{ package.offer_valid|date:"F d, Y" }}"</small>
                                                             </blockquote>
 
-                                                            <div class="section-title wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
-<!--                                                                <h4 class="title mb-4">User Community</h4>-->
+                                                            <div class="accordion" id="buyingquestion">
+                                                              <div class="accordion-item rounded">
+                                                                  <h2 class="accordion-header" id="headingOne">
+                                                                      <button class="accordion-button border-0 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                          aria-expanded="true" aria-controls="collapseOne">
+                                                                          How does it work ?
+                                                                      </button>
+                                                                  </h2>
+                                                                  <div id="collapseOne" class="accordion-collapse border-0 collapse show" aria-labelledby="headingOne"
+                                                                      data-bs-parent="#buyingquestion">
+                                                                      <div class="accordion-body text-muted">
+                                                                          There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                              
+                                                              <div class="accordion-item rounded mt-2">
+                                                                  <h2 class="accordion-header" id="headingTwo">
+                                                                      <button class="accordion-button border-0 bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                          aria-expanded="false" aria-controls="collapseTwo">
+                                                                          Do I need a designer to use Landrick ?
+                                                                      </button>
+                                                                  </h2>
+                                                                  <div id="collapseTwo" class="accordion-collapse border-0 collapse" aria-labelledby="headingTwo"
+                                                                      data-bs-parent="#buyingquestion">
+                                                                      <div class="accordion-body text-muted">
+                                                                          There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
+                                                            <!-- <div class="section-title wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
                                                                 <p class="text-dark text-small">{{ package.description|safe }}</p>
-                                                               
-                                                            </div>
+                                                            </div> -->
                                                         </div><!--end col-->
                                                         <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                                                             <h4 class="mb-0">Due Today</h4>

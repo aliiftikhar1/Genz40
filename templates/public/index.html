@@ -83,8 +83,8 @@
             <div class="row mb-4 justify-content-center d-lg-none mt-100">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
-                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                      <a href="{% url 'navitem_detail' slug=section_1.nav_item.slug %}" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a>
                   </div>
               </div>
           </div>
@@ -135,8 +135,8 @@
             <div class="row mb-4 justify-content-center d-lg-none mt-100">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
-                      <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                      <a href="{% url 'navitem_detail' slug=section_2.nav_item.slug %}" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a>
                   </div>
               </div>
           </div>
@@ -186,8 +186,8 @@
             <div class="row mb-4 justify-content-center d-lg-none mt-100">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
-                      <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="mt-5 btn btn-outline-light text-light text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-light text-light text-uppercase mt-2">Learn More </a>
+                      <a href="{% url 'navitem_detail' slug=section_3.nav_item.slug %}" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a>
                   </div>
               </div>
           </div>
@@ -219,12 +219,12 @@
             <div class="col-md-1"></div>
             <div class="col-md-4">
                 <div class="section-title me-lg-4">
-                    <h4 class="title title-dark text-light mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
-                    <h4 class="title title-dark text-light mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
-                    <p class="text-white-50 para-dark text-light para-desc mb-0">Interested in GEN-Z40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
+                    <h4 class="title title-light mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
                     <div class="mt-4 pt-2">
-                        <h6 class="title-dark text-light mb-4">WHAT ELSE YOU GET?</h6>
-                        <ul class="list-unstyled text-light">
+                        <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Build & Technical Support</li>
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Live Chat with Member & Group Experts</li>
@@ -319,12 +319,12 @@
         <div class="row align-items-start">
             <div class="col-md-6">
                 <div class="section-title me-lg-4">
-                    <h4 class="title title-dark text-light mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
-                    <h4 class="title title-dark text-light mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
-                    <p class="text-white-50 para-dark text-light para-desc mb-0">Interested in GEN-Z40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
+                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
                     <div class="mt-4 pt-2">
-                        <h6 class="title-dark text-light mb-4">WHAT ELSE YOU GET?</h6>
-                        <ul class="list-unstyled text-light">
+                        <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Build & Technical Support</li>
                             <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Live Chat with Member & Group Experts</li>
@@ -429,7 +429,7 @@
             <div class="subcribe-form">
                 <form method="POST" id="subscribe-form">
                   {% csrf_token %}
-                    <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required style="background-color: #fff !important;padding-right: 300px;">
+                    <input name="email" id="email" type="email" class="form-control border shadow rounded-pill text-dark" placeholder="Your email :" required>
                     <button type="submit" class="btn btn-pills btn-success" id="newssubscribebtn">Subscribe
                         <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
                     </button>
