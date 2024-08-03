@@ -75,6 +75,13 @@
                             {% endif %} -->
                         </li>
                         {% endfor %}
+                        <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
+                            <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
+                            href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                            {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+                                {{ item.title }}
+                            </a>
+                        </li>
                         <li class="has-submenu parent-parent-menu-item">
                             <a href="javascript:void(0)">Company</a><span class="menu-arrow"></span>
                             <ul class="submenu megamenu">
@@ -147,6 +154,13 @@
                                 </li>
                             </ul>
                         </li>
+
+                        <li class="sub-menu-item">
+                            <a class="nav-link" href="#">
+                                Community
+                            </a>
+                        </li>
+                        
                     </ul><!--end navigation menu-->
                 </div><!--end navigation-->
             </div><!--end container-->
