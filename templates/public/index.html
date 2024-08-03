@@ -66,7 +66,7 @@
   <!-- Hero End -->
   
    <!-- 1st Hero Start Mobile -->
-  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.image.url}}') center center; padding-top: 0px !important; height: 90vh;">
       <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
       <div class="container">
                  <!-- Mobile -->
@@ -118,7 +118,7 @@
   <!-- Hero End -->
   
    <!-- 2nd Hero Start Mobile -->
-  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_2.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_2.image.url}}') center center; padding-top: 0px !important; height: 90vh;">
       <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
       <div class="container">
                  <!-- Mobile -->
@@ -169,7 +169,7 @@
   <!-- Hero End -->
   
    <!-- 3rd Hero Start Mobile -->
-  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_3.image.url}}') center center; padding-top: 0px !important; height: 90vh; padding-bottom: 150px;">
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_3.image.url}}') center center; padding-top: 0px !important; height: 80vh;">
       <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
       <div class="container">
                  <!-- Mobile -->
@@ -235,75 +235,81 @@
             <div class="col-md-2"></div>
             <div class="col-md-4">
                 <div class="card rounded shadow border-0 bg-black">
-                    <div class="card-body">
-                        <h5 class="text-center text-white">Become A Member</h5>
-
-                        <form method="post" id="community-form" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="hidden" value="{{ random_password }}" name="password1">
-                            <input type="hidden" value="{{ random_password }}" name="password2">
-                            <input type="hidden" value="{{ country_code }}" name="country">
-                            <input type="hidden" value="customer" name="role">
-                            <div class="row mt-4">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
-                                        
-
-                                        <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons text-white"></i>
-                                            <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
+                    <div class="card-body pt-0">
+                        <div class="section-title">
+                            <h4 class="title title-light text-center">BECOME A MEMBER</h4>
+                            <div class="mt-4 pt-2">
+                                <form method="post" id="community-form" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ random_password }}" name="password1">
+                                    <input type="hidden" value="{{ random_password }}" name="password2">
+                                    <input type="hidden" value="{{ country_code }}" name="country">
+                                    <input type="hidden" value="customer" name="role">
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
+                                                
+        
+                                                <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
+                                                <div class="form-icon position-relative">
+                                                    <i data-feather="user" class="fea icon-sm icons text-white"></i>
+                                                    <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
+                                                </div>
+                                            </div>
+                                        </div><!--end col-->
+        
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
+                                                
+                                                <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
+                                                <div class="form-icon position-relative">
+                                                    <i data-feather="user" class="fea icon-sm icons"></i>
+                                                    <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
+                                                </div>
+                                            </div>
+                                        </div><!--end col-->
+        
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
+                                                
+                                                <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
+                                                <div class="form-icon position-relative">
+                                                    <i data-feather="mail" class="fea icon-sm icons"></i>
+                                                    <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
+                                                </div>
+                                            </div>
+                                        </div><!--end col-->
+        
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                                <div class="form-icon position-relative">
+                                                    <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                                    <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
+                                                </div>
+                                            </div> 
+                                        </div><!--end col-->
+                                        <div class="col-md-12 mb-2">
+                                            <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
                                         </div>
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
-                                        
-                                        <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons"></i>
-                                            <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
-                                        </div>
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
-                                        
-                                        <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="mail" class="fea icon-sm icons"></i>
-                                            <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
-                                        </div>
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                                        <div class="form-icon position-relative">
-                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
-                                            <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
-                                        </div>
-                                    </div> 
-                                </div><!--end col-->
-                                <div class="col-md-12 mb-2">
-                                    <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
-                                </div>
-
-                                <div class="col-md-12 mb-0">
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-success">Join now
-                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
-                                        </button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form><!--end form-->
+        
+                                        <div class="col-md-12 mb-0">
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-success">Join now
+                                                    <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                                </button>
+                                            </div>
+                                        </div><!--end col-->
+                                    </div><!--end row-->
+                                </form><!--end form-->
+                            </div>
+                        </div>
+                        <!-- <h5 class="text-center text-white">Become A Member</h5> -->
+                        <!-- <h4 class="text-center title title-dark mb-4 text-uppercase">Become A Member</h4> -->
+                       
                     </div>
                 </div>                             
             </div><!--end col-->
