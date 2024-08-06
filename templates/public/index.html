@@ -2,7 +2,11 @@
 {% load static %}
 {% load frontend_custom_filters %}
 {% block header %}
+
 <style>
+    .side-btn {
+        display: none;
+    }
     a.text-light:focus, a.text-light:hover {
         color: #000 !important;
     }
@@ -174,8 +178,8 @@
       <div class="container">
                  <!-- Mobile -->
                 <div class="row mb-4 justify-content-center d-lg-none">
-                  <div class="col-12">
-                <div class="title-heading text-center">
+                  <div class="col-12 mt-4">
+                <div class="title-heading text-center mt-4">
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
                   <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_3.title }}</h4>
                   <p class="para-desc text-white">{{ section_3.subtitle }}</p>
@@ -238,7 +242,7 @@
                     <div class="card-body pt-0">
                         <div class="section-title">
                             <h4 class="title title-light text-center">BECOME A MEMBER</h4>
-                            <div class="mt-4 pt-2">
+                            <!-- <div class="pt-2"> -->
                                 <form method="post" id="community-form" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <input type="hidden" value="{{ random_password }}" name="password1">
@@ -305,7 +309,7 @@
                                         </div><!--end col-->
                                     </div><!--end row-->
                                 </form><!--end form-->
-                            </div>
+                            <!-- </div> -->
                         </div>
                         <!-- <h5 class="text-center text-white">Become A Member</h5> -->
                         <!-- <h4 class="text-center title title-dark mb-4 text-uppercase">Become A Member</h4> -->

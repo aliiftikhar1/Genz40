@@ -31,4 +31,117 @@
         <link href="{% static 'css/style-dark.min.css' %}" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
         <!-- Toastr -->
         <link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
+
+        <style>
+  
+            .side-btn {
+               background-color: #fff;
+               border-bottom-left-radius: .3rem;
+               border-bottom-right-radius: .3rem;
+               color: #000;
+               cursor: pointer;
+               display: inline-block;
+               font-weight: 500;
+               left: 17px;
+               padding: 5px 30px;
+               position: fixed;
+               top: 60%;
+               -webkit-transform: translateY(-50%) rotate(-90deg);
+               transform: translateY(-50%) rotate(-90deg);
+               -webkit-transform-origin: left;
+               transform-origin: left;
+               z-index:99
+           }
+           
+           .side-btn:hover {
+               left: 20px;
+               padding:10px 30px
+           }
+           
+           @media (max-width: 992px) {
+               .side-btn {
+                   display:none
+               }
+           
+               .gravity-mobile {
+                   width:80%
+               }
+           
+           }
+           
+           @media (max-width: 992px) {
+         .button-bottom-stick-mobile {
+                 background-image: linear-gradient(to left, #fff, #fff, #fff);
+                 border-top-left-radius: 20px;
+                 border-top-right-radius: 20px;
+                 bottom: 0;
+                 display: flex;
+                 font-weight: 600;
+                 left: 0;
+                 padding: .7rem 0;
+                 position: fixed;
+                 text-transform: uppercase;
+                 width: 100%;
+                 z-index:99999
+             }
+         
+             .button-bottom-stick-mobile .banner-button {
+                 border: none !important;
+                 border-radius: .3rem;
+                 box-shadow: none;
+                 cursor: pointer;
+                 padding: .5rem 1rem;
+                 transition: -webkit-transform .1s;
+                 transition: transform .1s;
+                 transition:transform .1s, -webkit-transform .1s
+             }
+         
+             .button-bottom-stick-mobile .primary-text {
+                 color:#000
+             }
+         
+             .button-bottom-stick-mobile .banner-btn-logo svg {
+                 fill:#000
+             }
+             .vl {
+                 border-left:.1rem solid #a2a0a0
+             }
+         
+             .banner-button-margin, .banner-hr, .banner-logo, .banner-p {
+                 display: none;
+             }
+         
+             .banner-button-container-mobile, .banner-logo-container-mobile {
+                 display: flex;
+             }
+         
+              .banner-button-container-mobile {
+                 margin-top:2rem
+             }
+         
+                 .banner-button-container-mobile, .banner-logo-container-mobile {
+                 display:flex
+             }
+         
+         }
+         
+         @media (max-width: 767px) {
+             .banner-button-container-mobile .offset-1 {
+                 margin-left: 0;
+                 margin-top:.5rem
+             }
+         
+             .img-div {
+                 height:270px !important
+             }
+         }
+         
+         .banner-button-container-mobile, .banner-logo-container-mobile {
+             display:none
+         }
+         
+           </style>
+           
     </head>
+
+ 
