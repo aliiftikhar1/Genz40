@@ -192,7 +192,8 @@
                         <div class="col-lg-12 mt-4 pt-2 mt-lg-0 pt-lg-0 sidebar sticky-bar">
 
                         <div class="card border-0 shadow rounded ms-lg-4 overflow-hidden">
-                          <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
+                          <img src="{% static 'images/genz/Thumbnail.jpg' %}" class="img-fluid" alt="">
+                          <!-- <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
                             <div>
                               <figure class="product-viewer">
                                 <img src="{% static 'images/genz/alfa-loading.jpg' %}" class="img-fluid" alt="Product Preview">
@@ -203,7 +204,7 @@
                                 <span class="handle">Handle</span>
                               </div>
                             </div>
-                          </div>
+                          </div> -->
                         </div>
                     </div><!--end col-->
 
@@ -213,12 +214,12 @@
 
                     <!-- START SIDEBAR -->
                     <div class="col-lg-4 col-md-4">
-                        <div class="card border-0 shadow rounded overflow-hidden">
+                        <div class="card border-0 shadow rounded overflow-hidden bg-black">
                             <div class="row justify-content-center">
                                 <div class="col-12 text-center">
                                     <div class="section-title pb-2 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                                         <h4 class="title mb-1 mt-4 text-uppercase">{{ items.title }}</h4>
-                                        <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-primary fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small>
+                                        <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-success fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small>
                                     </div>
                                 </div><!--end col-->
                             </div><!--end row-->
