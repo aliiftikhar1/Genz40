@@ -176,6 +176,14 @@
     transform: translateX(-50%) scale(1);
   }
 }
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  background-color: #262424;
+  border-top: 3px solid #AAAAAA;
+  border-radius: 0px;
+}
+.acc-bg {
+  background-color: #262424 !important;
+}
 </style>
 {% endblock %}
 
@@ -192,7 +200,7 @@
                         <div class="col-lg-12 mt-4 pt-2 mt-lg-0 pt-lg-0 sidebar sticky-bar">
 
                         <div class="card border-0 shadow rounded ms-lg-4 overflow-hidden">
-                          <img src="{% static 'images/genz/Thumbnail.jpg' %}" class="img-fluid" alt="">
+                          <img src="{% static 'images/genz/mark1-builder4.png' %}" class="img-fluid" alt="">
                           <!-- <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
                             <div>
                               <figure class="product-viewer">
@@ -227,10 +235,10 @@
                             <div class="card-body">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-12 col-md-12 pt-2 text-center">
-                                        <ul class="nav nav-pills nav-justified flex-column flex-sm-row rounded bg-light wow animate__animated animate__fadeInUp" data-wow-delay=".3s" id="pills-tab" role="tablist">
+                                        <ul class="nav nav-pills nav-justified flex-column flex-sm-row wow animate__animated animate__fadeInUp" data-wow-delay=".3s" id="pills-tab" role="tablist" style="border-top: 1px solid #AAAAAA;">
                                             {% for package in packages %}
                                                 <li class="nav-item">
-                                                    <a class="nav-link rounded {% if forloop.first %}active{% endif %}" id="community-{{ package.id }}-tab" data-bs-toggle="pill" href="#pills-community-{{ package.id }}" role="tab" aria-controls="pills-community-{{ package.id }}" aria-selected="false">
+                                                    <a class="nav-link {% if forloop.first %}active{% endif %}" id="community-{{ package.id }}-tab" data-bs-toggle="pill" href="#pills-community-{{ package.id }}" role="tab" aria-controls="pills-community-{{ package.id }}" aria-selected="false">
                                                         <div class="text-center py-2">
                                                             <h6 class="mb-0">{{ package.name }}</h6>
                                                             <!-- <span class="d-flex justify-content-center"><s>Original ${{ package.amount }}</s></span> -->
@@ -249,54 +257,153 @@
                                                 <div class="tab-pane fade show {% if forloop.first %}show active{% endif %}" id="pills-community-{{ package.id }}" role="tabpanel" aria-labelledby="community-{{ package.id }}-tab">
                                                     <div class="row align-items-center">
                                                         <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                                                            <blockquote class="blockquote p-2">
+                                                            <!-- <blockquote class="blockquote p-2">
                                                              <small class="text-dark mb-0 fst-italic">"Reserve now For ${{ package.amount_reserve }} until {{ package.offer_valid|date:"F d, Y" }}"</small>
-                                                            </blockquote>
+                                                            </blockquote> -->
 
                                                             <div class="accordion" id="buyingquestion">
                                                               <div class="accordion-item rounded">
                                                                   <h2 class="accordion-header" id="headingOne">
-                                                                      <button class="accordion-button border-0 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                                                          aria-expanded="true" aria-controls="collapseOne">
-                                                                          How does it work ?
+                                                                      <button class="accordion-button bg-light border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                          aria-expanded="false" aria-controls="collapseOne">
+                                                                          COMPLETE SPACE FRAME
                                                                       </button>
                                                                   </h2>
-                                                                  <div id="collapseOne" class="accordion-collapse border-0 collapse show" aria-labelledby="headingOne"
+                                                                  <div id="collapseOne" class="accordion-collapse acc-bg collapse" aria-labelledby="headingOne"
                                                                       data-bs-parent="#buyingquestion">
-                                                                      <div class="accordion-body text-muted">
-                                                                          There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.
+                                                                      <div class="accordion-body">
+                                                                        <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box</p>
+                                                                        <p>- DOM .134 wall roll bar</p>
+                                                                        <p>- Front and Rear body supported and hinged</p>
+                                                                        <p>- L & R Side Pods</p>
+                                                                        <p>- Chassis is delivered in a satin black epoxy finish</p>
+                                                                        <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
                                                                       </div>
                                                                   </div>
                                                               </div>
                                                               
                                                               <div class="accordion-item rounded mt-2">
                                                                   <h2 class="accordion-header" id="headingTwo">
-                                                                      <button class="accordion-button border-0 bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                      <button class="accordion-button border-0 bg-light text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
                                                                           aria-expanded="false" aria-controls="collapseTwo">
-                                                                          Do I need a designer to use Landrick ?
+                                                                          COMPLETE FIBER GLASS BODY
                                                                       </button>
                                                                   </h2>
-                                                                  <div id="collapseTwo" class="accordion-collapse border-0 collapse" aria-labelledby="headingTwo"
+                                                                  <div id="collapseTwo" class="accordion-collapse acc-bg border-0 collapse" aria-labelledby="headingTwo"
                                                                       data-bs-parent="#buyingquestion">
-                                                                      <div class="accordion-body text-muted">
-                                                                          There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.
+                                                                      <div class="accordion-body">
+                                                                        <p>- Main Body</p>
+                                                                        <p>- Rocker Panels</p>
+                                                                        <p>- Roof</p>
+                                                                        <p>- Doors</p>
+                                                                        <p>- Nostril (drop down for single or Twin)</p>
+                                                                        <p>- Tail</p>
+                                                                        <p>- Windshield</p>
+                                                                        <p>- Polycarbonate Headlight Covers</p>
+                                                                        <p>- Polycarbonate Side and Rear Windows</p>
                                                                       </div>
                                                                   </div>
                                                               </div>
+
+                                                              <div class="accordion-item rounded mt-2">
+                                                                <h2 class="accordion-header" id="headingThree">
+                                                                    <button class="accordion-button border-0 bg-light collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                                        aria-expanded="false" aria-controls="collapseThree">
+                                                                        STEERING
+                                                                    </button>
+                                                                </h2>
+                                                                <div id="collapseThree" class="accordion-collapse border-0 acc-bg collapse" aria-labelledby="headingThree"
+                                                                    data-bs-parent="#buyingquestion">
+                                                                    <div class="accordion-body">
+                                                                      <p>- Custom Rack and Pinion Steering Unit</p>
+                                                                      <p>- Collapsible Steering Column</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="accordion-item rounded mt-2">
+                                                              <h2 class="accordion-header" id="headingFour">
+                                                                  <button class="accordion-button border-0 bg-light collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                                      aria-expanded="false" aria-controls="collapseFour">
+                                                                      SUSPENSION
+                                                                  </button>
+                                                              </h2>
+                                                              <div id="collapseFour" class="accordion-collapse border-0 acc-bg collapse" aria-labelledby="headingFour"
+                                                                  data-bs-parent="#buyingquestion">
+                                                                  <div class="accordion-body">
+                                                                    <p>- Billet Aluminum Front and Rear Suspension Uprights</p>
+                                                                    <p>- Billet Aluminum Front Upper and Lower Control Arms</p>
+                                                                    <p>- Performance Tie Rods and Balljoints</p>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
                                                           </div>
 
                                                             <!-- <div class="section-title wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
                                                                 <p class="text-dark text-small">{{ package.description|safe }}</p>
                                                             </div> -->
                                                         </div><!--end col-->
-                                                        <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <!-- <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                                                             <h4 class="mb-0">Due Today</h4>
                                                             <small>Fully refundable</small>
                                                         </div>
                                                         <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                                                             <h4 class="mb-0 float-end">${{ package.amount_due }}</h4>
-                                                        </div>
+                                                        </div> -->
                                                     </div><!--end row-->
+
+                                                    <div class="row justify-content-center">
+                                                      <div class="col-12 text-center">
+                                                          <div class="section-title mt-4 mb-4 pb-2">
+                                                              <h4 class="title">Your Mark I</h4>
+                                                              <p class="text-muted para-desc mb-0 mx-auto">Est. Delivery: <span class="text-success fw-bold">Aug – Sep 2024</span></p>
+                                                          </div>
+                                                          <div class="accordion" id="buyingquestion">
+                                                            <div class="accordion-item rounded">
+                                                                <h2 class="accordion-header" id="headingFive">
+                                                                    <button class="accordion-button bg-light border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                                        aria-expanded="false" aria-controls="collapseFive">
+                                                                        Show pricing details
+                                                                    </button>
+                                                                </h2>
+                                                                <div id="collapseFive" class="accordion-collapse acc-bg collapse" aria-labelledby="headingFive"
+                                                                    data-bs-parent="#buyingquestion">
+                                                                    <div class="accordion-body">
+                                                                      <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box</p>
+                                                                      <p>- DOM .134 wall roll bar</p>
+                                                                      <p>- Front and Rear body supported and hinged</p>
+                                                                      <p>- L & R Side Pods</p>
+                                                                      <p>- Chassis is delivered in a satin black epoxy finish</p>
+                                                                      <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                      </div><!--end col-->
+
+                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="mb-0 mt-4">Purchase Price</h4>
+                                                        <!-- <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small> -->
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="float-end">${{ package.amount }}</h4>
+                                                    </div>
+                                                    <div class="col-md-12 mt-1 mt-sm-0 pt-2 pt-sm-0">
+                                                      <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
+                                                    </div>
+
+                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="mb-0 mt-4">Due Today</h4>
+                                                        <small>Fully refundable</small>
+                                                    </div>
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="mb-0 mt-4 float-end">${{ package.amount_due }}</h4>
+                                                    </div>
+
+                                                  </div><!--end row-->
+
                                                     <div class="row">
                                                         <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
                                                             <a href="" class="mt-5 btn d-grid btn-outline-dark text-uppercase">Reserve Now</a>
