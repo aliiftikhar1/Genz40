@@ -184,6 +184,10 @@
 .acc-bg {
   background-color: #262424 !important;
 }
+
+.accordion .accordion-item .accordion-button:before {
+  color: #fff;
+}
 </style>
 {% endblock %}
 
@@ -227,14 +231,14 @@
                                 <div class="col-12 text-center">
                                     <div class="section-title pb-2 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                                         <h4 class="title mb-1 mt-4 text-uppercase">{{ items.title }}</h4>
-                                        <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-success fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small>
+                                        <!-- <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-success fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small> -->
                                     </div>
                                 </div><!--end col-->
                             </div><!--end row-->
 <!--                            <img src="{% static 'images/blog/standard.jpg' %}" class="img-fluid" alt="">-->
                             <div class="card-body">
                                 <div class="row justify-content-center">
-                                    <div class="col-lg-12 col-md-12 pt-2 text-center">
+                                    <div class="col-lg-12 col-md-12 text-center">
                                         <ul class="nav nav-pills nav-justified flex-column flex-sm-row wow animate__animated animate__fadeInUp" data-wow-delay=".3s" id="pills-tab" role="tablist" style="border-top: 1px solid #AAAAAA;">
                                             {% for package in packages %}
                                                 <li class="nav-item">
@@ -256,15 +260,16 @@
                                              {% for package in packages %}
                                                 <div class="tab-pane fade show {% if forloop.first %}show active{% endif %}" id="pills-community-{{ package.id }}" role="tabpanel" aria-labelledby="community-{{ package.id }}-tab">
                                                     <div class="row align-items-center">
+                                                      <span class="text-dark text-center mb-2 mt-0">Included</span>
                                                         <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                                                            <!-- <blockquote class="blockquote p-2">
-                                                             <small class="text-dark mb-0 fst-italic">"Reserve now For ${{ package.amount_reserve }} until {{ package.offer_valid|date:"F d, Y" }}"</small>
-                                                            </blockquote> -->
+                                                            <!-- <blockquote class="blockquote p-2"> -->
+                                                             <!-- <span class="text-dark text-center">Included</span> -->
+                                                            <!-- </blockquote> -->
 
                                                             <div class="accordion" id="buyingquestion">
-                                                              <div class="accordion-item rounded">
+                                                              <div class="accordion-item rounded" style="border: 1px solid #fff;">
                                                                   <h2 class="accordion-header" id="headingOne">
-                                                                      <button class="accordion-button bg-light border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                      <button class="accordion-button bg-black border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
                                                                           aria-expanded="false" aria-controls="collapseOne">
                                                                           COMPLETE SPACE FRAME
                                                                       </button>
@@ -282,9 +287,9 @@
                                                                   </div>
                                                               </div>
                                                               
-                                                              <div class="accordion-item rounded mt-2">
+                                                              <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
                                                                   <h2 class="accordion-header" id="headingTwo">
-                                                                      <button class="accordion-button border-0 bg-light text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                      <button class="accordion-button border-0 bg-black text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
                                                                           aria-expanded="false" aria-controls="collapseTwo">
                                                                           COMPLETE FIBER GLASS BODY
                                                                       </button>
@@ -305,9 +310,9 @@
                                                                   </div>
                                                               </div>
 
-                                                              <div class="accordion-item rounded mt-2">
+                                                              <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
                                                                 <h2 class="accordion-header" id="headingThree">
-                                                                    <button class="accordion-button border-0 bg-light collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                                    <button class="accordion-button border-0 bg-black collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
                                                                         aria-expanded="false" aria-controls="collapseThree">
                                                                         STEERING
                                                                     </button>
@@ -321,9 +326,9 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="accordion-item rounded mt-2">
+                                                            <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
                                                               <h2 class="accordion-header" id="headingFour">
-                                                                  <button class="accordion-button border-0 bg-light collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                                  <button class="accordion-button border-0 bg-black collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
                                                                       aria-expanded="false" aria-controls="collapseFour">
                                                                       SUSPENSION
                                                                   </button>
@@ -352,17 +357,54 @@
                                                             <h4 class="mb-0 float-end">${{ package.amount_due }}</h4>
                                                         </div> -->
                                                     </div><!--end row-->
+                                                    <div class="row">
+                                                      <div class="col-12">
+                                                    <!-- <div class="component-wrapper rounded shadow"> -->
+                                                      <!-- <div class="p-4 border-bottom"> -->
+                                                          <h5 class="title mb-0 mt-4"> Optional </h5>
+                                                      <!-- </div> -->
+                
+                                                          <!-- <div class="form-check">
+                                                              <div class="mb-0"> -->
+                                                                <div class="form-check mt-2">
+                                                                  <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                  <label class="form-check-label" for="flexCheckDefault1">Primer</label>
+                                                              </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                      <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                      <label class="form-check-label" for="flexCheckDefault1">Paint</label>
+                                                                  </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                    <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                    <label class="form-check-label" for="flexCheckDefault1">Livery</label>
+                                                                  </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                    <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                    <label class="form-check-label" for="flexCheckDefault1">Wheels</label>
+                                                                </div>
+                                                              <!-- </div>
+                                                          </div> -->
+                                                   
+                                                  <!-- </div> -->
+                                                  </div>
+                                                  </div>
+
 
                                                     <div class="row justify-content-center">
+
+                                                      
                                                       <div class="col-12 text-center">
                                                           <div class="section-title mt-4 mb-4 pb-2">
                                                               <h4 class="title">Your Mark I</h4>
-                                                              <p class="text-muted para-desc mb-0 mx-auto">Est. Delivery: <span class="text-success fw-bold">Aug – Sep 2024</span></p>
+                                                              <p class="para-desc mb-0 mx-auto">Est. Delivery: <span class="text-success fw-bold">Aug – Sep 2024</span></p>
                                                           </div>
                                                           <div class="accordion" id="buyingquestion">
-                                                            <div class="accordion-item rounded">
+                                                            <div class="accordion-item rounded" style="border: 1px solid #fff;">
                                                                 <h2 class="accordion-header" id="headingFive">
-                                                                    <button class="accordion-button bg-light border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                                    <button class="accordion-button bg-black border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
                                                                         aria-expanded="false" aria-controls="collapseFive">
                                                                         Show pricing details
                                                                     </button>
@@ -382,23 +424,23 @@
                                                             </div>
                                                       </div><!--end col-->
 
-                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
                                                         <h4 class="mb-0 mt-4">Purchase Price</h4>
                                                         <!-- <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small> -->
                                                     </div>
                                                     
                                                     <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                                                        <h4 class="float-end">${{ package.amount }}</h4>
+                                                        <h4 class="float-end mb-0 mt-4">${{ package.amount }}</h4>
                                                     </div>
                                                     <div class="col-md-12 mt-1 mt-sm-0 pt-2 pt-sm-0">
-                                                      <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
+                                                      <small class="text-small">THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
                                                     </div>
 
-                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 mb-4">
                                                         <h4 class="mb-0 mt-4">Due Today</h4>
-                                                        <small>Fully refundable</small>
+                                                        <small>Non-refundable Order Fee</small>
                                                     </div>
-                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 mb-4">
                                                         <h4 class="mb-0 mt-4 float-end">${{ package.amount_due }}</h4>
                                                     </div>
 
@@ -406,7 +448,15 @@
 
                                                     <div class="row">
                                                         <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
-                                                            <a href="" class="mt-5 btn d-grid btn-outline-dark text-uppercase">Reserve Now</a>
+                                                          <form action="{% url 'create_checkout_session' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <!-- <button type="submit" id="checkout-button">Pay $50</button> -->
+                                                            <input type="hidden" value="{{package.amount_due}}" name="amount"/>
+                                                            <input type="hidden" value="MARK I (Builder Package)" name="package" />
+                                                            {{user_data.is_authenticated}}
+                                                            {{user_data.user_id}}
+                                                              <button type="submit" class="btn d-grid btn-outline-dark text-uppercase">Reserve Now</button>
+                                                          </form>
                                                         </div>
                                                     </div>
                                                 </div><!--end teb pane-->
@@ -453,6 +503,7 @@
                                                 </div>    <!--end row-->
                                             </div><!--end teb pane-->
                                         </div><!--end tab content-->
+
                                     </div><!--end col-->
                                 </div><!--end row-->
                             </div>

@@ -21,6 +21,7 @@ import random
 from common.utils import get_client_ip, send_custom_email
 import requests
 
+
 # Create your views here.
 @method_decorator(csrf_exempt, name='dispatch')
 class CustomSortableUpdateView(View):
@@ -94,21 +95,21 @@ def register(request):
     return render(request, 'registration/register.html', context)
 
 
-def custom_login(request):
-    if request.user.is_authenticated:
-        return redirect('admin_dashboard')
-
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('admin_dashboard')
-        else:
-            messages.error(request, 'Invalid username or password')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'registration/login.html', {'form': form})
+# def custom_login(request):
+#     if request.user.is_authenticated:
+#         return redirect('dashboard')
+#     if request.method == 'POST':
+#         form = AuthenticationForm(request, data=request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             print('--------user details', user)
+#             return redirect('dashboard')
+#         else:
+#             messages.error(request, 'Invalid username or password')
+#     else:
+#         form = AuthenticationForm()
+#     return render(request, 'registration/login.html', {'form': form})
 
 
 class CustomPasswordResetView(SuccessMessageMixin, PasswordResetView):
@@ -134,17 +135,17 @@ class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
 def custom_logout(request):
     logout(request)
-    # messages.success(request, "You have been logged out.")
+    messages.success(request, "You have been logged out.")
     return redirect('/')
 
 
-@login_required
-def dashboard(request):
-    header = 'Dashboard'
-    if request.user.role == 'admin':
-        return render(request, "admin/dashboard.html", {'header': header, })
-    else:
-        return render(request, "customer/dashboard.html", {'header': header, })
+# @login_required
+# def dashboard(request):
+#     header = 'Dashboard'
+#     if request.user.role == 'admin':
+#         return render(request, "admin/dashboard.html", {'header': header })
+#     else:
+#         return render(request, "customer/dashboard.html", {'header': header })
 
 
 @login_required

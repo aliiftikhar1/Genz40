@@ -157,8 +157,9 @@ class PostNavItem(models.Model):
         return self.children.filter(is_active=True).order_by('position')
 
     def get_absolute_url(self):
-        return reverse('navitem_detail', kwargs={'slug': self.slug})
-
+        # return reverse('navitem_detail', kwargs={'slug': self.slug})
+        return reverse('car_details', kwargs={'slug': self.slug})
+    
     class Meta:
         ordering = ['position']
         db_table = 'nav_items'
@@ -365,7 +366,7 @@ class PostWheels(models.Model):
 
 class PostLandingPageImages(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    nav_item = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='landing_images')
+    # nav_item = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='landing_images')
     title = models.CharField(max_length=100)
     title_data = models.CharField(max_length=100, blank=True)
     subtitle = models.CharField(max_length=400)
@@ -449,3 +450,22 @@ class PostContactUs(models.Model):
 
     class Meta:
         db_table = 'contact_us'
+
+
+class PostPayment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
+    stripe_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="usd", blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    package_name = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.id
+    
+    class Meta:
+        db_table = 'payment'
+

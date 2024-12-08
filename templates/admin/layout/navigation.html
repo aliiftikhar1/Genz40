@@ -54,7 +54,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
           <li class="nav-item">
-            <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
               <i class="nav-icon fa fa-tachometer-alt"></i>
               <p class="text-bold">Dashboard</p>
             </a>
@@ -73,13 +73,6 @@
               <p class="text-bold">Packages</p>
             </a>
           </li>
-
-<!--          <li class="nav-item">-->
-<!--            <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">-->
-<!--              <i class="nav-icon fa fa-briefcase"></i>-->
-<!--              <p class="text-bold">Business</p>-->
-<!--            </a>-->
-<!--          </li>-->
 
         </ul>
       </nav>

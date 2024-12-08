@@ -2,15 +2,14 @@ from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
 
 from . import views
-from .views import register, CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordChangeView, \
-    custom_login, custom_logout, package_list, package_add, package_edit, package_activate, package_deactivate
+from .views import register, CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordChangeView, custom_logout, package_list, package_add, package_edit, package_activate, package_deactivate
 
 # app_name = 'auth'
 
 urlpatterns = [
     # Admin urls
     path('register/', register, name='register'),
-    path('login/', custom_login, name='login'),
+#     path('login/', custom_login, name='login'),
     path('logout/', custom_logout, name='logout'),
     # path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     # path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
@@ -25,7 +24,7 @@ urlpatterns = [
          auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'),
          name='password_reset_done'),
     path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
-    path('dashboard/', views.dashboard, name='admin_dashboard'),
+#     path('dashboard/', views.dashboard, name='dashboard'),
 
     # Navigation
     path('nav-items', views.navitem_list, name='navitem_list'),
@@ -62,6 +61,9 @@ urlpatterns = [
     path('post-paint/toggle/<int:pk>/', views.toggle_post_paint, name='toggle_post_paint'),
 
     path('package-details/<uuid:pk>/', views.all_package_details, name='package_details'),
+
+
+
 ]
 
 

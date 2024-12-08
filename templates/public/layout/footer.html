@@ -230,7 +230,7 @@
         <div class="offcanvas-footer p-4 border-top text-center">
             <ul class="list-unstyled social-icon social mb-0">
                 <li class="list-inline-item mb-0"><a href="http://facebook.com/genzsportscars" class="rounded" target="_blank"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
-                              <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official" class="rounded" target="_blank"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official" class="rounded" target="_blank"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
                 <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
                 <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li>
             </ul><!--end icon-->
@@ -286,7 +286,7 @@
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response.message);
-                    location.href = "{% url 'admin_dashboard' %}"
+                    location.href = "{% url 'dashboard' %}"
                 } else {
                     toastr.error(response.message);
                 }
