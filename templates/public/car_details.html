@@ -77,23 +77,11 @@
         transition: all 0.5s ease-in-out;
     }
 
-    /* #sideContent {
-        position: absolute;
-        top: 65px;
-        right: 0;
-        height: 100%;
-        z-index: 10;
-        height: 100vh;
-        overflow-y: auto;
-        display: none;
-    } */
-
-
     #sideContent {
       position: absolute;
-      top: 60px;
+      top: 65px;
       right: 0;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 65px);
       z-index: 10;
       overflow-y: auto;
       display: none;
@@ -133,89 +121,6 @@
     /* Show sidebar with proper display */
     #sideContent.show {
         display: block !important;
-    }
-
-    div.radio-with-Icon {
-        display: block;
-    }
-
-    div.radio-with-Icon p.radioOption-Item {
-        display: inline-block;
-        width: 45%;
-        height: 150px;
-        box-sizing: border-box;
-        margin: 0px 5px;
-        border: none;
-    }
-
-    div.radio-with-Icon p.radioOption-Item label {
-        display: block;
-        height: 100%;
-        width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid lightgray;
-        color: lightgray;
-        cursor: pointer;
-        opacity: .8;
-        transition: none;
-        font-size: 13px;
-        padding-top: 10px;
-        text-align: center;
-        margin: 0 !important;
-    }
-
-    div.radio-with-Icon p.radioOption-Item label:hover,
-    div.radio-with-Icon p.radioOption-Item label:focus,
-    div.radio-with-Icon p.radioOption-Item label:active {
-        opacity: .5;
-        background-color: lightgray;
-        color: #000;
-        margin: 0 !important;
-    }
-
-    div.radio-with-Icon p.radioOption-Item label::after,
-    div.radio-with-Icon p.radioOption-Item label:after,
-    div.radio-with-Icon p.radioOption-Item label::before,
-    div.radio-with-Icon p.radioOption-Item label:before {
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-    }
-
-    div.radio-with-Icon p.radioOption-Item label i.fa {
-        display: block;
-        font-size: 50px;
-    }
-
-    div.radio-with-Icon p.radioOption-Item input[type="radio"] {
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-    }
-
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]:active~label {
-        opacity: 1;
-    }
-
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]:checked~label {
-        opacity: 1;
-        border: none;
-        background-color: #de1831;
-        border-color: lightgray;
-        color: #fff;
-    }
-
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]:hover,
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]:focus,
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]:active {
-        margin: 0 !important;
-    }
-
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]+label:before,
-    div.radio-with-Icon p.radioOption-Item input[type="radio"]+label:after {
-        margin: 0 !important;
     }
 
     .thumbnail-container {
@@ -296,6 +201,66 @@
       margin-top: 10px;
       display: none;
     }
+</style>
+
+<style>
+    /* Modal container */
+.modal {
+  position: absolute;
+  top: 76px;
+  right: -60%;
+  width: 40%;
+  height: calc(100vh - 76px);
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: right 0.3s ease-in-out; /* Smooth slide-in animation */
+  display: flex;
+  /* flex-direction: column;
+  justify-content: center;
+  align-items: center; */
+  display: none; /* Hidden by default */
+}
+/* Show modal class */
+.modal.show {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content */
+.modal-content {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  background-color: #fff;
+  color: #000;
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive adjustments for tablets and smaller devices */
+@media (max-width: 1024px) {
+  .modal {
+    width: 60%; /* Adjust width for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 100%; /* Fullscreen for mobile devices */
+  }
+}
 </style>
 {% endblock header %}
 
@@ -397,7 +362,7 @@
             </div>
         </section>
     </div>
-    <!-- Sidebar (Initially Hidden) -->
+    <!-- Sidebar for reserve now (Initially Hidden) -->
     <div id="sideContent" class="col-md-12 bg-white text-white p-5 transition-all d-none">
         <div class="container-fluid">
             <div class="row">
@@ -438,7 +403,7 @@
                         {% csrf_token %}
                         <!-- <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3>
                             <span class="mt-5">Delivery Date</span> -->
-                            <div class="alert alert-info alert-dismissible fade show text-dark" role="alert" style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;"> 
+                            <div class="alert alert-info alert-dismissible fade show text-dark mt-3" role="alert" style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;"> 
                                 <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i><strong class="text-uppercase">Reserve now, Configure later</strong><br>
                                     This reservation will save your position in line. When you car is available
                                     for production, we will invite you to configure and choose from dozens of options to make it
@@ -477,8 +442,7 @@
                           </div>
                           <span class="text-dark fst-italic" style="font-size: 12px;">
                             <i class="uil uil-info-circle text-dark"></i> 
-                            Save $4000 when you book before December 31st 2024 <a class="text-primary" href="javascript:void(0)" data-bs-toggle="modal"
-                            data-bs-target="#packageDetails">Learn more...</a></span>
+                            Save $4000 when you book before December 31st 2024 <a class="text-primary" onclick="openModal()">Learn more...</a></span>
                           
                           <div class="checkbox-card mt-3" onclick="toggleRadio(this)">
                             <input type="radio" name="package" id="package2" onclick="event.stopPropagation(); toggleInputRadio(this)" />
@@ -492,14 +456,14 @@
                             data-bs-target="#packageDetails">Learn more...</a></span>
                           <p class="error-message" id="error-message">Please select package.</p>
 
-                        <div class="col-md-12 mt-4 pt-2">
+                        <div class="col-md-12 mt-2 pt-2">
                             <div class="row">
                                 <div class="col-md-6 text-dark">
                                     <h4 class="mb-0">Due Today</h4>
                                     <small>Non-refundable Order Fee</small>
                                 </div>
                                 <div class="col-md-6 text-dark">
-                                    <h4 class="mb-0 mt-4 float-end">$ 490</h4>
+                                    <h4 class="mb-0 mt-2 float-end">$ 490</h4>
                                 </div>
                             </div>
                             <input type="hidden" value="100" name="amount" />
@@ -515,7 +479,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <!-- <div class="col-md-12">
                     <h3 class="display-5 fw-bold mb-5 title-top text-uppercase">{{ items.title }}</h3>
@@ -577,9 +540,8 @@
                     </form>
                 </div> -->
         </div>
-
     </div>
-    <!-- </section> -->
+
 </div>
 
 <!-- tech specs Modal -->
@@ -774,9 +736,25 @@
         </div>
     </div>
 </div>
+
+<div id="rightModal" class="modal">
+    <div class="modal-content" style="border-radius: 0px !important;">
+        <div class="modal-header"
+            style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+            <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
+                {{ items.title }}
+            </h1>
+            <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
+            onclick="closeModal()"><i class="mdi mdi-close"></i></button>
+            <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
+        </div>
+    </div>
+  </div>
+
 {% endblock content %}
 
 {% block script %}
+<!-- reserve now side content -->
 <script>
     document.getElementById('toggleButton').addEventListener('click', function () {
         const mainContent = document.getElementById('mainContent');
@@ -814,6 +792,23 @@
             radios.forEach(radio => radio.checked = false);
         });
     });
+</script>
+
+<!-- Lear more side modal -->
+<script>
+function openModal() {
+  const modal = document.getElementById('rightModal');
+  modal.style.display = 'block'; // Show the modal
+  modal.style.left = '60%';
+  document.body.classList.add('no-scroll'); // Prevent background scrolling
+}
+
+function closeModal() {
+  const modal = document.getElementById('rightModal');
+  modal.style.display = 'none'; // Hide the modal
+    modal.style.right = '0';
+  document.body.classList.remove('no-scroll'); // Restore scrolling
+}
 </script>
 
 <script>
