@@ -5,6 +5,7 @@
     .btn.btn-outline-light {
         border-color: #fff !important;
     }
+
     .title-top {
         position: absolute;
         top: 100%;
@@ -59,123 +60,218 @@
     .text-dark {
         color: #000 !important;
     }
+
     .accordion .accordion-item .accordion-button.collapsed {
         color: #000 !important;
     }
+
     .accordion .accordion-item .accordion-button.collapsed:before {
         color: #000 !important;
     }
+
     .accordion .accordion-item {
-        border: 0.5px solid gray!important;
+        border: 0.5px solid gray !important;
     }
 
     .transition-all {
-    transition: all 0.5s ease-in-out;
-}
+        transition: all 0.5s ease-in-out;
+    }
 
-#sideContent {
-    position: absolute;
-    top: 65px;
-    right: 0;
-    height: 100%;
-    z-index: 10;
-    height: 100vh;
-    overflow-y: auto;
-    display: none;
-}
+    /* #sideContent {
+        position: absolute;
+        top: 65px;
+        right: 0;
+        height: 100%;
+        z-index: 10;
+        height: 100vh;
+        overflow-y: auto;
+        display: none;
+    } */
 
-/* Show sidebar with proper display */
-#sideContent.show {
-    display: block !important;
-}
 
-div.radio-with-Icon {
-  display: block;
-}
-div.radio-with-Icon p.radioOption-Item {
-  display: inline-block;
-  width: 45%;
-  height: 150px;
-  box-sizing: border-box;
-  margin: 0px 5px;
-  border: none;
-}
-div.radio-with-Icon p.radioOption-Item label {
-  display: block;
-  height: 100%;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid lightgray;
-  color: lightgray;
-  cursor: pointer;
-  opacity: .8;
-  transition: none;
-  font-size: 13px;
-  padding-top: 10px;
-  text-align: center;
-  margin: 0 !important;
-}
-div.radio-with-Icon p.radioOption-Item label:hover, div.radio-with-Icon p.radioOption-Item label:focus, div.radio-with-Icon p.radioOption-Item label:active {
-  opacity: .5;
-  background-color: lightgray;
-  color: #000;
-  margin: 0 !important;
-}
-div.radio-with-Icon p.radioOption-Item label::after, div.radio-with-Icon p.radioOption-Item label:after, div.radio-with-Icon p.radioOption-Item label::before, div.radio-with-Icon p.radioOption-Item label:before {
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-  margin: 0 !important;
-}
-div.radio-with-Icon p.radioOption-Item label i.fa {
-  display: block;
-  font-size: 50px;
-}
-div.radio-with-Icon p.radioOption-Item input[type="radio"] {
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-div.radio-with-Icon p.radioOption-Item input[type="radio"]:active ~ label {
-  opacity: 1;
-}
-div.radio-with-Icon p.radioOption-Item input[type="radio"]:checked ~ label {
-  opacity: 1;
-  border: none;
-  background-color: #de1831;
-  border-color: lightgray;
-  color: #fff;
-}
-div.radio-with-Icon p.radioOption-Item input[type="radio"]:hover, div.radio-with-Icon p.radioOption-Item input[type="radio"]:focus, div.radio-with-Icon p.radioOption-Item input[type="radio"]:active {
-  margin: 0 !important;
-}
-div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:after {
-  margin: 0 !important;
-}
-.thumbnail-container {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
+    #sideContent {
+      position: absolute;
+      top: 100px;
+      right: 0;
+      height: 100vh;
+      z-index: 10;
+      overflow-y: auto;
+      display: none;
+      background-color: #fff;
+      width: 100%;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    }
 
-        .thumbnail {
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.3s;
-        }
+    body.side-content-open {
+      overflow: hidden; /* Prevent scrolling when side content is open */
+    }
 
-        .thumbnail.active {
-            border-color: #007bff;
-        }
+    /* Show sidebar with proper display */
+    #sideContent.show {
+        display: block !important;
+    }
 
-        .thumbnail img {
-            height: 80px;
-            width: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
+    div.radio-with-Icon {
+        display: block;
+    }
+
+    div.radio-with-Icon p.radioOption-Item {
+        display: inline-block;
+        width: 45%;
+        height: 150px;
+        box-sizing: border-box;
+        margin: 0px 5px;
+        border: none;
+    }
+
+    div.radio-with-Icon p.radioOption-Item label {
+        display: block;
+        height: 100%;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid lightgray;
+        color: lightgray;
+        cursor: pointer;
+        opacity: .8;
+        transition: none;
+        font-size: 13px;
+        padding-top: 10px;
+        text-align: center;
+        margin: 0 !important;
+    }
+
+    div.radio-with-Icon p.radioOption-Item label:hover,
+    div.radio-with-Icon p.radioOption-Item label:focus,
+    div.radio-with-Icon p.radioOption-Item label:active {
+        opacity: .5;
+        background-color: lightgray;
+        color: #000;
+        margin: 0 !important;
+    }
+
+    div.radio-with-Icon p.radioOption-Item label::after,
+    div.radio-with-Icon p.radioOption-Item label:after,
+    div.radio-with-Icon p.radioOption-Item label::before,
+    div.radio-with-Icon p.radioOption-Item label:before {
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+    }
+
+    div.radio-with-Icon p.radioOption-Item label i.fa {
+        display: block;
+        font-size: 50px;
+    }
+
+    div.radio-with-Icon p.radioOption-Item input[type="radio"] {
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]:active~label {
+        opacity: 1;
+    }
+
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]:checked~label {
+        opacity: 1;
+        border: none;
+        background-color: #de1831;
+        border-color: lightgray;
+        color: #fff;
+    }
+
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]:hover,
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]:focus,
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]:active {
+        margin: 0 !important;
+    }
+
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]+label:before,
+    div.radio-with-Icon p.radioOption-Item input[type="radio"]+label:after {
+        margin: 0 !important;
+    }
+
+    .thumbnail-container {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .thumbnail {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s;
+    }
+
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+
+    .thumbnail img {
+        height: 80px;
+        width: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    /* .carousel-inner img {
+      height: 200px;
+      object-fit: cover;
+    } */
+
+    .thumbnail img:hover {
+      border-color: black;
+    }
+
+</style>
+<style>
+    .checkbox-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px 20px;
+      width: 100%;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .checkbox-card input[type="radio"] {
+      accent-color: black;
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
+
+    .checkbox-card.checked {
+      background-color: #f7f7f7;
+      border-color: #000;
+    }
+
+    .checkbox-card label {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0;
+      flex-grow: 1;
+      color: #000;
+    }
+
+    .checkbox-card .price {
+      font-size: 16px;
+      font-weight: bold;
+      color: #000;
+    }
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
 </style>
 {% endblock header %}
 
@@ -184,10 +280,11 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
     <!-- Main Content -->
     <div id="mainContent" class="col-md-12 text-dark text-white p-4 transition-all">
         <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start" id="home"
-            style="background: url('/static/images/genz/222.jpeg') center center; background-size: cover; height: 100vh;">
+            style="background: url('/static/images/mark1details/HighresScreenshot00013.png') center center; background-size: cover; height: 100vh;">
             <div class="container">
                 <div class="justify-content-center row mt-5">
                     <div class="col-12 mt-5">
+                        <h5 class="text-center text-white">Introducing the GEN-Z40 </h5>
                         <h3 class="display-3 fw-bold mb-3 title-top text-uppercase">{{ items.title }}</h3>
                     </div>
                 </div>
@@ -204,7 +301,8 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
 
                     <div class="col-md-6 text-center">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-                            class="btn btn-outline-light mt-4 float-end"><i class="mdi mdi-arrow-right-thin"></i>Technical
+                            class="btn btn-outline-light mt-4 float-end"><i
+                                class="mdi mdi-arrow-right-thin"></i>Technical
                             Specs</a>
                     </div>
                     <div class="col-md-6 text-center">
@@ -214,138 +312,192 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                 </div>
             </div>
         </section>
-    </div>
-    <!-- <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start" id="home"> -->
-        <!-- Sidebar (Initially Hidden) -->
-        <div id="sideContent" class="col-md-12 bg-light text-white p-5 transition-all d-none">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-12">
-                        <button id="closeButton" type="button" class="btn btn-outline-light mt-2 float-end"><i
-                            class="mdi mdi-arrow-right-thin"></i>Cancel Now</button>
-                        <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3> 
-                        <span class="mt-5 mb-3">Delivery Date</span>
-                    </div>
-                    <div class="col-md-8 mt-3">
-                    <!-- Carousel -->
-                        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="https://via.placeholder.com/800x400?text=Image+1" class="d-block w-100" alt="...">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="https://via.placeholder.com/800x400?text=Image+2" class="d-block w-100" alt="...">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="https://via.placeholder.com/800x400?text=Image+3" class="d-block w-100" alt="...">
-                                </div>
-                            </div>
-                        </div>
-    
-                        <!-- Thumbnails -->
-                        <div class="thumbnail-container">
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="0">
-                                <img src="https://via.placeholder.com/800x400?text=Image+1" alt="Thumbnail 1">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="1">
-                                <img src="https://via.placeholder.com/800x400?text=Image+2" alt="Thumbnail 2">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="2">
-                                <img src="https://via.placeholder.com/800x400?text=Image+3" alt="Thumbnail 3">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <form id="packageForm">
-                        <!-- <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3>
-                            <span class="mt-5">Delivery Date</span> -->
-                            <h3>Reserve now and Configure later</h3>
-                            <p>This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.</p>
-    
-                            <h3 class="mt-2">Select Body Style</h3>
-                                <div class="radio-with-Icon">
-                                    <p class="radioOption-Item" style="height: 80px !important;">
-                                    <input type="radio" name="bodyTypes" id="bodyTypes1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                    <label for="bodyTypes1">
-                                        <strong class="lead fw-bold">Intermediate Rear</strong><br><em>(73 Inch wide)</em>
-                                    </label>
-                                    </p>
-                                
-                                    <p class="radioOption-Item ms-4" style="height: 80px !important;">
-                                    <input type="radio" name="bodyTypes" id="bodyTypes2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                    <label for="bodyTypes2">
-                                        <strong class="lead fw-bold">Wide Body Rear</strong><br><em>(79 Inch wide)</em>
-                                    </label>
-                                    </p>
-                                </div>
-                                <p id="bodyErrorMessage" class="text-danger mt-5 text-center" style="display: none;">Please select a car body!</p>
-    
-                                <h3 class="mt-5">Select Package</h3>
-                                <div class="radio-with-Icon">
-                                    <p class="radioOption-Item">
-                                      <input type="radio" name="package" id="package1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                      <label for="package1">
-                                        <strong class="lead fw-bold">Roller</strong> <br><em>Starting at 32,490</em><br><i
-                                        class="mdi mdi-offer"></i> Save $4000 when you book before December 31st 2024<br>
-                                        <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                      </label>
-                                      
-                                    </p>
-                                  
-                                    <p class="radioOption-Item ms-4">
-                                      <input type="radio" name="package" id="package2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                      <label for="package2">
-                                        <strong class="lead fw-bold">Turn Key Minus</strong><br><em>Starting at 99,999</em><br><i
-                                        class="mdi mdi-information"></i> Save $15000 when you book before December 31st 2024<br>
-                                        <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                      </label>
-                                    </p>
-                                </div>
-                            <p id="errorMessage" class="text-danger mt-5 text-center" style="display: none;">Please select a package!</p>
-                            
-                            <div class="col-md-12 mt-4 pt-2">
-        
-                                <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 text-white">
-                                    <h4 class="mb-0 mt-4">Purchase Price</h4>
-                                    <!-- <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small> -->
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-8 text-white">
-                                        <small class="text-small">THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
-                                    </div>
-                                    <div class="col-md-4 text-white">
-                                        <h4 class="float-end mb-0 mt-4">$ 33,0000</h4>
-                                    </div>
-                                    
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 text-white">
-                                        <h4 class="mb-0 mt-4">Due Today</h4>
-                                        <small>Non-refundable Order Fee</small>
-                                    </div>
-                                    <div class="col-md-6 text-white">
-                                        <h4 class="mb-0 mt-4 float-end">$ 490</h4>
-                                    </div>
-                                </div>
-                                
-                                <button type="button" id="submitBtn" class="btn btn-lg btn-secondary mt-4 float-start" data-bs-dismiss="modal"><i
-                                        class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
-                            </div>
 
-                            <!-- <div class="col-md-12">
-                                <button type="button" id="submitBtn" class="btn btn-primary mt-5">Submit</button>
-                            </div> -->
-                        </form>
+        <section class="bg-black border-bottom">
+            <div class="container-fluid">
+                <div class="align-items-center row">
+                    <div class="col-md-5 col-lg-6">
+                        <div class="app-feature-shape-left position-relative">
+                            <div class="text-center text-md-start"><img
+                                    src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 mt-sm-0 col-md-7 col-lg-6">
+                        <div class="section-title">
+                            <h1 class="title mb-3 text-white">We Build High Performing <br> Application</h1>
+                            <p class="para-desc text-muted">Launch your campaign and benefit from our expertise on
+                                designing and managing conversion centered bootstrap v5 html page.</p>
+                            <ul class="list-unstyled text-muted">
+                                <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                            class="uil uil-check-circle align-middle"></i></span>Digital Marketing
+                                    Solutions for Tomorrow</li>
+                                <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                            class="uil uil-check-circle align-middle"></i></span>Our Talented &amp;
+                                    Experienced Marketing Agency</li>
+                                <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                            class="uil uil-check-circle align-middle"></i></span>Create your own skin to
+                                    match your brand</li>
+                            </ul>
+                            <div class="mt-4"><a class="mt-3 h6 text-primary" href="/index-classic-app">Find Out More <i
+                                        class="uil uil-angle-right-b"></i></a></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+        </section>
+
+        <section class="bg-black border-bottom">
+            <div class="mb-5 container">
+                <div class="align-items-center row">
+                    <div class="mt-5 mt-sm-0 order-2 col-md-7 order-md-1 col-lg-6">
+                        <div class="section-title">
+                            <h1 class="title mb-3 text-white">Easy And Best Solution <br> For Your App</h1>
+                            <p class="para-desc text-muted">Launch your Lorem ipsum dolor, sit amet consectetur
+                                adipisicing elit. Eveniet eligendi expedita ducimus fuga sed possimus veritatis eum
+                                voluptates. Ab ex odio sed atque. Quam delectus, voluptatibus rem harum nihil minus.
+                                campaign and benefit from our expertise on designing and managing conversion centered
+                                bootstrap v5 html page.</p>
+                            <div class="mt-4"><a class="btn btn-primary" href="/index-classic-app">Learn More <i
+                                        class="uil uil-angle-right-b"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="order-1 col-md-5 order-md-2 col-lg-6">
+                        <div class="app-feature-shape-right position-relative">
+                            <div class="text-center text-md-end"><img
+                                src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Sidebar (Initially Hidden) -->
+    <div id="sideContent" class="col-md-12 bg-white text-white p-5 transition-all d-none">
+        <div class="container-fluid">
             <div class="row">
-                <!-- <div class="col-md-12">
+                <div class="col-md-12">
+                    <button id="closeButton" type="button" class="btn btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
+                            class="mdi mdi-arrow-left-thin"></i>Cancel Now</button>
+                    <h3 class="display-5 fw-bold mb-0 text-uppercase text-dark">{{ items.title }}</h3>
+                    {{items.amount_due}}
+                    <span class="mt-5 mb-3 text-dark">Delivery Date</span>
+                </div>
+                <div class="col-md-8 mt-3">
+                    <!-- Carousel -->
+                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="{% static 'images/homepage/Homepage_01.png' %}" class="d-block w-100"
+                                    alt="...">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static 'images/homepage/Homepage_03.jpg' %}" class="d-block w-100"
+                                    alt="...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thumbnails -->
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="0">
+                            <img src="{% static 'images/homepage/Homepage_01.png' %}" alt="Thumbnail 1">
+                        </div>
+                        <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="1">
+                            <img src="{% static 'images/homepage/Homepage_03.jpg' %}" alt="Thumbnail 2">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <form id="packageForm" action="{% url 'create_checkout_session' %}" method="POST">
+                        {% csrf_token %}
+                        <!-- <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3>
+                            <span class="mt-5">Delivery Date</span> -->
+                            <div class="alert alert-info alert-dismissible fade show text-dark" role="alert" style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;"> 
+                                <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i><strong class="text-uppercase">Reserve now, Configure later</strong><br>
+                                    This reservation will save your position in line. When you car is available
+                                    for production, we will invite you to configure and choose from dozens of options to make it
+                                    complete personalized and unique.
+                                    <button type="button" class="btn-close btn btn-icon btn-sm text-white float-end" style="width: 20px; height: 20px; color: #fff !important; background-color: rgb(59 130 246 / .5) !important;"
+                                        data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                        <h3 class="mt-2 text-dark">Select Body Style</h3>
+                          <div class="checkbox-card" onclick="toggleRadio(this, 'body1')">
+                            <input type="radio" name="body" id="body1" onclick="event.stopPropagation(); toggleInputRadio(this, 'body1')" />
+                            <label for="body1">Intermediate Rear</label>
+                            <span class="price">$8,000</span>
+                          </div>
+                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            <i class="uil uil-info-circle text-dark"></i> 
+                            Save $15000 when you book before December 31st 2024
+                        </span>
+
+                          
+                          <div class="checkbox-card mt-3" onclick="toggleRadio(this, 'body2')">
+                            <input type="radio" name="body" id="body2" onclick="event.stopPropagation(); toggleInputRadio(this, 'body2')" />
+                            <label for="body2">Wide Body Rear</label>
+                            <span class="price">$6,000</span>
+                          </div>
+                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            <i class="uil uil-info-circle text-dark"></i> 
+                            Save $15000 when you book before December 31st 2024</span>
+                          <p class="error-message" id="error-message">Please select body.</p>
+<!-- =========================== -->
+                        <h3 class="mt-3 text-dark">Select Package</h3>
+                        <div class="checkbox-card" onclick="toggleRadio(this)">
+                            <input type="radio" name="package" id="package1" onclick="event.stopPropagation(); toggleInputRadio(this)" />
+                            <label for="package1">Roller</label>
+                            <span class="price">Starting at $32,490</span>
+                          </div>
+                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            <i class="uil uil-info-circle text-dark"></i> 
+                            Save $4000 when you book before December 31st 2024 <a class="text-primary" href="javascript:void(0)" data-bs-toggle="modal"
+                            data-bs-target="#packageDetails">Learn more...</a></span>
+                          
+                          <div class="checkbox-card mt-3" onclick="toggleRadio(this)">
+                            <input type="radio" name="package" id="package2" onclick="event.stopPropagation(); toggleInputRadio(this)" />
+                            <label for="package2">Turn Key Minus</label>
+                            <span class="price">Starting at $99,999 </span>
+                          </div>
+                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            <i class="uil uil-info-circle text-dark"></i> 
+                            Save $15000 when you book before December 31st 2024
+                            <a class="text-primary" href="javascript:void(0)" data-bs-toggle="modal"
+                            data-bs-target="#packageDetails">Learn more...</a></span>
+                          <p class="error-message" id="error-message">Please select package.</p>
+
+                        <div class="col-md-12 mt-4 pt-2">
+                            <div class="row">
+                                <div class="col-md-6 text-dark">
+                                    <h4 class="mb-0">Due Today</h4>
+                                    <small>Non-refundable Order Fee</small>
+                                </div>
+                                <div class="col-md-6 text-dark">
+                                    <h4 class="mb-0 mt-4 float-end">$ 490</h4>
+                                </div>
+                            </div>
+                            <input type="hidden" value="100" name="amount" />
+                            <input type="hidden" value="MARK I (Builder Package)" name="package" />
+                            <!-- {{user_data.is_authenticated}}
+                            {{user_data.user_id}} -->
+                            <div class="d-grid mt-3">
+                                    <button type="submit" id="submitBtn" class="btn btn-outline-secondary text-dark text-uppercase">
+                                        <i class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- <div class="col-md-12">
                     <h3 class="display-5 fw-bold mb-5 title-top text-uppercase">{{ items.title }}</h3>
                     <span class="title-top mt-5">Delivery Date</span>
                 </div> -->
-                <!-- <div class="col-md-12">
+            <!-- <div class="col-md-12">
                     <form id="packageForm">
                         <button id="closeButton" type="button" class="btn btn-outline-light mt-4 float-end"><i
                             class="mdi mdi-arrow-right-thin"></i>Cancel Now</button>
@@ -400,17 +552,18 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                         </div>
                     </form>
                 </div> -->
-            </div>
-
         </div>
+
+    </div>
     <!-- </section> -->
 </div>
 
-<!-- Modal -->
+<!-- tech specs Modal -->
 <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+            <div class="modal-header"
+                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
                 <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
                     {{ items.title }}
                 </h1>
@@ -446,60 +599,67 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                     </div>
 
                     <div class="col-md-12 mt-4 pt-2">
-                        <small class="text-dark mb-4">* Manufacturer’s Suggested Retail Price. Excludes options; taxes; title; registration; delivery, processing and handling fee; dealer charges. Dealer sets actual selling price.</small>
-                        
+                        <small class="text-dark mb-4">* Manufacturer’s Suggested Retail Price. Excludes options; taxes;
+                            title; registration; delivery, processing and handling fee; dealer charges. Dealer sets
+                            actual selling price.</small>
+
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
+                        <div class="col-md-6 mt-4 pt-2">
+                            <h1 class="text-dark mt-4">Technical Specs</h1>
+                        </div>
+
+                        <div class="col-md-3 text-dark mt-5 pt-2">
+                            <div class="flex-1">
+                                Height
+                                <h4 class="text-dark mb-0">52.0 in</h4>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-dark mt-5 pt-2">
+                            <div class="flex-1">
+                                Width w/ mirrors folded
+                                <h4 class="text-dark mb-0">74.8 in</h4>
+                            </div>
+                        </div>
+
+                    </div> -->
+
                     <div class="col-md-6 mt-4 pt-2">
                         <h1 class="text-dark mt-4">Technical Specs</h1>
-                    </div>
-
-                    <div class="col-md-3 text-dark mt-5 pt-2">
-                        <div class="flex-1">
-                            Height
-                            <h4 class="text-dark mb-0">52.0 in</h4>
-                            
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-dark mt-5 pt-2">
-                        <div class="flex-1">
-                            Width w/ mirrors folded
-                            <h4 class="text-dark mb-0">74.8 in</h4>
-                        </div>
-                    </div>
-
-                </div>
-
-                    <div class="col-md-6 mt-4 pt-2">
-
                         <div class="accordion" id="accordionExample">
                             <!-- Accordion Item 1 -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingOne">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                         COMPLETE SPACE FRAME
                                     </button>
                                 </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div id="collapseOne" class="accordion-collapse collapse"
+                                    aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box</p>
-                                            <p>- DOM .134 wall roll bar</p>
-                                            <p>- Front and Rear body supported and hinged</p>
-                                            <p>- L & R Side Pods</p>
-                                            <p>- Chassis is delivered in a satin black epoxy finish</p>
-                                            <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
+                                        <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed
+                                            skin pedal box</p>
+                                        <p>- DOM .134 wall roll bar</p>
+                                        <p>- Front and Rear body supported and hinged</p>
+                                        <p>- L & R Side Pods</p>
+                                        <p>- Chassis is delivered in a satin black epoxy finish</p>
+                                        <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
                                     </div>
                                 </div>
                             </div>
-                
+
                             <!-- Accordion Item 2 -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingTwo">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                         COMPLETE FIBER GLASS BODY
                                     </button>
                                 </h2>
-                                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                    data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <p>- Main Body</p>
                                         <p>- Rocker Panels</p>
@@ -513,15 +673,18 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                                     </div>
                                 </div>
                             </div>
-                
+
                             <!-- Accordion Item 3 -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingThree">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseThree" aria-expanded="false"
+                                        aria-controls="collapseThree">
                                         STEERING
                                     </button>
                                 </h2>
-                                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div id="collapseThree" class="accordion-collapse collapse"
+                                    aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <p>- Custom Rack and Pinion Steering Unit</p>
                                         <p>- Collapsible Steering Column</p>
@@ -532,11 +695,14 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                             <!-- Accordion Item 4 -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingFour">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseFour" aria-expanded="false"
+                                        aria-controls="collapseFour">
                                         SUSPENSION
                                     </button>
                                 </h2>
-                                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                    data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <p>- Billet Aluminum Front and Rear Suspension Uprights</p>
                                         <p>- Billet Aluminum Front Upper and Lower Control Arms</p>
@@ -546,37 +712,10 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
                             </div>
 
                         </div>
-
-                        <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 text-dark">
-                            <h4 class="mb-0 mt-4">Purchase Price</h4>
-                            <!-- <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small> -->
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8 text-dark">
-                                <small class="text-small">THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
-                            </div>
-                            <div class="col-md-4 text-dark">
-                                <h4 class="float-end mb-0 mt-4">$ 33,0000</h4>
-                            </div>
-                            
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 text-dark">
-                                <h4 class="mb-0 mt-4">Due Today</h4>
-                                <small>Non-refundable Order Fee</small>
-                            </div>
-                            <div class="col-md-6 text-dark">
-                                <h4 class="mb-0 mt-4 float-end">$ 490</h4>
-                            </div>
-                        </div>
-                        
-                        <button type="button" class="btn mt-4 float-start" data-bs-dismiss="modal"><i
-                                class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
                     </div><!--end col-->
                     <div class="mt-4 pt-2 col-md-6">
-                        
-                        <img src="{% static 'images/genz/mark1-builder4.png' %}"
-                        class="img-fluid rounded shadow" alt="">
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow"
+                            alt="">
                     </div>
                 </div>
             </div>
@@ -584,18 +723,25 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
     </div>
 </div>
 
- <!-- Modal Content Start for reserve now -->
- <div class="modal fade" id="packageDetails" tabindex="-1" aria-labelledby="packageDetails-title" aria-hidden="true">
+<!-- Modal Content Start for reserve now -->
+<div class="modal fade" id="packageDetails" tabindex="-1" aria-labelledby="packageDetails-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded shadow border-0">
-            <div class="modal-header border-bottom" style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+            <div class="modal-header border-bottom"
+                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
                 <h5 class="modal-title" id="packageDetails-title">Modal title</h5>
                 <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
-                data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
             </div>
             <div class="modal-body bg-white">
                 <div class="bg-white p-3 rounded box-shadow">
-                    <p class="text-muted mb-0">Dummy text is also used to demonstrate the appearance of different typefaces and layouts, and in general the content of dummy text is nonsensical. Due to its widespread use as filler text for layouts, non-readability is of great importance: human perception is tuned to recognize certain patterns and repetitions in texts. If the distribution of letters and 'words' is random, the reader will not be distracted from making a neutral judgement on the visual impact and readability of the typefaces (typography), or the distribution of text on the page (layout or type area).</p>                                                        
+                    <p class="text-muted mb-0">Dummy text is also used to demonstrate the appearance of different
+                        typefaces and layouts, and in general the content of dummy text is nonsensical. Due to its
+                        widespread use as filler text for layouts, non-readability is of great importance: human
+                        perception is tuned to recognize certain patterns and repetitions in texts. If the distribution
+                        of letters and 'words' is random, the reader will not be distracted from making a neutral
+                        judgement on the visual impact and readability of the typefaces (typography), or the
+                        distribution of text on the page (layout or type area).</p>
                 </div>
             </div>
             <div class="modal-footer bg-white">
@@ -620,12 +766,17 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
             mainContent.classList.replace('col-md-12', 'col-md-0');
             button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Cancel Now';
             sideContent.classList.add('show');
+            document.body.classList.add('side-content-open');
         } else {
             // Hide sidebar and reset main content
             sideContent.classList.add('d-none');
             mainContent.classList.replace('col-md-0', 'col-md-12');
             button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
             sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
         }
 
         closeButton.addEventListener("click", function () {
@@ -633,45 +784,127 @@ div.radio-with-Icon p.radioOption-Item input[type="radio"] + label:before, div.r
             mainContent.classList.replace('col-md-8', 'col-md-12');
             button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
             sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
         });
     });
 </script>
 
 <script>
     document.getElementById('submitBtn').addEventListener('click', function () {
-    const radiosbodyTypes = document.querySelectorAll('input[name="bodyTypes"]');
-    const bodyErrorMessage = document.getElementById('bodyErrorMessage');
 
-    const radios = document.querySelectorAll('input[name="package"]');
-    const errorMessage = document.getElementById('errorMessage');
+        const selectedOption = document.querySelector('input[type="radio"]:checked');
+      const errorMessage1 = document.getElementById('error-message');
+      if (!selectedOption) {
+        errorMessage1.style.display = 'block';
+      } else {
+        errorMessage1.style.display = 'none';
+        alert('Form submitted successfully with option: ' + selectedOption.nextElementSibling.textContent);
+      }
 
-    const isSelectedBody = Array.from(radiosbodyTypes).some(radio => radio.checked);
 
-    if (!isSelectedBody) {
-        bodyErrorMessage.style.display = 'block';
-    } else {
-        setTimeout(() => {
-            bodyErrorMessage.style.display = 'none';
-        }, 3000); 
-        // bodyErrorMessage.style.display = 'none';
-    }
+        const radiosbodyTypes = document.querySelectorAll('input[name="bodyTypes"]');
+        const bodyErrorMessage = document.getElementById('bodyErrorMessage');
 
-    // Check if any radio button is selected
-    const isSelected = Array.from(radios).some(radio => radio.checked);
+        const radios = document.querySelectorAll('input[name="package"]');
+        const errorMessage = document.getElementById('errorMessage');
 
-    if (!isSelected) {
-        // Show error message if no radio button is selected
-        errorMessage.style.display = 'block';
-    } else {
-        // Hide error message and proceed
-        errorMessage.style.display = 'none';
-        setTimeout(() => {
+        const isSelectedBody = Array.from(radiosbodyTypes).some(radio => radio.checked);
+
+        if (!isSelectedBody) {
+            bodyErrorMessage.style.display = 'block';
+        } else {
+            setTimeout(() => {
+                bodyErrorMessage.style.display = 'none';
+            }, 3000);
+            // bodyErrorMessage.style.display = 'none';
+        }
+
+        // Check if any radio button is selected
+        const isSelected = Array.from(radios).some(radio => radio.checked);
+
+        if (!isSelected) {
+            // Show error message if no radio button is selected
+            errorMessage.style.display = 'block';
+        } else {
+            // Hide error message and proceed
             errorMessage.style.display = 'none';
-        }, 3000);
-        // alert('Package selected successfully!');
-        // Perform form submission or other actions here
-    }
-});
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+            // alert('Package selected successfully!');
+            // Perform form submission or other actions here
+        }
+    });
 
+</script>
+<script>
+    const images = {
+    body1: [
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00000.png' %}", alt: 'Option 1 Image 1' },
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00001.png' %}", alt: 'Option 1 Image 2' },
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00002.png' %}", alt: 'Option 2 Image 1' },
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00003.png' %}", alt: 'Option 2 Image 2' },
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00004.png' %}", alt: 'Option 2 Image 2' },
+      { src: "{% static 'images/intermediatebody/HighresScreenshot00005.png' %}", alt: 'Option 2 Image 2' }
+    ],
+    body2: [
+      { src: "{% static 'images/homepage/Homepage_01.png' %}", alt: 'Option 2 Image 1' },
+      { src: "{% static 'images/homepage/Homepage_03.jpg' %}", alt: 'Option 2 Image 2' },
+    ]
+  };
+
+    function toggleRadio(card, option) {
+      const radio = card.querySelector('input[type="radio"]');
+      if (!radio.checked) {
+        const allCards = document.querySelectorAll('.checkbox-card');
+        allCards.forEach(c => c.classList.remove('checked'));
+        radio.checked = true;
+        card.classList.add('checked');
+        updateSlider(option);
+      }
+    }
+  
+    function toggleInputRadio(radio, option) {
+      const allCards = document.querySelectorAll('.checkbox-card');
+      allCards.forEach(c => c.classList.remove('checked'));
+      const card = radio.closest('.checkbox-card');
+      card.classList.add('checked');
+      updateSlider(option);
+    }
+  
+    function updateSlider(option) {
+    const carouselInner = document.querySelector('.carousel-inner');
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    carouselInner.innerHTML = '';
+    thumbnailContainer.innerHTML = '';
+
+    images[option].forEach((img, index) => {
+      const item = document.createElement('div');
+      item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+      item.innerHTML = `<img src="${img.src}" class="d-block w-100" alt="${img.alt}">`;
+      carouselInner.appendChild(item);
+
+      const thumbnail = document.createElement('div');
+      thumbnail.className = 'thumbnail';
+      thumbnail.setAttribute('data-bs-target', '#carouselExample');
+      thumbnail.setAttribute('data-bs-slide-to', index);
+      thumbnail.innerHTML = `<img src="${img.src}" alt="${img.alt}">`;
+      thumbnailContainer.appendChild(thumbnail);
+    });
+  }
+
+    function validateSelection() {
+      const selectedOption = document.querySelector('input[type="radio"]:checked');
+      const errorMessage = document.getElementById('error-message');
+      if (!selectedOption) {
+        errorMessage.style.display = 'block';
+      } else {
+        errorMessage.style.display = 'none';
+        alert('Form submitted successfully with option: ' + selectedOption.nextElementSibling.textContent);
+      }
+    }
 </script>
 {% endblock script %}
