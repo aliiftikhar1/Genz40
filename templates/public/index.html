@@ -95,8 +95,20 @@
             <div class="row mb-4 justify-content-center d-lg-none mt-100">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
-                      <a href="" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a>
+                      <!-- <a href="" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
+                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a> -->
+                      {% for item in nav_items %}
+                            {% if forloop.first %}
+                                <a class="btn btn-lg me-2 btn-light text-uppercase"
+                                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                    Reserve Now   
+                                </a>
+                                <a class="btn btn-lg btn-light text-uppercase"
+                                href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                Learn More    
+                                </a>
+                            {% endif %}
+                        {% endfor %}
                   </div>
               </div>
           </div>
