@@ -102,6 +102,30 @@
       box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
+    /* For tablets and iPads (screen width between 768px and 1024px) */
+    @media (max-width: 1024px) and (min-width: 768px) {
+    #sideContent {
+        top: 50px; /* Adjust top height for tablets */
+        height: calc(100vh - 50px); /* Adjust height */
+    }
+    }
+
+    /* For mobile devices (screen width less than 768px) */
+    @media (max-width: 767px) {
+    #sideContent {
+        top: 40px; /* Adjust top height for mobiles */
+        height: calc(100vh - 40px); /* Adjust height */
+    }
+    }
+
+    /* Additional fine-tuning for smaller phones or portrait modes */
+    @media (max-width: 480px) {
+    #sideContent {
+        top: 30px; /* Further reduce top height for smaller phones */
+        height: calc(100vh - 30px);
+    }
+    }
+
     body.side-content-open {
       overflow: hidden; /* Prevent scrolling when side content is open */
     }
