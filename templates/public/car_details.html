@@ -5,7 +5,6 @@
     .btn.btn-outline-light {
         border-color: #fff !important;
     }
-
     .title-top {
         position: absolute;
         top: 100%;
@@ -22,7 +21,7 @@
 
     .bottom-row {
         position: absolute;
-        bottom: 5%;
+        bottom: 11%;
         left: 50%;
         transform: translateX(-50%);
         z-index: 10;
@@ -79,9 +78,9 @@
 
     #sideContent {
       position: absolute;
-      top: 65px;
+      top: 75px;
       right: 0;
-      height: calc(100vh - 65px);
+      height: calc(100vh - 75px);
       z-index: 10;
       overflow-y: auto;
       display: none;
@@ -89,28 +88,31 @@
       width: 100%;
       box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     }
+    #sideContent.open {
+        transform: translateX(0); /* Slide into view */
+    }
 
     /* For tablets and iPads (screen width between 768px and 1024px) */
     @media (max-width: 1024px) and (min-width: 768px) {
     #sideContent {
-        top: 50px; /* Adjust top height for tablets */
-        height: calc(100vh - 50px); /* Adjust height */
+        top: 75px; /* Adjust top height for tablets */
+        height: calc(100vh - 75px); /* Adjust height */
     }
     }
 
     /* For mobile devices (screen width less than 768px) */
     @media (max-width: 767px) {
     #sideContent {
-        top: 40px; /* Adjust top height for mobiles */
-        height: calc(100vh - 40px); /* Adjust height */
+        top: 75px; /* Adjust top height for mobiles */
+        height: calc(100vh - 75px); /* Adjust height */
     }
     }
 
     /* Additional fine-tuning for smaller phones or portrait modes */
     @media (max-width: 480px) {
     #sideContent {
-        top: 30px; /* Further reduce top height for smaller phones */
-        height: calc(100vh - 30px);
+        top: 75px; /* Further reduce top height for smaller phones */
+        height: calc(100vh - 120px);
     }
     }
 
@@ -157,6 +159,7 @@
     }
 
 </style>
+
 <style>
     .checkbox-card {
       display: flex;
@@ -205,7 +208,7 @@
 
 <style>
     /* Modal container */
-.modal {
+.modal-right {
   position: absolute;
   top: 76px;
   right: -60%;
@@ -222,7 +225,7 @@
   display: none; /* Hidden by default */
 }
 /* Show modal class */
-.modal.show {
+.modal-right.show {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -230,7 +233,7 @@
 }
 
 /* Modal content */
-.modal-content {
+.modal-right-content {
   width: 100%;
   margin: auto;
   text-align: center;
@@ -251,29 +254,145 @@
 
 /* Responsive adjustments for tablets and smaller devices */
 @media (max-width: 1024px) {
-  .modal {
-    width: 60%; /* Adjust width for tablets */
+  .modal-right {
+    right: -60%;
+    /* width: 40%; */
+    width: 40%; /* Adjust width for tablets */
   }
 }
 
 @media (max-width: 768px) {
-  .modal {
-    width: 100%; /* Fullscreen for mobile devices */
+  .modal-right {
+    right: 0 !important;
+    width: 100% !important; /* Fullscreen for mobile devices */
+    left: 0 !important;
   }
 }
+
+@media (max-width: 480px) {
+  .modal-right {
+    right: 0 !important;
+    width: 100% !important; /* Fullscreen for mobile devices */
+    left: 0 !important;
+  }
+  .close-mobile {
+    width: 50%;
+    margin-top: -5px;
+  }
+  .title-mobile {
+    width: 50%;
+  }
+}
+
+</style>
+
+<style>
+    body {
+        padding: 15px !important;
+    }
+    .hero {
+      width: 100%;
+      text-align: center;
+    }
+
+    .hero img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+    .specs {
+      display: flex;
+      justify-content: space-around;
+      text-align: left;
+      /* margin: 20px 0; */
+    }
+
+    .specs div {
+      flex: 1;
+      padding: 10px;
+      /* border-right: 1px solid #555; */
+    }
+
+    .specs div:last-child {
+      border-right: none;
+    }
+
+    .specs h2 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .specs p {
+      font-size: 1rem;
+      margin: 0;
+      color: #bbb;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .actions button {
+      background: none;
+      border: 1px solid #fff;
+      padding: 15px;
+      font-size: 1rem;
+      text-align: left;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s;
+    }
+
+    .actions button:hover {
+      background-color: #333;
+    }
+
+    .actions button span {
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .specs {
+        flex-direction: column;
+      }
+
+      .specs div {
+        border-right: none;
+        /* border-bottom: 1px solid #555; */
+      }
+
+      .specs div:last-child {
+        border-bottom: none;
+      }
+    }
 </style>
 {% endblock header %}
 
 {% block content %}
+
 <div class="row">
     <!-- Main Content -->
-    <div id="mainContent" class="col-md-12 text-dark text-white p-4 transition-all">
-        <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start" id="home"
+    <div id="mainContent" class="col-md-12 text-dark transition-all p-0">
+        <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start d-none d-lg-block" id="home"
             style="background: url('/static/images/mark1details/HighresScreenshot00013.png') center center; background-size: cover; height: 100vh;">
             <div class="container">
                 <div class="justify-content-center row mt-5">
                     <div class="col-12 mt-5">
-                        <h5 class="text-center text-white">Introducing the GEN-Z40 </h5>
+                        <h5 class="text-center text-white">Introducing the GEN-Z4011 </h5>
                         <h3 class="display-3 fw-bold mb-3 title-top text-uppercase">{{ items.title }}</h3>
                     </div>
                 </div>
@@ -302,73 +421,52 @@
             </div>
         </section>
 
-        <section class="bg-black border-bottom">
-            <div class="container-fluid">
-                <div class="align-items-center row">
-                    <div class="col-md-5 col-lg-6">
-                        <div class="app-feature-shape-left position-relative">
-                            <div class="text-center text-md-start"><img
-                                    src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-5 mt-sm-0 col-md-7 col-lg-6">
-                        <div class="section-title">
-                            <h1 class="title mb-3 text-white">We Build High Performing <br> Application</h1>
-                            <p class="para-desc text-muted">Launch your campaign and benefit from our expertise on
-                                designing and managing conversion centered bootstrap v5 html page.</p>
-                            <ul class="list-unstyled text-muted">
-                                <li class="mb-1"><span class="text-primary h5 me-2"><i
-                                            class="uil uil-check-circle align-middle"></i></span>Digital Marketing
-                                    Solutions for Tomorrow</li>
-                                <li class="mb-1"><span class="text-primary h5 me-2"><i
-                                            class="uil uil-check-circle align-middle"></i></span>Our Talented &amp;
-                                    Experienced Marketing Agency</li>
-                                <li class="mb-1"><span class="text-primary h5 me-2"><i
-                                            class="uil uil-check-circle align-middle"></i></span>Create your own skin to
-                                    match your brand</li>
-                            </ul>
-                            <div class="mt-4"><a class="mt-3 h6 text-primary" href="/index-classic-app">Find Out More <i
-                                        class="uil uil-angle-right-b"></i></a></div>
-                        </div>
-                    </div>
+        <!-- mobile -->
+        <section class="bg-black text-white d-flex align-items-start d-lg-none" id="home">
+            <div class="container-fluid d-lg-none p-0">
+                <div class="hero mt-5">
+                    <img class="mt-5" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="911 GT3 RS">
                 </div>
-            </div>
-        </section>
+                <div class="specs">
+                    <div>
+                        <h5 class="text-white">Introducing the GEN-Z40 </h5>
+                        <h3 class="display-3 fw-bold text-uppercase">{{ items.title }}</h3>
+                    </div>
+                    <div>
+                      <h2>518 hp</h2>
+                      <p>Max. engine power</p>
+                    </div>
+                    <div>
+                      <h2>3.0 s</h2>
+                      <p>0 - 60 mph</p>
+                    </div>
+                    <div>
+                        <h2>184</h2>
+                        <p>Top track speed (with summer tries)</p>
+                      </div>
+                  </div>
+                  
+                  <div class="actions p-2">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
+                            class="btn btn-outline-light mt-2 float-end"><i
+                                class="mdi mdi-arrow-right-thin"></i>Technical
+                            Specs</a>
+                            <button id="toggleButtonMobile" type="button" class="btn btn-outline-light mt-2 float-start"><i
+                                class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
+                  </div>
 
-        <section class="bg-black border-bottom">
-            <div class="mb-5 container">
-                <div class="align-items-center row">
-                    <div class="mt-5 mt-sm-0 order-2 col-md-7 order-md-1 col-lg-6">
-                        <div class="section-title">
-                            <h1 class="title mb-3 text-white">Easy And Best Solution <br> For Your App</h1>
-                            <p class="para-desc text-muted">Launch your Lorem ipsum dolor, sit amet consectetur
-                                adipisicing elit. Eveniet eligendi expedita ducimus fuga sed possimus veritatis eum
-                                voluptates. Ab ex odio sed atque. Quam delectus, voluptatibus rem harum nihil minus.
-                                campaign and benefit from our expertise on designing and managing conversion centered
-                                bootstrap v5 html page.</p>
-                            <div class="mt-4"><a class="btn btn-primary" href="/index-classic-app">Learn More <i
-                                        class="uil uil-angle-right-b"></i></a></div>
-                        </div>
-                    </div>
-                    <div class="order-1 col-md-5 order-md-2 col-lg-6">
-                        <div class="app-feature-shape-right position-relative">
-                            <div class="text-center text-md-end"><img
-                                src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
             </div>
         </section>
     </div>
+
     <!-- Sidebar for reserve now (Initially Hidden) -->
-    <div id="sideContent" class="col-md-12 bg-white text-white p-5 transition-all d-none">
+    <div id="sideContent" class="col-md-12 bg-white text-white transition-all d-none">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <button id="closeButton" type="button" class="btn btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
-                            class="mdi mdi-arrow-left-thin"></i>Cancel Now</button>
+                    <button id="closeButton" type="button" class="btn btn-sm btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
+                            class="mdi mdi-arrow-left-thin"></i>Back</button>
                     <h3 class="display-5 fw-bold mb-0 text-uppercase text-dark">{{ items.title }}</h3>
                     {{items.amount_due}}
                     <span class="mt-5 mb-3 text-dark">Delivery Date</span>
@@ -413,48 +511,47 @@
                             </div>
 
                         <h3 class="mt-2 text-dark">Select Body Style</h3>
-                          <div class="checkbox-card" onclick="toggleRadio(this, 'body1')">
+                            <div class="checkbox-card" onclick="toggleRadio(this, 'body1')">
                             <input type="radio" name="body" id="body1" onclick="event.stopPropagation(); toggleInputRadio(this, 'body1')" />
                             <label for="body1">Intermediate Rear</label>
                             <span class="price">$8,000</span>
-                          </div>
-                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            </div>
+                            <span class="text-dark fst-italic" style="font-size: 12px;">
                             <i class="uil uil-info-circle text-dark"></i> 
                             Save $15000 when you book before December 31st 2024
                         </span>
 
-                          
-                          <div class="checkbox-card mt-3" onclick="toggleRadio(this, 'body2')">
+                            
+                            <div class="checkbox-card mt-3" onclick="toggleRadio(this, 'body2')">
                             <input type="radio" name="body" id="body2" onclick="event.stopPropagation(); toggleInputRadio(this, 'body2')" />
                             <label for="body2">Wide Body Rear</label>
                             <span class="price">$6,000</span>
-                          </div>
-                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            </div>
+                            <span class="text-dark fst-italic" style="font-size: 12px;">
                             <i class="uil uil-info-circle text-dark"></i> 
                             Save $15000 when you book before December 31st 2024</span>
-                          <p class="error-message" id="error-message">Please select body.</p>
+                            <p class="error-message" id="error-message">Please select body.</p>
 <!-- =========================== -->
                         <h3 class="mt-3 text-dark">Select Package</h3>
                         <div class="checkbox-card" onclick="toggleRadio(this)">
                             <input type="radio" name="package" id="package1" onclick="event.stopPropagation(); toggleInputRadio(this)" />
                             <label for="package1">Roller</label>
                             <span class="price">Starting at $32,490</span>
-                          </div>
-                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            </div>
+                            <span class="text-dark fst-italic" style="font-size: 12px;">
                             <i class="uil uil-info-circle text-dark"></i> 
                             Save $4000 when you book before December 31st 2024 <a class="text-primary" onclick="openModal()">Learn more...</a></span>
-                          
-                          <div class="checkbox-card mt-3" onclick="toggleRadio(this)">
+                            
+                            <div class="checkbox-card mt-3" onclick="toggleRadio(this)">
                             <input type="radio" name="package" id="package2" onclick="event.stopPropagation(); toggleInputRadio(this)" />
                             <label for="package2">Turn Key Minus</label>
                             <span class="price">Starting at $99,999 </span>
-                          </div>
-                          <span class="text-dark fst-italic" style="font-size: 12px;">
+                            </div>
+                            <span class="text-dark fst-italic" style="font-size: 12px;">
                             <i class="uil uil-info-circle text-dark"></i> 
                             Save $15000 when you book before December 31st 2024
-                            <a class="text-primary" href="javascript:void(0)" data-bs-toggle="modal"
-                            data-bs-target="#packageDetails">Learn more...</a></span>
-                          <p class="error-message" id="error-message">Please select package.</p>
+                            <a class="text-primary" onclick="openModal()">Learn more...</a></span>
+                            <p class="error-message" id="error-message">Please select package.</p>
 
                         <div class="col-md-12 mt-2 pt-2">
                             <div class="row">
@@ -470,8 +567,8 @@
                             <input type="hidden" value="MARK I (Builder Package)" name="package" />
                             <!-- {{user_data.is_authenticated}}
                             {{user_data.user_id}} -->
-                            <div class="d-grid mt-3">
-                                    <button type="submit" id="submitBtn" class="btn btn-outline-secondary text-dark text-uppercase">
+                            <div class="d-grid mt-3 mb-5">
+                                <button type="submit" id="submitBtn" class="mb-3 btn btn-outline-secondary text-dark text-uppercase">
                                         <i class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
                             </div>
                         </div>
@@ -514,22 +611,22 @@
                             <h3 class="mt-5">Select Package</h3>
                             <div class="radio-with-Icon">
                                 <p class="radioOption-Item">
-                                  <input type="radio" name="package" id="package1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                  <label for="package1">
+                                    <input type="radio" name="package" id="package1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
+                                    <label for="package1">
                                     <strong class="lead fw-bold">Roller</strong> <br><em>Starting at 32,490</em><br><i
                                     class="mdi mdi-offer"></i> Save $4000 when you book before December 31st 2024<br>
                                     <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                  </label>
-                                  
+                                    </label>
+                                    
                                 </p>
-                              
+                                
                                 <p class="radioOption-Item ms-4">
-                                  <input type="radio" name="package" id="package2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                  <label for="package2">
+                                    <input type="radio" name="package" id="package2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
+                                    <label for="package2">
                                     <strong class="lead fw-bold">Turn Key Minus</strong><br><em>Starting at 99,999</em><br><i
                                     class="mdi mdi-information"></i> Save $15000 when you book before December 31st 2024<br>
                                     <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                  </label>
+                                    </label>
                                 </p>
                             </div>
                         <p id="errorMessage" class="text-danger mt-5 text-center" style="display: none;">Please select a package!</p>
@@ -542,8 +639,69 @@
         </div>
     </div>
 
-</div>
 
+    <!-- <section class="bg-black border-bottom p-0">
+        <div class="container-fluid">
+            <div class="align-items-center row">
+                <div class="col-md-5 col-lg-6">
+                    <div class="app-feature-shape-left position-relative">
+                        <div class="text-center text-md-start"><img
+                                src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 mt-sm-0 col-md-7 col-lg-6">
+                    <div class="section-title">
+                        <h1 class="title mb-3 text-white">We Build High Performing <br> Application</h1>
+                        <p class="para-desc text-muted">Launch your campaign and benefit from our expertise on
+                            designing and managing conversion centered bootstrap v5 html page.</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Digital Marketing
+                                Solutions for Tomorrow</li>
+                            <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Our Talented &amp;
+                                Experienced Marketing Agency</li>
+                            <li class="mb-1"><span class="text-primary h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Create your own skin to
+                                match your brand</li>
+                        </ul>
+                        <div class="mt-4"><a class="mt-3 h6 text-primary" href="/index-classic-app">Find Out More <i
+                                    class="uil uil-angle-right-b"></i></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-black border-bottom p-0">
+        <div class="mb-5 container">
+            <div class="align-items-center row">
+                <div class="mt-5 mt-sm-0 order-2 col-md-7 order-md-1 col-lg-6">
+                    <div class="section-title">
+                        <h1 class="title mb-3 text-white">Easy And Best Solution <br> For Your App</h1>
+                        <p class="para-desc text-muted">Launch your Lorem ipsum dolor, sit amet consectetur
+                            adipisicing elit. Eveniet eligendi expedita ducimus fuga sed possimus veritatis eum
+                            voluptates. Ab ex odio sed atque. Quam delectus, voluptatibus rem harum nihil minus.
+                            campaign and benefit from our expertise on designing and managing conversion centered
+                            bootstrap v5 html page.</p>
+                        <div class="mt-4"><a class="btn btn-primary" href="/index-classic-app">Learn More <i
+                                    class="uil uil-angle-right-b"></i></a></div>
+                    </div>
+                </div>
+                <div class="order-1 col-md-5 order-md-2 col-lg-6">
+                    <div class="app-feature-shape-right position-relative">
+                        <div class="text-center text-md-end"><img
+                            src="{% static 'images/genz/222.jpeg' %}" class="img-fluid" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+</div>
+   
 <!-- tech specs Modal -->
 <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
@@ -710,7 +868,7 @@
 </div>
 
 <!-- Modal Content Start for reserve now -->
-<div class="modal fade" id="packageDetails" tabindex="-1" aria-labelledby="packageDetails-title" aria-hidden="true">
+<!-- <div class="modal fade" id="packageDetails" tabindex="-1" aria-labelledby="packageDetails-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded shadow border-0">
             <div class="modal-header border-bottom"
@@ -735,21 +893,28 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<div id="rightModal" class="modal">
-    <div class="modal-content" style="border-radius: 0px !important;">
-        <div class="modal-header"
-            style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
-            <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
-                {{ items.title }}
-            </h1>
-            <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
-            onclick="closeModal()"><i class="mdi mdi-close"></i></button>
-            <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
+<div id="rightModal" class="modal-right" tabindex="-1" aria-labelledby="fullscreenModalRight" aria-hidden="true">
+    <div class="modal-right-content" style="border-radius: 0px !important;">
+        <div class="modal-right-header"
+            style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 15px; padding-right: 15px;">
+            <div class="row">
+                <div class="col-md-6 title-mobile">
+                    <h1 class="modal-title text-dark text-uppercase float-start" id="fullscreenModalRight">
+                        {{ items.title }}
+                    </h1>
+                </div>
+                <div class="col-md-6 close-mobile">
+                    <button type="button" class="btn btn-icon btn-danger float-end mt-2"
+                        onclick="closeModal()"><i class="mdi mdi-close text-white"></i></button>
+                </div>
+            </div>
         </div>
     </div>
-  </div>
+</div>
+
+
 
 {% endblock content %}
 
@@ -757,6 +922,8 @@
 <!-- reserve now side content -->
 <script>
     document.getElementById('toggleButton').addEventListener('click', function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
         const mainContent = document.getElementById('mainContent');
         const sideContent = document.getElementById('sideContent');
         const closeButton = document.getElementById("closeButton");
@@ -766,7 +933,7 @@
             // Show sidebar and adjust main content
             sideContent.classList.remove('d-none');
             mainContent.classList.replace('col-md-12', 'col-md-0');
-            button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Cancel Now';
+            button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Back';
             sideContent.classList.add('show');
             document.body.classList.add('side-content-open');
         } else {
@@ -793,7 +960,47 @@
         });
     });
 </script>
+<!-- mobile -->
+<script>
+    document.getElementById('toggleButtonMobile').addEventListener('click', function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        const mainContent = document.getElementById('mainContent');
+        const sideContent = document.getElementById('sideContent');
+        const closeButton = document.getElementById("closeButton");
+        const button = this;
+        // Toggle classes
+        if (sideContent.classList.contains('d-none')) {
+            // Show sidebar and adjust main content
+            sideContent.classList.remove('d-none');
+            mainContent.classList.replace('col-md-12', 'col-md-0');
+            button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Back';
+            sideContent.classList.add('show');
+            document.body.classList.add('side-content-open');
+        } else {
+            // Hide sidebar and reset main content
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-0', 'col-md-12');
+            button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        }
 
+        closeButton.addEventListener("click", function () {
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-8', 'col-md-12');
+            button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        });
+    });
+</script>
 <!-- Lear more side modal -->
 <script>
 function openModal() {

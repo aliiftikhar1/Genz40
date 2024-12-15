@@ -99,11 +99,11 @@
                       <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a> -->
                       {% for item in nav_items %}
                             {% if forloop.first %}
-                                <a class="btn btn-lg me-2 btn-light text-uppercase"
+                                <a class="mt-5 btn btn-outline-dark text-uppercase"
                                     href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                     Reserve Now   
                                 </a>
-                                <a class="btn btn-lg btn-light text-uppercase"
+                                <a class="btn btn-outline-dark text-uppercase mt-2"
                                 href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                 Learn More    
                                 </a>
