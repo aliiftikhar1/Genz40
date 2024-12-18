@@ -86,7 +86,7 @@
         overflow-y: auto;
         display: none;
         background-color: #fff;
-        width: 40%;
+        width: 25%;
         box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
@@ -608,38 +608,38 @@ width: 0;
                         <h3 class="mt-2 text-dark">Reserve Now</h3>
                         <div class="col-md-12 pt-2">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="form-label text-dark">First Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="first_name"
                                         id="first_name" />
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Last Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="last_name"
                                         id="last_name" />
                                 </div>
 
-                                <div class="col-md-6 mt-3">
+                                <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="email"
                                         id="email" />
                                 </div>
-                                <div class="col-md-6 mt-3">
+                                <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Confirm Email<span
                                             class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="confirm_email"
                                         id="confirm_email" />
                                 </div>
 
-                                <div class="col-md-6 mt-3">
+                                <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Phone Number<span
                                             class="text-danger">*</span></label>
                                     <input type="tel" class="form-control bg-white text-dark" name="phone_number"
                                         id="phone_number" />
                                 </div>
-                                <div class="col-md-6 mt-3">
+                                <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Delivery Zip Code<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="zip_code"
@@ -656,15 +656,15 @@ width: 0;
                                     </small>
                                 </div>
 
-                                <div class="col-md-12 text-dark mt-3 mb-1 text-center">
-                                    <h4 class="mb-0">Due Today - $100</h4>
-                                    <small>Fully Refundable Reservation Fee</small>
+                                <div class="col-md-6 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
+                                    <h4 class="mb-0">Due Today</h4>
+                                    <small>Fully Refundable</small>
                                 </div>
 
 
-                                <!-- <div class="col-md-6 text-dark mt-5 mb-5">
+                                <div class="col-md-6 text-dark mt-3 mb-5">
                                     <h4 class="mb-0 mt-2 float-end">$100</h4>
-                                </div> -->
+                                </div>
                             </div>
                             <input type="hidden" value="100" name="amount" />
                             <input type="hidden" value="MARK I (Builder Package)" name="package" />
@@ -672,10 +672,10 @@ width: 0;
                             {{user_data.user_id}} -->
                             <div class="d-grid mt-3 mb-1">
                                 <button type="submit" id="submitBtn"
-                                    class="mb-1 btn btn-outline-secondary text-dark text-uppercase">
+                                    class="mb-1 btn btn-secondary text-dark text-uppercase">
                                     <i class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
                             </div>
-                            <div class="col-md-12 text-dark">
+                            <div class="col-md-12 text-dark mb-5">
                                 <small class="text-dark text-sm" style="font-size: 11px;">
                                     By placing this order, I understand that this is just the reservation fee and not a
                                     car purchase price.
