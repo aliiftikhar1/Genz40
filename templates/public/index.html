@@ -57,7 +57,7 @@
                     <div class="pt-2 align-items-center gap-2">
                         {% for item in nav_items %}
                             {% if forloop.first %}
-                                <a class="btn btn-lg me-2 btn-light text-uppercase"
+                                <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
                                     href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                     Reserve Now   
                                 </a>
@@ -587,6 +587,12 @@
 {% endblock content %}
 
 {% block script %}
+<script>
+    function triggerToggleButton() {
+        // Set a flag in local storage to signal the other page
+        localStorage.setItem('triggerToggle', 'true');
+    }
+</script>
 <!-- Ajax request on button click -->
 <script>
     $("#community-form").submit(function (e) {

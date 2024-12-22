@@ -172,144 +172,6 @@
 </style>
 
 <style>
-    .checkbox-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px 20px;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.3s, border-color 0.3s;
-    }
-
-    .checkbox-card input[type="radio"] {
-        accent-color: black;
-        width: 18px;
-        height: 18px;
-        margin-right: 10px;
-    }
-
-    .checkbox-card.checked {
-        background-color: #f7f7f7;
-        border-color: #000;
-    }
-
-    .checkbox-card label {
-        font-size: 16px;
-        font-weight: 500;
-        margin: 0;
-        flex-grow: 1;
-        color: #000;
-    }
-
-    .checkbox-card .price {
-        font-size: 16px;
-        font-weight: bold;
-        color: #000;
-    }
-
-    .error-message {
-        color: red;
-        font-size: 14px;
-        margin-top: 10px;
-        display: none;
-    }
-</style>
-
-<style>
-    /* Modal container */
-    .modal-right {
-        position: absolute;
-        top: 76px;
-        right: -60%;
-        width: 40%;
-        height: calc(100vh - 76px);
-        background-color: #fff;
-        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        transition: right 0.3s ease-in-out;
-        /* Smooth slide-in animation */
-        display: flex;
-        /* flex-direction: column;
-  justify-content: center;
-  align-items: center; */
-        display: none;
-        /* Hidden by default */
-    }
-
-    /* Show modal class */
-    .modal-right.show {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Modal content */
-    .modal-right-content {
-        width: 100%;
-        margin: auto;
-        text-align: center;
-        background-color: #fff;
-        color: #000;
-    }
-
-    /* Close button */
-    .close-button {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-    }
-
-    /* Responsive adjustments for tablets and smaller devices */
-    @media (max-width: 1024px) {
-        .modal-right {
-            right: -60%;
-            /* width: 40%; */
-            width: 40%;
-            /* Adjust width for tablets */
-        }
-    }
-
-    @media (max-width: 768px) {
-        .modal-right {
-            right: 0 !important;
-            width: 100% !important;
-            /* Fullscreen for mobile devices */
-            left: 0 !important;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .modal-right {
-            right: 0 !important;
-            width: 100% !important;
-            /* Fullscreen for mobile devices */
-            left: 0 !important;
-        }
-
-        .close-mobile {
-            width: 50%;
-            margin-top: -5px;
-        }
-
-        .title-mobile {
-            width: 50%;
-        }
-    }
-</style>
-
-<style>
-    body {
-        padding: 0px !important;
-    }
-
     .hero {
         width: 100%;
         text-align: center;
@@ -411,14 +273,15 @@
         text-align: left;
         width: 100%;
         -webkit-transform: translateZ(0);
+        
         /* webkit flicker fix */
         -webkit-font-smoothing: antialiased;
         /* webkit text rendering fix */
     }
 
     .wrapper .tooltip {
-        background: #fff;
-        border: 1px solid #1496bb;
+       background-color:#fff; 
+        border: 1px solid rgb(59 130 246 / .5) !important;
         top: 120%;
         color: #000;
         display: block;
@@ -493,8 +356,6 @@ width: 0;
 {% endblock header %}
 
 {% block content %}
-
-<div class="row">
     <!-- Main Content -->
     <div id="mainContent" class="col-md-12 text-dark transition-all ">
         <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start d-none d-lg-block" id="home"
@@ -519,13 +380,14 @@ width: 0;
 
                     <div class="col-md-6 text-center">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-                            class="btn btn-outline-light mt-4 float-end"><i
-                                class="mdi mdi-arrow-right-thin"></i>Technical
-                            Specs</a>
+                            class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
+                            <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                            Technical Specs</a>
                     </div>
                     <div class="col-md-6 text-center">
-                        <button id="toggleButton" type="button" class="btn btn-outline-light mt-4 float-start"><i
-                                class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
+                        <button id="toggleButton" type="button" class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-start">
+                            <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                            Reserve Now</button>
                     </div>
                 </div>
             </div>
@@ -543,7 +405,7 @@ width: 0;
                         <h5 class="text-white">Introducing the GEN-Z 40 </h5>
                         <h3 class="display-3 fw-bold text-uppercase">{{ items.title }}</h3>
                     </div>
-                    <div>
+                    <!-- <div>
                         <h2>518 hp</h2>
                         <p>Max. engine power</p>
                     </div>
@@ -554,28 +416,167 @@ width: 0;
                     <div>
                         <h2>184</h2>
                         <p>Top track speed (with summer tries)</p>
+                    </div> -->
+                </div>
+
+                <div class="row mb-4 justify-content-center">
+                    <div class="col-12">
+                        <div class="pt-2 d-grid gap-2">
+                            <a class="mt-5 btn btn-outline-dark text-uppercase"
+                                href="#" data-bs-toggle="modal" data-bs-target="#fullscreenModal">
+                                Technical Specs 
+                            </a>
+                            <a id="toggleButtonMobile" class="btn btn-outline-dark text-uppercase mt-2"
+                            href="#">
+                            Reserve Now 
+                            </a>    
+                        </div>
                     </div>
                 </div>
-
-                <div class="actions">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-                        class="btn btn-outline-light mt-2 float-end"><i class="mdi mdi-arrow-right-thin"></i>Technical
-                        Specs</a>
-                        <button id="toggleButtonMobile" type="button" class="btn btn-outline-light mt-2 float-start"><i
-                                class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
-                </div>
-
-
-
-
             </div>
-
-
-
         </section>
-
     </div>
 
+    <div class="container bg-black">
+        <div class="rounded py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="section-title">
+                            <!-- <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container bg-black">
+        <div class="rounded py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="section-title">
+                            <h4 class="fw-bold text-white text-center text-uppercase">
+                                A meticulously crafted homage to one of the most iconic car in the history of endurance
+                                racing,
+                                reimagined for the modern enthusiast.
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="container bg-black mt-4">
+        <div class="rounded py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{% static 'images/genz/f1.jpg' %}" class="d-block w-100" alt="..."
+                                        style="height: 412px;">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{% static 'images/genz/f2.jpg' %}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{% static 'images/genz/f3.jpg' %}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{% static 'images/genz/f4.jpg' %}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{% static 'images/genz/f5.jpg' %}" class="d-block w-100" alt="...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="thumbnail-container">
+                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="0">
+                                <img src="{% static 'images/genz/f1.jpg' %}" alt="Thumbnail 1">
+                            </div>
+                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="1">
+                                <img src="{% static 'images/genz/f2.jpg' %}" alt="Thumbnail 2">
+                            </div>
+                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="2">
+                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
+                            </div>
+                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="3">
+                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
+                            </div>
+                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="4">
+                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <p class="fw-bold text-white fs-5">
+                            At the heart of the Genz40 is our bespoke space frame chassis, meticulously engineered in
+                            collaboration with industry experts. Designed exclusively for the Genz40, this chassis
+                            strikes the perfect balance between rigidity and comfort, ensuring exceptional handling on
+                            the track while delivering a smooth, refined experience for daily driving. By integrating
+                            cutting-edge materials and precision engineering,
+                            we’ve crafted a foundation that enhances performance, safety, and drivability, redefining
+                            what’s possible in a Genz40
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="container bg-black">
+        <div class="rounded py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="section-title">
+                            <h4 class="fw-bold text-white text-center text-uppercase">
+                                While staying true to the iconic design that defined a generation of motorsport,
+                                the Genz40 Mark I blends timeless aesthetics with contemporary engineering.
+                                Built for both spirited daily drives and confident performance on the track,
+                                it’s where heritage meets innovation. <br>The Genz40 Mark I isn’t just a car;
+                                it’s a driving experience redefined.
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="d-flex align-items-start">
+    <div class="container">
+        <div class="justify-content-center row mt-5">
+                    <div class="col-md-12">
+                        <!-- <div class="border-0 shadow rounded ms-lg-4 overflow-hidden card"> -->
+                            <!-- <div class="d-flex p-2 bg-light justify-content-between align-items-center">
+                                <div><a class="text-danger" href="/index-videocall"><i class="mdi mdi-circle"></i></a> <a
+                                        class="text-warning" href="/index-videocall"><i class="mdi mdi-circle"></i></a> <a
+                                        class="text-success" href="/index-videocall"><i class="mdi mdi-circle"></i></a> </div><small
+                                    class="fw-bold"><i class="mdi mdi-circle-medium text-success"></i> Landrick</small>
+                            </div> -->
+                            <!-- <div class="bg-light px-2 position-relative"> -->
+                                <video class="w-100 rounded" controls="" autoplay="" loop="">
+                                    <source src="{% static 'images/genz/MK1White.mp4' %}" type="video/mp4">
+                                </video>
+                                <!-- <div class="position-absolute top-0 start-0">
+                                    <div class="mt-2 ms-3"><span class="badge bg-danger">LIVE</span> <small
+                                            class="mb-0 text-white title-dark">4 Attendance</small></div>
+                                </div> -->
+                            <!-- </div> -->
+                            <!-- <div class="p-2 bg-light">
+                                <p class="text-muted mb-0"><b>Note:</b> This video is only for demo purposes.</p>
+                            </div> -->
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+    </section>
     <!-- Sidebar for reserve now (Initially Hidden) -->
     <div id="sideContent" class="col-md-12 bg-white text-white transition-all d-none">
         <div class="container-fluid">
@@ -649,21 +650,19 @@ width: 0;
                                 <div class="col-md-12 text-dark">
                                     <small class="text-gray text-sm" style="font-size: 11px;">
                                         By entering my contact information above, I authorize Alvi Automobiles to
-                                        contact me about this request and Alvi Automobiles Updates including other Tesla
-                                        products, services and events. I can opt out in the Tesla app or by
+                                        contact me about this request and Alvi Automobiles Updates including other Alvi Automobiles
+                                        products, services and events. I can opt out in the Alvi Automobiles app or by
                                         unsubscribing. This is not a purchase requirement.</span>
 
                                     </small>
                                 </div>
 
-                                <div class="col-md-6 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
-                                    <h4 class="mb-0">Due Today</h4>
+                                <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
+                                    <h4 class="mb-0">Due Today
+                                        <span class="mb-0 float-end mt-2">$100</span>
+                                    </h4>
+                                    <!-- <h4 class="mb-0 float-end">$100</h4> -->
                                     <small>Fully Refundable</small>
-                                </div>
-
-
-                                <div class="col-md-6 text-dark mt-3 mb-5">
-                                    <h4 class="mb-0 mt-2 float-end">$100</h4>
                                 </div>
                             </div>
                             <input type="hidden" value="100" name="amount" />
@@ -673,7 +672,8 @@ width: 0;
                             <div class="d-grid mt-3 mb-1">
                                 <button type="submit" id="submitBtn"
                                     class="mb-1 btn btn-secondary text-dark text-uppercase">
-                                    <i class="mdi mdi-arrow-right-thin"></i>Reserve Now</button>
+                                    <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                                    Reserve Now</button>
                             </div>
                             <div class="col-md-12 text-dark mb-5">
                                 <small class="text-dark text-sm" style="font-size: 11px;">
@@ -687,539 +687,281 @@ width: 0;
                 </div>
             </div>
         </div>
-        <div class="row">
-            <!-- <div class="col-md-12">
-                    <h3 class="display-5 fw-bold mb-5 title-top text-uppercase">{{ items.title }}</h3>
-                    <span class="title-top mt-5">Delivery Date</span>
-                </div> -->
-            <!-- <div class="col-md-12">
-                    <form id="packageForm">
-                        <button id="closeButton" type="button" class="btn btn-outline-light mt-4 float-end"><i
-                            class="mdi mdi-arrow-right-thin"></i>Cancel Now</button>
-                        <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3>
-                        <span class="mt-5">Delivery Date</span>
-                        <h3>Reserve now and Configure later</h3>
-                        <p>This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.</p>
-
-                        <h3 class="mt-2">Select Body Style</h3>
-                            <div class="radio-with-Icon">
-                                <p class="radioOption-Item" style="height: 80px !important;">
-                                <input type="radio" name="bodyTypes" id="bodyTypes1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                <label for="bodyTypes1">
-                                    <strong class="lead fw-bold">Intermediate Rear</strong><br><em>(73 Inch wide)</em>
-                                </label>
-                                </p>
-                            
-                                <p class="radioOption-Item ms-4" style="height: 80px !important;">
-                                <input type="radio" name="bodyTypes" id="bodyTypes2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                <label for="bodyTypes2">
-                                    <strong class="lead fw-bold">Wide Body Rear</strong><br><em>(79 Inch wide)</em>
-                                </label>
-                                </p>
-                            </div>
-                            <p id="bodyErrorMessage" class="text-danger mt-5 text-center" style="display: none;">Please select a car body!</p>
-
-                            <h3 class="mt-5">Select Package</h3>
-                            <div class="radio-with-Icon">
-                                <p class="radioOption-Item">
-                                    <input type="radio" name="package" id="package1" value="true" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                    <label for="package1">
-                                    <strong class="lead fw-bold">Roller</strong> <br><em>Starting at 32,490</em><br><i
-                                    class="mdi mdi-offer"></i> Save $4000 when you book before December 31st 2024<br>
-                                    <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                    </label>
-                                    
-                                </p>
-                                
-                                <p class="radioOption-Item ms-4">
-                                    <input type="radio" name="package" id="package2" value="false" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false">
-                                    <label for="package2">
-                                    <strong class="lead fw-bold">Turn Key Minus</strong><br><em>Starting at 99,999</em><br><i
-                                    class="mdi mdi-information"></i> Save $15000 when you book before December 31st 2024<br>
-                                    <a class="mt-3 h6 text-white" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#packageDetails">Lear more...</a>
-                                    </label>
-                                </p>
-                            </div>
-                        <p id="errorMessage" class="text-danger mt-5 text-center" style="display: none;">Please select a package!</p>
-                        
-                        <div class="col-md-12">
-                            <button type="button" id="submitBtn" class="btn btn-primary mt-5">Submit</button>
-                        </div>
-                    </form>
-                </div> -->
-        </div>
     </div>
 
-    <div class="container-fluid bg-black">
-        <div class="rounded py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <!-- <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid bg-black">
-        <div class="rounded py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <h4 class="fw-bold text-white text-center text-uppercase">
-                                A meticulously crafted homage to one of the most iconic car in the history of endurance
-                                racing,
-                                reimagined for the modern enthusiast.
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid bg-black mt-4">
-        <div class="rounded py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- Carousel -->
-                        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="{% static 'images/genz/f1.jpg' %}" class="d-block w-100" alt="..."
-                                        style="height: 412px;">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="{% static 'images/genz/f2.jpg' %}" class="d-block w-100" alt="...">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="{% static 'images/genz/f3.jpg' %}" class="d-block w-100" alt="...">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="{% static 'images/genz/f4.jpg' %}" class="d-block w-100" alt="...">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="{% static 'images/genz/f5.jpg' %}" class="d-block w-100" alt="...">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Thumbnails -->
-                        <div class="thumbnail-container">
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="0">
-                                <img src="{% static 'images/genz/f1.jpg' %}" alt="Thumbnail 1">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="1">
-                                <img src="{% static 'images/genz/f2.jpg' %}" alt="Thumbnail 2">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="2">
-                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="3">
-                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
-                            </div>
-                            <div class="thumbnail" data-bs-target="#carouselExample" data-bs-slide-to="4">
-                                <img src="{% static 'images/genz/f3.jpg' %}" alt="Thumbnail 2">
-                            </div>
-                        </div>
-
-                        <!-- <img src="{% static 'images/company/about2.png' %}" class="img-fluid" alt=""> -->
-                    </div>
-                    <div class="col-md-6">
-                        <p class="fw-bold text-white fs-5">
-                            At the heart of the Genz40 is our bespoke space frame chassis, meticulously engineered in
-                            collaboration with industry experts. Designed exclusively for the Genz40, this chassis
-                            strikes the perfect balance between rigidity and comfort, ensuring exceptional handling on
-                            the track while delivering a smooth, refined experience for daily driving. By integrating
-                            cutting-edge materials and precision engineering,
-                            we’ve crafted a foundation that enhances performance, safety, and drivability, redefining
-                            what’s possible in a Genz40
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid bg-black">
-        <div class="rounded py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <h4 class="fw-bold text-white text-center text-uppercase">
-                                While staying true to the iconic design that defined a generation of motorsport,
-                                the Genz40 Mark I blends timeless aesthetics with contemporary engineering.
-                                Built for both spirited daily drives and confident performance on the track,
-                                it’s where heritage meets innovation. <br>The Genz40 Mark I isn’t just a car;
-                                it’s a driving experience redefined.
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <section class="d-flex align-items-start">
-    <div class="container">
-        <div class="justify-content-center row mt-5">
-                    <div class="col-md-12">
-                        <!-- <div class="border-0 shadow rounded ms-lg-4 overflow-hidden card"> -->
-                            <!-- <div class="d-flex p-2 bg-light justify-content-between align-items-center">
-                                <div><a class="text-danger" href="/index-videocall"><i class="mdi mdi-circle"></i></a> <a
-                                        class="text-warning" href="/index-videocall"><i class="mdi mdi-circle"></i></a> <a
-                                        class="text-success" href="/index-videocall"><i class="mdi mdi-circle"></i></a> </div><small
-                                    class="fw-bold"><i class="mdi mdi-circle-medium text-success"></i> Landrick</small>
-                            </div> -->
-                            <!-- <div class="bg-light px-2 position-relative"> -->
-                                <video class="w-100 rounded" controls="" autoplay="" loop="">
-                                    <source src="{% static 'images/genz/MK1White.mp4' %}" type="video/mp4">
-                                </video>
-                                <!-- <div class="position-absolute top-0 start-0">
-                                    <div class="mt-2 ms-3"><span class="badge bg-danger">LIVE</span> <small
-                                            class="mb-0 text-white title-dark">4 Attendance</small></div>
-                                </div> -->
-                            <!-- </div> -->
-                            <!-- <div class="p-2 bg-light">
-                                <p class="text-muted mb-0"><b>Note:</b> This video is only for demo purposes.</p>
-                            </div> -->
-                        <!-- </div> -->
-                    </div>
-                </div>
-            </div>
-      
-    </section>
-
-    <!-- While staying true to the iconic design that defined a generation of motorsport, the Genz40 Mark I blends timeless aesthetics with contemporary engineering.  -->
-
-</div>
-
-<!-- tech specs Modal -->
-<div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-            <div class="modal-header"
-                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
-                <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
-                    {{ items.title }}
-                </h1>
-                <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
-                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
-                <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
-            </div>
-            <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
-                <div class="row">
-                    <div class="col-md-6 text-dark">
-                        <div class="row">
-                            <div class="col-md-6 text-dark">
-                                <div class="flex-1">
-                                    <h4 class="text-dark mb-0">Roller From $32, 500</h4>
-                                    <div class="wrapper text-primary fs-6">
-                                        Learn More
-                                        <div class="tooltip">
-                                            Package comes with body mounted to chassis with dash unit and suspension pre
-                                            installed.
-                                            You will be able to choose more options as add-on features to this package
-                                            when your car is in production to make your car as close to turnkey.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-dark">
-                                <div class="flex-1">
-                                    <h4 class="text-dark mb-0">Turnkey Minus From $100,000</h4>
-                                    <div class="wrapper text-primary fs-6">
-                                        Learn More
-                                        <div class="tooltip">
-                                            Completely Built to your requirement, this is esentially everything except
-                                            for Drivetrain (Engine, transmission and ECU).
-                                            The pricing of this package may vary based on individual requirements. Price
-                                            you see online is a ball park with standard equipment.
-                                            Place your order now and save your position in line. We will work with you
-                                            on every step of the production of your car with dozens of options available
-                                            to make your GENZ-40 truly personalized.
-                                        </div>
-                                    </div>
-                                    <!-- <a class="text-primary" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">Learn more...</a></span> -->
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- <div class="col-md-2 text-dark">
-                            <div class="flex-1">
-                                <h4 class="text-dark mb-0">3.0 s</h4>
-                                0 - 60 mph
-                            </div>
-                        </div>
-                        <div class="col-md-3 text-dark">
-                            <div class="flex-1">
-                                <h4 class="text-dark mb-0">184 mph</h4>
-                                Top track speed (with summer tires)
-                            </div>
-                        </div>
-
-                        <div class="col-md-12 mt-4 pt-2">
-                            <small class="text-dark mb-4">* Manufacturer’s Suggested Retail Price. Excludes options; taxes;
-                                title; registration; delivery, processing and handling fee; dealer charges. Dealer sets
-                                actual selling price.</small>
-
-                        </div> -->
-                        <!-- <div class="row">
-                            <div class="col-md-6 mt-4 pt-2">
-                                <h1 class="text-dark mt-4">Technical Specs</h1>
-                            </div>
-
-                            <div class="col-md-3 text-dark mt-5 pt-2">
-                                <div class="flex-1">
-                                    Height
-                                    <h4 class="text-dark mb-0">52.0 in</h4>
-
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-dark mt-5 pt-2">
-                                <div class="flex-1">
-                                    Width w/ mirrors folded
-                                    <h4 class="text-dark mb-0">74.8 in</h4>
-                                </div>
-                            </div>
-
-                        </div> -->
-
-                        <div class="col-md-12 mt-4 pt-2">
-                            <h1 class="text-dark mt-4">Technical Specs</h1>
-                            <div class="accordion" id="accordionExample">
-                                <!-- Accordion Item 1 -->
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingDimension">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseDimension"
-                                            aria-expanded="false" aria-controls="collapseDimension">
-                                            Dimensions
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDimension" class="accordion-collapse collapse"
-                                        aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Length: 163"</p>
-                                            <p>- Height: 40.5"</p>
-                                            <p>- Width: 71" (intermediate rear) or 79" (Extra Wide rear)</p>
-                                            <p>- Wheelbase: 95"</p>
-                                            <p>- Front Wheels: Options Available</p>
-                                            <p>- Rear Wheels: Options Available</p>
-                                            <p>- Front Tires: Options Available</p>
-                                            <p>- Rear Tires: Options Available</p>
-                                            <p>- Fuel Tank: Aluminum 22 Gallons</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading2">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
-                                            aria-controls="collapse2">
-                                            Body
-                                        </button>
-                                    </h2>
-                                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
-                                            <p>- Fiber Glass / Carbon Fiber Roof</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading3">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
-                                            aria-controls="collapse3">
-                                            Chassis
-                                        </button>
-                                    </h2>
-                                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
-                                            <p>- Aluminum Skinned</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading4">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
-                                            aria-controls="collapse4">
-                                            Suspension
-                                        </button>
-                                    </h2>
-                                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
-                                                lower control arm, adjustable coilover shocks </p>
-                                            <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading5">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
-                                            aria-controls="collapse5">
-                                            Steering
-                                        </button>
-                                    </h2>
-                                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Rack and pinion with Colapsable Steering Column </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading6">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
-                                            aria-controls="collapse6">
-                                            Brakes
-                                        </button>
-                                    </h2>
-                                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Front: Brembo / Wilwood </p>
-                                            <p>- Rear: Brembo / Wilwood </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading6">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
-                                            aria-controls="collapse6">
-                                            Interior
-                                        </button>
-                                    </h2>
-                                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
-                                                Stiched / Carbon Fiber / Alacantara </p>
-                                            <p>- Moto-lita 14" Steering Wheel </p>
-                                            <p>- Original style Seats with Leather or Alcantara </p>
-                                            <p>- Speed Hut Gauges </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading7">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
-                                            aria-controls="collapse7">
-                                            Drivetrain
-                                        </button>
-                                    </h2>
-                                    <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Recommended Engines: 289, 302, 351W, 427 or Cayote </p>
-                                            <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading8">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
-                                            aria-controls="collapse8">
-                                            Exhaust System
-                                        </button>
-                                    </h2>
-                                    <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Bundle of Snakes </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-                        </div><!--end col-->
-                    </div>
-                    <div class="pt-2 col-md-6">
-                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow" alt="">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Content Start for reserve now -->
-<div class="modal fade" id="packageDetails" tabindex="-1" aria-labelledby="packageDetails-title" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded shadow border-0">
-            <div class="modal-header border-bottom"
-                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
-                <h5 class="modal-title" id="packageDetails-title">Modal title</h5>
-                <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
-                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
-            </div>
-            <div class="modal-body bg-white">
-                <div class="bg-white p-3 rounded box-shadow">
-                    <p class="text-muted mb-0">Dummy text is also used to demonstrate the appearance of different
-                        typefaces and layouts, and in general the content of dummy text is nonsensical. Due to its
-                        widespread use as filler text for layouts, non-readability is of great importance: human
-                        perception is tuned to recognize certain patterns and repetitions in texts. If the distribution
-                        of letters and 'words' is random, the reader will not be distracted from making a neutral
-                        judgement on the visual impact and readability of the typefaces (typography), or the
-                        distribution of text on the page (layout or type area).</p>
-                </div>
-            </div>
-            <div class="modal-footer bg-white">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="rightModal" class="modal-right" tabindex="-1" aria-labelledby="fullscreenModalRight" aria-hidden="true">
-    <div class="modal-right-content" style="border-radius: 0px !important;">
-        <div class="modal-right-header"
-            style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 15px; padding-right: 15px;">
-            <div class="row">
-                <div class="col-md-6 title-mobile">
-                    <h1 class="modal-title text-dark text-uppercase float-start" id="fullscreenModalRight">
+    <!-- tech specs Modal -->
+    <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header"
+                    style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+                    <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
                         {{ items.title }}
                     </h1>
+                    <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
+                        data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                    <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
-                <div class="col-md-6 close-mobile">
-                    <button type="button" class="btn btn-icon btn-danger float-end mt-2" onclick="closeModal()"><i
-                            class="mdi mdi-close text-white"></i></button>
+                <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
+                    <div class="row">
+                        <div class="col-md-6 text-dark">
+                            <div class="row">
+                                <div class="col-md-6 text-dark">
+                                    <div class="flex-1">
+                                        <h4 class="text-dark mb-0">Roller From $32, 500</h4>
+                                        <div class="wrapper text-primary fs-6">
+                                            Learn More
+                                            <div class="tooltip">
+                                                Package comes with body mounted to chassis with dash unit and suspension pre
+                                                installed.
+                                                You will be able to choose more options as add-on features to this package
+                                                when your car is in production to make your car as close to turnkey.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-dark">
+                                    <div class="flex-1">
+                                        <h4 class="text-dark mb-0">Turnkey Minus From $100,000</h4>
+                                        <div class="wrapper text-primary fs-6">
+                                            Learn More
+                                            <div class="tooltip">
+                                                Completely Built to your requirement, this is esentially everything except
+                                                for Drivetrain (Engine, transmission and ECU).
+                                                The pricing of this package may vary based on individual requirements. Price
+                                                you see online is a ball park with standard equipment.
+                                                Place your order now and save your position in line. We will work with you
+                                                on every step of the production of your car with dozens of options available
+                                                to make your GENZ-40 truly personalized.
+                                            </div>
+                                        </div>
+                                        <!-- <a class="text-primary" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">Learn more...</a></span> -->
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- <div class="col-md-2 text-dark">
+                                <div class="flex-1">
+                                    <h4 class="text-dark mb-0">3.0 s</h4>
+                                    0 - 60 mph
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-dark">
+                                <div class="flex-1">
+                                    <h4 class="text-dark mb-0">184 mph</h4>
+                                    Top track speed (with summer tires)
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-4 pt-2">
+                                <small class="text-dark mb-4">* Manufacturer’s Suggested Retail Price. Excludes options; taxes;
+                                    title; registration; delivery, processing and handling fee; dealer charges. Dealer sets
+                                    actual selling price.</small>
+
+                            </div> -->
+                            <!-- <div class="row">
+                                <div class="col-md-6 mt-4 pt-2">
+                                    <h1 class="text-dark mt-4">Technical Specs</h1>
+                                </div>
+
+                                <div class="col-md-3 text-dark mt-5 pt-2">
+                                    <div class="flex-1">
+                                        Height
+                                        <h4 class="text-dark mb-0">52.0 in</h4>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-dark mt-5 pt-2">
+                                    <div class="flex-1">
+                                        Width w/ mirrors folded
+                                        <h4 class="text-dark mb-0">74.8 in</h4>
+                                    </div>
+                                </div>
+
+                            </div> -->
+
+                            <div class="col-md-12 mt-4 pt-2">
+                                <h1 class="text-dark mt-4">Technical Specs</h1>
+                                <div class="accordion" id="accordionExample">
+                                    <!-- Accordion Item 1 -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingDimension">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapseDimension"
+                                                aria-expanded="false" aria-controls="collapseDimension">
+                                                Dimensions
+                                            </button>
+                                        </h2>
+                                        <div id="collapseDimension" class="accordion-collapse collapse"
+                                            aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Length: 163"</p>
+                                                <p>- Height: 40.5"</p>
+                                                <p>- Width: 71" (intermediate rear) or 79" (Extra Wide rear)</p>
+                                                <p>- Wheelbase: 95"</p>
+                                                <p>- Front Wheels: Options Available</p>
+                                                <p>- Rear Wheels: Options Available</p>
+                                                <p>- Front Tires: Options Available</p>
+                                                <p>- Rear Tires: Options Available</p>
+                                                <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading2">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
+                                                aria-controls="collapse2">
+                                                Body
+                                            </button>
+                                        </h2>
+                                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
+                                                <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading3">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
+                                                aria-controls="collapse3">
+                                                Chassis
+                                            </button>
+                                        </h2>
+                                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
+                                                <p>- Aluminum Skinned</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading4">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
+                                                aria-controls="collapse4">
+                                                Suspension
+                                            </button>
+                                        </h2>
+                                        <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
+                                                    lower control arm, adjustable coilover shocks </p>
+                                                <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading5">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
+                                                aria-controls="collapse5">
+                                                Steering
+                                            </button>
+                                        </h2>
+                                        <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Rack and pinion with Colapsable Steering Column </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading6">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
+                                                aria-controls="collapse6">
+                                                Brakes
+                                            </button>
+                                        </h2>
+                                        <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Brembo / Wilwood </p>
+                                                <p>- Rear: Brembo / Wilwood </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading9">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false"
+                                                aria-controls="collapse9">
+                                                Interior
+                                            </button>
+                                        </h2>
+                                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
+                                                    Stiched / Carbon Fiber / Alacantara </p>
+                                                <p>- Moto-lita 14" Steering Wheel </p>
+                                                <p>- Original style Seats with Leather or Alcantara </p>
+                                                <p>- Speed Hut Gauges </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading7">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
+                                                aria-controls="collapse7">
+                                                Drivetrain
+                                            </button>
+                                        </h2>
+                                        <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Recommended Engines: 289, 302, 351W, 427 or Cayote </p>
+                                                <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading8">
+                                            <button class="accordion-button collapsed text-uppercase" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
+                                                aria-controls="collapse8">
+                                                Exhaust System
+                                            </button>
+                                        </h2>
+                                        <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
+                                            data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Bundle of Snakes </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+                            <div class="col-md-6 text-center">
+                                <button data-bs-dismiss="modal" id="closeModalButton" type="button" class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
+                                    Reserve Now
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pt-2 col-md-6 mb-5">
+                            <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
 
 {% endblock content %}
 
@@ -1440,5 +1182,34 @@ width: 0;
             alert('Form submitted successfully with option: ' + selectedOption.nextElementSibling.textContent);
         }
     }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const closeModalButton = document.getElementById("closeModalButton");
+    const toggleButton = document.getElementById("toggleButton");
+
+    // Add an event listener to the modal close button
+    closeModalButton.addEventListener("click", function () {
+        // Simulate a click on the toggleButton
+        toggleButton.click();
+    });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if the flag is set in local storage
+        const trigger = localStorage.getItem('triggerToggle');
+        if (trigger === 'true') {
+            // Perform the action on the button
+            const toggleButton = document.getElementById('toggleButton');
+            if (toggleButton) {
+                toggleButton.click(); // Trigger a click event
+            }
+            // Clear the flag after triggering
+            localStorage.removeItem('triggerToggle');
+        }
+    });
 </script>
 {% endblock script %}
