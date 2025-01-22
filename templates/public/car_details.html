@@ -615,44 +615,44 @@ width: 0;
                                     <label class="form-label text-dark">First Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="first_name"
-                                        id="first_name" />
+                                        id="first_name" required />
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Last Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="last_name"
-                                        id="last_name" />
+                                        id="last_name" required />
                                 </div>
 
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="email"
-                                        id="email" />
+                                        id="email" required />
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Confirm Email<span
                                             class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="confirm_email"
-                                        id="confirm_email" />
+                                        id="confirm_email" required />
                                 </div>
 
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Phone Number<span
                                             class="text-danger">*</span></label>
                                     <input type="tel" class="form-control bg-white text-dark" name="phone_number"
-                                        id="phone_number" />
+                                        id="phone_number" required />
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Delivery Zip Code<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="zip_code"
-                                        id="zip_code" />
+                                        id="zip_code" required />
                                 </div>
 
                                 <div class="col-md-12 text-dark">
                                     <small class="text-gray text-sm" style="font-size: 11px;">
                                         By entering my contact information above, I authorize Alvi Automobiles to
-                                        contact me about this request and Alvi Automobiles Updates including other Alvi Automobiles
+                                        contact me about this request and Alvi Automobiles Updates including other Alvi Automobiles
                                         products, services and events. I can opt out in the Alvi Automobiles app or by
                                         unsubscribing. This is not a purchase requirement.</span>
 
@@ -706,23 +706,27 @@ width: 0;
                 </div>
                 <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
                     <div class="row">
+                        
                         <div class="col-md-6 text-dark">
                             <div class="row">
+                                {% for package in packages %}
                                 <div class="col-md-6 text-dark">
                                     <div class="flex-1">
-                                        <h4 class="text-dark mb-0">Roller From $32, 500</h4>
+                                        <h4 class="text-dark mb-0">{{ package.name }} From ${{ package.amount }}</h4>
                                         <div class="wrapper text-primary fs-6">
                                             Learn More
                                             <div class="tooltip">
-                                                Package comes with body mounted to chassis with dash unit and suspension pre
+                                                {{ package.description }}
+                                                <!-- Package comes with body mounted to chassis with dash unit and suspension pre
                                                 installed.
                                                 You will be able to choose more options as add-on features to this package
-                                                when your car is in production to make your car as close to turnkey.
+                                                when your car is in production to make your car as close to turnkey. -->
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 text-dark">
+                                {% endfor %}
+                                <!-- <div class="col-md-6 text-dark">
                                     <div class="flex-1">
                                         <h4 class="text-dark mb-0">Turnkey Minus From $100,000</h4>
                                         <div class="wrapper text-primary fs-6">
@@ -737,11 +741,11 @@ width: 0;
                                                 to make your GENZ-40 truly personalized.
                                             </div>
                                         </div>
-                                        <!-- <a class="text-primary" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">Learn more...</a></span> -->
-                                    </div>
-                                </div>
-                            </div>
 
+                                    </div>
+                                </div> -->
+                            </div>
+                                        <!-- <a class="text-primary" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">Learn more...</a></span> -->
 
                             <!-- <div class="col-md-2 text-dark">
                                 <div class="flex-1">

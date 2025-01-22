@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import get_client_ip
 from .forms import PostContactForm, RegisterForm
-from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostNavItem, PostLandingPageImages, PostPayment, PostSubscribers
+from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -183,10 +183,15 @@ def navitem_detail(request, slug):
 
 def car_details(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
-    package = items.details.filter(is_active=True).order_by('position')
+    print('------items', items.id)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    # get_object_or_404(PostPackage, nav_item=items.id)
+    print('------package_details', package_details)
+    # package = items.details.filter(is_active=True).order_by('position')
+    # print('---------package', package)
     return render(request, 'public/car_details.html',
                   {'items': items,
-                   'packages': package})
+                   'packages': package_details})
 
 
 def about(request):
