@@ -382,10 +382,10 @@ width: 0;
     <div id="mainContent" class="col-md-12 text-dark transition-all ">
 
         <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start d-none d-lg-block" id="home"
-            style="background: {% if items.title == 'Mark-I' %} url('/static/images/mark1details/HighresScreenshot00013.png') 
-            {% elif items.title == 'Mark-II' %}
+            style="background: {% if items.title == 'Mark I' %} url('/static/images/mark1details/HighresScreenshot00013.png') 
+            {% elif items.title == 'Mark II' %}
                 url('/static/images/mark2details/HighresScreenshot00001.png')
-            {% elif items.title == 'Mark-IV' %}
+            {% elif items.title == 'Mark IV' %}
                 url('/static/images/mark4details/HighresScreenshot00002.png')
             {% endif %}
             
@@ -435,13 +435,13 @@ width: 0;
         <section class="bg-black text-white d-flex align-items-start d-lg-none" id="home">
             <div class="container d-lg-none ">
                 <div class="hero mt-5">
-                    {% if items.title == 'Mark-I' %}
+                    {% if items.title == 'Mark I' %}
                     <img class="mt-5" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}"
                         alt="Mark-I">
-                    {% elif items.title == 'Mark-II' %}
+                    {% elif items.title == 'Mark II' %}
                         <img class="mt-5" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}"
                         alt="Mark-II">
-                    {% elif items.title == 'Mark-IV' %}
+                    {% elif items.title == 'Mark IV' %}
                     <img class="mt-5" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}"
                     alt="Mark-IV">
                     {% endif %}
@@ -892,11 +892,11 @@ width: 0;
                                             <div class="accordion-body bg-white text-dark">
                                                 <p>- Length: 163"</p>
                                                 <p>- Height: 40.5"</p>
-                                                {% if items.title == 'Mark-I' %} 
+                                                {% if items.title == 'Mark I' %} 
                                                 <p>- Width: 71" (intermediate rear) or 79" (Extra Wide rear)</p>
-                                                {% elif items.title == 'Mark-II' %}
+                                                {% elif items.title == 'Mark II' %}
                                                 <p>- Width: 71"</p>
-                                                {% elif items.title == 'Mark-IV' %}
+                                                {% elif items.title == 'Mark IV' %}
                                                 <p>- Width: 71"</p>
                                                 {% endif %}
                                                 <p>- Wheelbase: 95"</p>
@@ -1058,11 +1058,11 @@ width: 0;
                             </div>
                         </div>
                         <div class="pt-2 col-md-6 mb-5">
-                            {% if items.title == 'Mark-I' %} 
+                            {% if items.title == 'Mark I' %} 
                                 <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
-                            {% elif items.title == 'Mark-II' %}
+                            {% elif items.title == 'Mark II' %}
                                 <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
-                            {% elif items.title == 'Mark-IV' %}
+                            {% elif items.title == 'Mark IV' %}
                                 <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
                             {% endif %}
 
