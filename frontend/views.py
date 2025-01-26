@@ -180,25 +180,33 @@ def navitem_detail(request, slug):
                   {'items': items,
                    'packages': package})
 
-
 def car_details(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
-    print('------items', items.id)
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
-    # get_object_or_404(PostPackage, nav_item=items.id)
-    print('------package_details', package_details)
+    amount_due = package_details[0].amount_due
     # package = items.details.filter(is_active=True).order_by('position')
-    # print('---------package', package)
+    print('---------package', package_details[0].amount_due)
+    random_password = generate_random_password()
+    # ip = get_country_info(request)
+    ip = '103.135.189.214'
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+
     return render(request, 'public/car_details.html',
                   {'items': items,
-                   'packages': package_details})
-
+                   'packages': package_details,
+                   'amount_due': amount_due,
+                   'country_code': country_code,
+                    'country_flag_url': country_flag_url,
+                    'random_password': random_password})
 
 def about(request):
     return render(request, 'public/about.html', {
         'navbar_style': 'dark'
     })
-
 
 def blog(request):
     # items = get_object_or_404(PostNavItem, slug=slug)
@@ -215,7 +223,6 @@ def blog_details(request):
 
 def contact_us(request):
     return render(request, 'public/contact_us.html')
-
 
 def terms_conditions(request):
     return render(request, 'public/terms_conditions.html')
@@ -239,34 +246,65 @@ def save_contact(request):
             return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
         else:
             return JsonResponse({"message": 'Something went wrong. Please try again!', 'is_success': False})
-        
 
-def create_checkout_session(request):
-    if request.method == "POST":
+def create_account_before_checkout(request):
+    if request.method == 'POST':
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
-        currency = "usd"
-        
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': currency,
-                    'product_data': {
-                        'name': product_name,
-                        'description': 'this is product description',
-                        'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
-                    },
-                    'unit_amount': int(amount)*100,
+        print('------amo', amount, product_name)
+        if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
+            form = RegisterForm(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                random_password = generate_random_password()
+                user.set_password(random_password)
+                user.zip_code = request.POST['zip_code']
+                user.save()
+                print('-------user', user)
+                # user = form.get_user()
+                login(request, user)
+                print('-------user111', user.id)
+                if(user.id):
+                    fullName = user.first_name+ ' '+user.last_name
+                    return create_checkout_session(product_name, amount, user.email, fullName)
+                # return JsonResponse({"message": 'Successfully added.', 'is_success': True})       
+        else:
+            fullName = request.user.first_name+ ' '+request.user.last_name
+            return create_checkout_session(product_name, amount, request.user.email, fullName)
+            # return JsonResponse({"message": 'Email and Phone number already register with us.', 'is_success': False})
+             
+def create_checkout_session(product_name, amount, email, full_name):
+    # print('------amoqwwww', amount, product_name)
+    # if request.method == "POST":
+    #     amount = request.POST['amount'] 
+    #     product_name = request.POST['package']
+    currency = "usd"
+    
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': currency,
+                'product_data': {
+                    'name': product_name,
+                    'description': 'this is product description',
+                    'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
                 },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url='http://127.0.0.1:8000/success/',
-            cancel_url='http://127.0.0.1:8000/cancel/',
-        )
+                'unit_amount': int(amount)*100,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url='http://127.0.0.1:8000/success/',
+        cancel_url='http://127.0.0.1:8000/cancel/',
+        customer_email=email,  # Pass email to prefill the Stripe Checkout form
+            metadata={
+                'full_name': full_name,  # Pass full name as metadata
+                'email': email,
+            },
+    )
 
-        return redirect(session.url, code=303)
+    return redirect(session.url, code=303)
 
     # return render(request, 'public/payment/checkout.html')
 
@@ -301,7 +339,7 @@ def stripe_webhook(request):
 
         # Save payment details in the database
         PostPayment.objects.create(
-            user_id='c218d9aa-bc52-4f8a-9640-a7ccf75e8abb',
+            user_id=request.user.id,
             package_name='Builder',
             stripe_payment_id=payment_intent_id,
             amount=payment_intent['amount'] / 100,  # Convert to dollars
@@ -310,12 +348,12 @@ def stripe_webhook(request):
         )
 
     # Handle the event
-    # if event['type'] == 'payment_intent.succeeded':
-    #     payment_intent = event['data']['object']
-    #     print('-----------webhook', payment_intent)
-    #     payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
-    #     payment.status = 'succeeded'
-    #     payment.save()
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        print('-----------webhook', payment_intent)
+        payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
+        payment.status = 'succeeded'
+        payment.save()
 
     return HttpResponse(status=200)
 

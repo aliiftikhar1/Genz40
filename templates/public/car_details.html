@@ -353,6 +353,27 @@ width: 0;
     .lte8 .wrapper:hover .tooltip {
         display: block;
     }
+
+    .input-group-prepend {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+.input-group .form-control {
+  padding-left: 50px; /* Adjust spacing to accommodate the flag */
+}
+.input-group-text {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+
 </style>
 {% endblock header %}
 
@@ -592,8 +613,12 @@ width: 0;
                     <span class="badge bg-info">Est. Delivery - Mar 31, 2025</span>
                 </div>
                 <div class="col-md-12">
-                    <form id="packageForm" action="{% url 'create_checkout_session' %}" method="POST">
+                    <form id="checkout-form111" method="POST" action="{% url 'create_account_before_checkout' %}">
                         {% csrf_token %}
+                            <input type="text" value="{{ random_password }}" name="password1" hidden>
+                            <input type="text" value="{{ random_password }}" name="password2" hidden>
+                            <input type="text" value="{{ country_code }}" name="country" hidden>
+                            <input type="text" value="customer" name="role" hidden>
                         <!-- <h3 class="display-5 fw-bold mb-0 text-uppercase">{{ items.title }}</h3>
                             <span class="mt-5">Delivery Date</span> -->
                         <div class="alert alert-info alert-dismissible fade show text-dark mt-3" role="alert"
@@ -615,38 +640,68 @@ width: 0;
                                     <label class="form-label text-dark">First Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="first_name"
-                                        id="first_name" required />
+                                        id="first_name" value="{{user_data.first_name}}" required />
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Last Name<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="last_name"
-                                        id="last_name" required />
+                                        id="last_name" value="{{user_data.last_name}}" required />
                                 </div>
 
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="email"
-                                        id="email" required />
+                                        id="email" value="{{user_data.email}}" required />
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Confirm Email<span
                                             class="text-danger">*</span></label>
                                     <input type="email" class="form-control bg-white text-dark" name="confirm_email"
-                                        id="confirm_email" required />
+                                        id="confirm_email" value="{{user_data.email}}" required />
                                 </div>
+                                <div id="errorMessage" style="color: red; display: none;"></div>
 
-                                <div class="col-md-12 mt-2">
+                                <!-- <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Phone Number<span
                                             class="text-danger">*</span></label>
                                     <input type="tel" class="form-control bg-white text-dark" name="phone_number"
                                         id="phone_number" required />
-                                </div>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
+                                            
+                                        </div>
+
+                                </div> -->
+                                <div class="col-md-12 mt-2 position-relative">
+                                    <label class="form-label text-dark">Phone Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                      <!-- Add wrapper to hold the flag -->
+                                      <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-0 p-0">
+                                          <img
+                                            class="fea icon-sm icons"
+                                            src="{{ country_flag_url }}"
+                                            alt="Country Flag"
+                                            style="width: 28px; height: 28px;"
+                                          />
+                                        </span>
+                                      </div>
+                                      <!-- Input field -->
+                                      <input
+                                        type="tel"
+                                        class="form-control bg-white text-dark pl-5"
+                                        name="phone_number"  value="{{user_data.phone_number}}"
+                                        id="phone_number" style="border-radius: .375rem !important;"
+                                        required
+                                      />
+                                    </div>
+                                  </div>
                                 <div class="col-md-12 mt-2">
                                     <label class="form-label text-dark">Delivery Zip Code<span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control bg-white text-dark" name="zip_code"
-                                        id="zip_code" required />
+                                        id="zip_code" value="{{ user_data.zip_code }}" required />
                                 </div>
 
                                 <div class="col-md-12 text-dark">
@@ -661,21 +716,23 @@ width: 0;
 
                                 <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
                                     <h4 class="mb-0">Due Today
-                                        <span class="mb-0 float-end mt-2">$100</span>
+                                        <span class="mb-0 float-end mt-2">${{ amount_due }}</span>
                                     </h4>
                                     <!-- <h4 class="mb-0 float-end">$100</h4> -->
                                     <small>Fully Refundable</small>
                                 </div>
                             </div>
-                            <input type="hidden" value="100" name="amount" />
-                            <input type="hidden" value="MARK I (Builder Package)" name="package" />
+                            <input type="hidden" value="{{ amount_due }}" name="amount" />
+                            <input type="hidden" value="{{ items.title }}" name="package" />
                             <!-- {{user_data.is_authenticated}}
                             {{user_data.user_id}} -->
                             <div class="d-grid mt-3 mb-1">
                                 <button type="submit" id="submitBtn"
                                     class="mb-1 btn btn-secondary text-dark text-uppercase">
                                     <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
-                                    Reserve Now</button>
+                                    Reserve Now
+                                    <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
+                                </button>
                             </div>
                             <div class="col-md-12 text-dark mb-5">
                                 <small class="text-dark text-sm mb-5" style="font-size: 11px;">
@@ -1221,4 +1278,57 @@ width: 0;
         }
     });
 </script>
+
+<script>
+    $("#checkout-form").submit(function (e) {
+        event.preventDefault();
+    // Get email values
+    const email = document.getElementById('email').value.trim();
+    const confirmEmail = document.getElementById('confirm_email').value.trim();
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Validate emails
+    if (!email || !confirmEmail) {
+      errorMessage.textContent = 'Both email fields are required.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
+    if (email !== confirmEmail) {
+      errorMessage.textContent = 'Email and Confirm Email must match.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
+    errorMessage.style.display = 'none';
+
+    var data = new FormData($('#checkout-form').get(0));
+    $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'create_account_before_checkout' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                // $('#checkout-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        })
+    })
+
+</script>
+
 {% endblock script %}

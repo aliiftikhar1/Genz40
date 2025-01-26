@@ -29,9 +29,13 @@ def add_user_to_context(request):
         user_data['is_authenticated'] = True
         user_data['user_id'] = str(request.user.id)  # Ensure you convert the UUID to a string if necessary
         user_data['email'] = request.user.email
+        user_data['first_name'] = request.user.first_name
+        user_data['last_name'] = request.user.last_name
         user_data['full_name'] = request.user.first_name + ' '+ request.user.last_name
         user_data['is_delete'] = request.user.is_delete
+        user_data['phone_number'] = request.user.phone_number
         user_data['is_email_verified'] = request.user.is_email_verified
+        user_data['zip_code'] = request.user.zip_code
         user_data['base_url'] = settings.BASE_URL
         user_data['role'] = request.user.role
     return {'user_data': user_data}
