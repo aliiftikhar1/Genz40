@@ -206,7 +206,11 @@
                               <p class="fw-bold text-white">{{ section_3.subtitle }}</p>
                               <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
                   <div class="pt-2 align-items-center gap-2">
-                    {% for item in nav_items %}
+                    <a class="btn btn-lg me-2 btn-light text-uppercase"
+                            href="#" onclick="notAvailable()">
+                            Not Available Until July 2025   
+                    </a>
+                    <!-- {% for item in nav_items %}
                     {% if forloop.counter == 3 %}
                         <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
                             href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
@@ -217,7 +221,7 @@
                         Learn More    
                         </a>
                     {% endif %}
-                {% endfor %}
+                {% endfor %} -->
                   </div>
               </div>
           </div><!--end col-->
@@ -245,7 +249,11 @@
             <div class="row mb-4 justify-content-center d-lg-none mt-60">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
-                    {% for item in nav_items %}
+                    <a class="btn btn-lg me-2 btn-light text-uppercase"
+                            href="#" onclick="notAvailable()">
+                            Not Available Until July 2025   
+                    </a>
+                    <!-- {% for item in nav_items %}
                     {% if forloop.counter == 3 %}
                         <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
                             href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
@@ -256,7 +264,7 @@
                         Learn More    
                         </a>
                     {% endif %}
-                {% endfor %}
+                {% endfor %} -->
                   </div>
               </div>
           </div>
@@ -638,6 +646,14 @@
         localStorage.setItem('triggerToggle', 'true');
     }
 </script>
+
+<script>
+    function notAvailable() {
+        // Set a flag in local storage to signal the other page
+        alert('Not Available Until July 2025');
+    }
+</script>
+
 <!-- Ajax request on button click -->
 <script>
     $("#community-form").submit(function (e) {

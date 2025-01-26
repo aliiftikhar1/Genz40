@@ -408,6 +408,13 @@ width: 0;
                         <!-- <p class="text-white p-3 rounded">184<br>Top track speed (with summer tries)</p> -->
                     </div>
 
+            {% if items.title == 'Mark-IV' %}
+            <a class="btn btn-lg me-2 btn-light text-uppercase"
+            href="#" onclick="notAvailable()">
+            Not Available Until July 2025   
+            </a>
+            {% else %}
+
                     <div class="col-md-6 text-center">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
                             class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
@@ -419,6 +426,7 @@ width: 0;
                             <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
                             Reserve Now</button>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -427,8 +435,16 @@ width: 0;
         <section class="bg-black text-white d-flex align-items-start d-lg-none" id="home">
             <div class="container d-lg-none ">
                 <div class="hero mt-5">
+                    {% if items.title == 'Mark-I' %}
                     <img class="mt-5" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}"
-                        alt="911 GT3 RS">
+                        alt="Mark-I">
+                    {% elif items.title == 'Mark-II' %}
+                        <img class="mt-5" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}"
+                        alt="Mark-II">
+                    {% elif items.title == 'Mark-IV' %}
+                    <img class="mt-5" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}"
+                    alt="Mark-IV">
+                    {% endif %}
                 </div>
                 <div class="specs">
                     <div>
@@ -452,6 +468,12 @@ width: 0;
                 <div class="row mb-4 justify-content-center">
                     <div class="col-12">
                         <div class="pt-2 d-grid gap-2">
+                            {% if items.title == 'Mark-IV' %}
+            <a class="btn btn-lg me-2 btn-light text-uppercase"
+            href="#" onclick="notAvailable()">
+            Not Available Until July 2025   
+            </a>
+            {% else %}
                             <a class="mt-5 btn btn-outline-dark text-uppercase"
                                 href="#" data-bs-toggle="modal" data-bs-target="#fullscreenModal">
                                 Technical Specs 
@@ -459,7 +481,8 @@ width: 0;
                             <a id="toggleButtonMobile" class="btn btn-outline-dark text-uppercase mt-2"
                             href="#">
                             Reserve Now 
-                            </a>    
+                            </a>   
+                            {% endif %} 
                         </div>
                     </div>
                 </div>
@@ -869,7 +892,13 @@ width: 0;
                                             <div class="accordion-body bg-white text-dark">
                                                 <p>- Length: 163"</p>
                                                 <p>- Height: 40.5"</p>
+                                                {% if items.title == 'Mark-I' %} 
                                                 <p>- Width: 71" (intermediate rear) or 79" (Extra Wide rear)</p>
+                                                {% elif items.title == 'Mark-II' %}
+                                                <p>- Width: 71"</p>
+                                                {% elif items.title == 'Mark-IV' %}
+                                                <p>- Width: 71"</p>
+                                                {% endif %}
                                                 <p>- Wheelbase: 95"</p>
                                                 <p>- Front Wheels: Options Available</p>
                                                 <p>- Rear Wheels: Options Available</p>
@@ -1029,7 +1058,15 @@ width: 0;
                             </div>
                         </div>
                         <div class="pt-2 col-md-6 mb-5">
-                            <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% if items.title == 'Mark-I' %} 
+                                <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark-II' %}
+                                <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark-IV' %}
+                                <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% endif %}
+
+                            
                         </div>
                     </div>
                 </div>
@@ -1338,5 +1375,10 @@ width: 0;
     })
 
 </script>
-
+<script>
+    function notAvailable() {
+        // Set a flag in local storage to signal the other page
+        alert('Not Available Until July 2025');
+    }
+</script>
 {% endblock script %}
