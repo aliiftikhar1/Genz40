@@ -380,8 +380,16 @@ width: 0;
 {% block content %}
     <!-- Main Content -->
     <div id="mainContent" class="col-md-12 text-dark transition-all ">
+
         <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start d-none d-lg-block" id="home"
-            style="background: url('/static/images/mark1details/HighresScreenshot00013.png') center center; background-size: cover; height: 100vh;">
+            style="background: {% if items.title == 'Mark-I' %} url('/static/images/mark1details/HighresScreenshot00013.png') 
+            {% elif items.title == 'Mark-II' %}
+                url('/static/images/mark2details/HighresScreenshot00001.png')
+            {% elif items.title == 'Mark-IV' %}
+                url('/static/images/mark4details/HighresScreenshot00002.png')
+            {% endif %}
+            
+            center center; background-size: cover; height: 100vh;">
             <div class="container">
                 <div class="justify-content-center row mt-5">
                     <div class="col-12 mt-5">
