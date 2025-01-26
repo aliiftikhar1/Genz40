@@ -89,7 +89,7 @@ def get_register_community(request):
                 user.save()
                 PostCommunityJoiners.objects.create(user=user)
                 # login(request, user)
-                return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
+                return JsonResponse({"message": "Thank You for Joining. This Feature is currently under progress and you will be automatically added in our community once it's developed.", 'is_success': True})       
         else:
                 user = CustomUser.objects.get(email=request.POST['email'])
                 if not PostCommunityJoiners.objects.filter(user=user.id).exists():
