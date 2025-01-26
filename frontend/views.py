@@ -63,8 +63,7 @@ def generate_random_password(length=12):
 
 def register_page(request):
     random_password = generate_random_password()
-    # ip = get_country_info(request)
-    ip = '103.135.189.214'
+    ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
@@ -187,8 +186,7 @@ def car_details(request, slug):
     # package = items.details.filter(is_active=True).order_by('position')
     print('---------package', package_details[0].amount_due)
     random_password = generate_random_password()
-    # ip = get_country_info(request)
-    ip = '103.135.189.214'
+    ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
