@@ -131,6 +131,9 @@ def dashboard(request):
     print('-request.user.role', request.user.role)
     if request.user.role == 'admin':
         return render(request, "admin/dashboard.html", {'header': header })
+    elif request.user.role == 'customer':
+        return redirect('my_vehicles')
+        # return render(request, "customer/dashboard.html", {'header': header })
     else:
         section_1 = get_object_or_404(PostLandingPageImages, section=1)
         section_2 = get_object_or_404(PostLandingPageImages, section=2)
@@ -355,19 +358,22 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@login_required
 def payment_history(request):
-    return render(request, 'public/reserved_vehicles/payments.html', {'is_footer_required': True})
+    return render(request, 'customer/reserved_vehicles/payments.html', {'is_footer_required': True})
 
-
+@login_required
 def my_vehicles(request):
-    return render(request, 'public/reserved_vehicles/my_vehicles.html', {'is_footer_required': True})
+    return render(request, 'customer/reserved_vehicles/my_vehicles.html', {'is_footer_required': True})
 
+@login_required
 def my_vehicle_details(request):
-    return render(request, 'public/reserved_vehicles/vehicle_details.html', {'is_footer_required': True})
+    return render(request, 'customer/reserved_vehicles/vehicle_details.html', {'is_footer_required': True})
 
+@login_required
 def profile_settings(request):
     return render(request, 'customer/profile/profile_settings.html', {'is_footer_required': True})
 
+@login_required
 def customer_message(request):
     return render(request, 'customer/message/message.html', {'is_footer_required': True})
