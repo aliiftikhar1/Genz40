@@ -347,12 +347,12 @@ def stripe_webhook(request):
         # Handle successful payment logic here
         print('-----------webhook', payment_intent)
         PostPayment.objects.create(
-            user_id=request.user.id,
-            package_name='Builder',
-            stripe_payment_id=payment_intent['id'],
-            amount=payment_intent['amount'] / 100,  # Convert to dollars
-            currency=payment_intent['currency'],
-            status=payment_intent['status'],
+            user_id='ad412359-8ca9-4280-b967-a51c1b2b1d1b',
+            package_name='Mark1-Builder',
+            stripe_payment_id='ad41235984280',
+            amount='100',  # Convert to dollars
+            currency='usd',
+            status='success',
         )
     else:
         print(f"Unhandled event type: {event['type']}")
@@ -396,12 +396,12 @@ def stripe_webhook1(request):
         payment_intent = event['data']['object']
         print('-----------webhook', payment_intent)
         PostPayment.objects.create(
-            user_id='ad412359-8ca9-4280-b967-a51c1b2b1d1b',
-            package_name='Mark1-Builder',
-            stripe_payment_id='ad41235984280',
-            amount='100',  # Convert to dollars
-            currency='usd',
-            status='success',
+            user_id=request.user.id,
+            package_name='Builder',
+            stripe_payment_id=payment_intent['id'],
+            amount=payment_intent['amount'] / 100,  # Convert to dollars
+            currency=payment_intent['currency'],
+            status=payment_intent['status'],
         )
         # payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
         # payment.status = 'succeeded'
