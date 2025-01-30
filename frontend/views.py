@@ -18,7 +18,7 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 import stripe
 from django.http import HttpResponse
-
+import datetime
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -121,7 +121,7 @@ def custom_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            print('-------user', user)
+            print('-------user', user.id)
             return JsonResponse({"message": 'Login successfully.', 'is_success': True})
         else:
             return JsonResponse({"message": 'Invalid username or password.', 'is_success': False})
@@ -253,8 +253,25 @@ def save_contact(request):
         else:
             return JsonResponse({"message": 'Something went wrong. Please try again!', 'is_success': False})
 
+def generate_reference_number():
+    # Get today's date in MMDDYY format
+    today_date = datetime.datetime.today().strftime('%m%d%y')
+
+    # Get the last inserted number from the database
+    last_entry = PostPayment.objects.order_by('-created_at').first()  # Get last record
+    last_number = int(last_entry.rn_number[-4:]) if last_entry else 1004  # Start from 1000 if no entry exists
+    print('-------last_number', last_number)
+    # Increment the last number
+    new_number = last_number + 1
+
+    # Generate the new reference number
+    reference_number = f"RN{today_date}{new_number:04d}"  # Ensures 4-digit number format
+
+    return reference_number
+
 def create_account_before_checkout(request):
     if request.method == 'POST':
+        new_ref = generate_reference_number()
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
         print('------amo', amount, product_name)
@@ -272,20 +289,15 @@ def create_account_before_checkout(request):
                 print('-------user111', user.id)
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
-                    return create_checkout_session(product_name, amount, user.email, fullName)
+                    return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)
                 # return JsonResponse({"message": 'Successfully added.', 'is_success': True})       
         else:
             fullName = request.user.first_name+ ' '+request.user.last_name
-            return create_checkout_session(product_name, amount, request.user.email, fullName)
+            return create_checkout_session(product_name, amount, request.user.email, fullName, request.user.id, new_ref)
             # return JsonResponse({"message": 'Email and Phone number already register with us.', 'is_success': False})
              
-def create_checkout_session(product_name, amount, email, full_name):
-    # print('------amoqwwww', amount, product_name)
-    # if request.method == "POST":
-    #     amount = request.POST['amount'] 
-    #     product_name = request.POST['package']
+def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
     currency = "usd"
-    
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -293,7 +305,7 @@ def create_checkout_session(product_name, amount, email, full_name):
                 'currency': currency,
                 'product_data': {
                     'name': product_name,
-                    'description': 'this is product description',
+                    'description': 'This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.',
                     'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
                 },
                 'unit_amount': int(amount)*100,
@@ -306,10 +318,22 @@ def create_checkout_session(product_name, amount, email, full_name):
         # success_url='http://127.0.0.1:8000/success/',
         # cancel_url='http://127.0.0.1:8000/cancel/',
         customer_email=email,  # Pass email to prefill the Stripe Checkout form
-            metadata={
-                'full_name': full_name,  # Pass full name as metadata
-                'email': email,
-            },
+        metadata={
+            'full_name': full_name,  # Pass full name as metadata
+            'email': email
+        },
+        payment_intent_data={
+        'description': str(user_id), #Passing Userid
+        "metadata": {
+            'new_ref':new_ref,
+            'product_name': product_name
+        },
+        },
+        # custom_fields=[{
+        #     "key": "custom_note",
+        #     "label": {"type": "custom", "custom": new_ref},
+        #     "type": "text"
+        # }],
     )
 
     return redirect(session.url, code=303)
@@ -322,16 +346,17 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
-STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+# STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
 
 @csrf_exempt  # Webhooks don't require CSRF protection
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.headers.get('STRIPE_SIGNATURE')
+    print('-------sig_header', sig_header)
     
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, stripe.api_key
         )
     except ValueError as e:
         # Invalid payload
@@ -341,73 +366,33 @@ def stripe_webhook(request):
         return HttpResponse(status=400)
 
     # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
+    if event['type'] == 'payment_intent.created':
         payment_intent = event['data']['object']
-        print(f"PaymentIntent succeeded: {payment_intent['id']}")
-        # Handle successful payment logic here
-        print('-----------webhook', payment_intent)
+        print('------payment_intent', payment_intent)
+        # getting user id
+        user_id = payment_intent.get('description')
+        print('---------user_iduser_id', user_id)
         PostPayment.objects.create(
-            user_id='ad412359-8ca9-4280-b967-a51c1b2b1d1b',
-            package_name='Mark1-Builder',
-            stripe_payment_id='ad41235984280',
+            user_id=user_id,
+            package_name=payment_intent['metadata']['product_name'],
+            stripe_payment_id=payment_intent['id'],
             amount='100',  # Convert to dollars
+            rn_number=payment_intent['metadata']['new_ref'], #RN0130251005
             currency='usd',
-            status='success',
+            status='created',
         )
+    elif event['type'] == 'charge.updated':
+        print('=======================1111',  event['data']['object'])
+        payment_intent = event['data']['object']
+        payment = PostPayment.objects.get(stripe_payment_id=payment_intent['payment_intent'])
+        payment.status = payment_intent['status']
+        payment.save()
+    elif event['type'] == 'payment_intent.succeeded':
+        print('=======================',  event['data']['object'])
     else:
         print(f"Unhandled event type: {event['type']}")
 
     return JsonResponse({'success': True})
-
-@csrf_exempt
-def stripe_webhook1(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    event = None
-# settings.STRIPE_WEBHOOK_SECRET
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
-        )
-    except ValueError as e:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
-
-    # if event['type'] == 'checkout.session.completed':
-    #     session = event['data']['object']
-    #     payment_intent_id = session.get('payment_intent')
-
-    #     # Fetch the PaymentIntent details if needed
-    #     payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-
-    #     # Save payment details in the database
-        # PostPayment.objects.create(
-        #     user_id=request.user.id,
-        #     package_name='Builder',
-        #     stripe_payment_id=payment_intent_id,
-        #     amount=payment_intent['amount'] / 100,  # Convert to dollars
-        #     currency=payment_intent['currency'],
-        #     status=payment_intent['status'],
-        # )
-
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        print('-----------webhook', payment_intent)
-        PostPayment.objects.create(
-            user_id=request.user.id,
-            package_name='Builder',
-            stripe_payment_id=payment_intent['id'],
-            amount=payment_intent['amount'] / 100,  # Convert to dollars
-            currency=payment_intent['currency'],
-            status=payment_intent['status'],
-        )
-        # payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
-        # payment.status = 'succeeded'
-        # payment.save()
-
-    return HttpResponse(status=200)
 
 @login_required
 def payment_history(request):
