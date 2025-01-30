@@ -274,7 +274,6 @@ def create_account_before_checkout(request):
         new_ref = generate_reference_number()
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
-        print('------amo', amount, product_name)
         if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
             form = RegisterForm(request.POST)
             if form.is_valid():
@@ -283,18 +282,14 @@ def create_account_before_checkout(request):
                 user.set_password(random_password)
                 user.zip_code = request.POST['zip_code']
                 user.save()
-                print('-------user', user)
                 # user = form.get_user()
                 login(request, user)
-                print('-------user111', user.id)
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
-                    return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)
-                # return JsonResponse({"message": 'Successfully added.', 'is_success': True})       
+                    return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)     
         else:
             fullName = request.user.first_name+ ' '+request.user.last_name
             return create_checkout_session(product_name, amount, request.user.email, fullName, request.user.id, new_ref)
-            # return JsonResponse({"message": 'Email and Phone number already register with us.', 'is_success': False})
              
 def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
     currency = "usd"
@@ -346,7 +341,7 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
-STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+# STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
 
 @csrf_exempt  # Webhooks don't require CSRF protection
 def stripe_webhook(request):
@@ -356,7 +351,7 @@ def stripe_webhook(request):
     
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, settings.STRIPE_WEBHOOK_KEY
         )
     except ValueError as e:
         # Invalid payload
