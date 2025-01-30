@@ -301,8 +301,10 @@ def create_checkout_session(product_name, amount, email, full_name):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='http://127.0.0.1:8000/success/',
-        cancel_url='http://127.0.0.1:8000/cancel/',
+        success_url='https://genz40.com/success/',
+        cancel_url='https://genz40.com/cancel/',
+        # success_url='http://127.0.0.1:8000/success/',
+        # cancel_url='http://127.0.0.1:8000/cancel/',
         customer_email=email,  # Pass email to prefill the Stripe Checkout form
             metadata={
                 'full_name': full_name,  # Pass full name as metadata
