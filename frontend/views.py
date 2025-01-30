@@ -322,9 +322,45 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
+STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+
+@csrf_exempt  # Webhooks don't require CSRF protection
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        print(f"PaymentIntent succeeded: {payment_intent['id']}")
+        # Handle successful payment logic here
+        print('-----------webhook', payment_intent)
+        PostPayment.objects.create(
+            user_id=request.user.id,
+            package_name='Builder',
+            stripe_payment_id=payment_intent['id'],
+            amount=payment_intent['amount'] / 100,  # Convert to dollars
+            currency=payment_intent['currency'],
+            status=payment_intent['status'],
+        )
+    else:
+        print(f"Unhandled event type: {event['type']}")
+
+    return JsonResponse({'success': True})
 
 @csrf_exempt
-def stripe_webhook(request):
+def stripe_webhook1(request):
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
@@ -338,30 +374,38 @@ def stripe_webhook(request):
     except stripe.error.SignatureVerificationError as e:
         return HttpResponse(status=400)
 
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        payment_intent_id = session.get('payment_intent')
+    # if event['type'] == 'checkout.session.completed':
+    #     session = event['data']['object']
+    #     payment_intent_id = session.get('payment_intent')
 
-        # Fetch the PaymentIntent details if needed
-        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+    #     # Fetch the PaymentIntent details if needed
+    #     payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
 
-        # Save payment details in the database
-        PostPayment.objects.create(
-            user_id=request.user.id,
-            package_name='Builder',
-            stripe_payment_id=payment_intent_id,
-            amount=payment_intent['amount'] / 100,  # Convert to dollars
-            currency=payment_intent['currency'],
-            status=payment_intent['status'],
-        )
+    #     # Save payment details in the database
+        # PostPayment.objects.create(
+        #     user_id=request.user.id,
+        #     package_name='Builder',
+        #     stripe_payment_id=payment_intent_id,
+        #     amount=payment_intent['amount'] / 100,  # Convert to dollars
+        #     currency=payment_intent['currency'],
+        #     status=payment_intent['status'],
+        # )
 
     # Handle the event
     if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
         print('-----------webhook', payment_intent)
-        payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
-        payment.status = 'succeeded'
-        payment.save()
+        PostPayment.objects.create(
+            user_id=request.user.id,
+            package_name='Builder',
+            stripe_payment_id=payment_intent['id'],
+            amount=payment_intent['amount'] / 100,  # Convert to dollars
+            currency=payment_intent['currency'],
+            status=payment_intent['status'],
+        )
+        # payment = PostPayment.objects.get(stripe_payment_id=payment_intent['id'])
+        # payment.status = 'succeeded'
+        # payment.save()
 
     return HttpResponse(status=200)
 
