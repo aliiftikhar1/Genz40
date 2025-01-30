@@ -455,6 +455,7 @@ class PostContactUs(models.Model):
 class PostPayment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
+    rn_number = models.CharField(max_length=64, blank=True, null=True)
     stripe_payment_id = models.CharField(max_length=255, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="usd", blank=True, null=True)

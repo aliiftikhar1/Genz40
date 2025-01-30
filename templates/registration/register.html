@@ -25,7 +25,7 @@
                 <div class="card shadow rounded border-0">
                     <div class="card-body">
                         <h4 class="card-title text-center">Sign Up</h4>  
-                        <form method="post" id="register-form1" enctype="multipart/form-data">
+                        <form method="post" id="register-form" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="text" value="{{ random_password }}" name="password1" hidden>
                             <input type="text" value="{{ random_password }}" name="password2" hidden>
@@ -171,7 +171,7 @@ $(document).ready(function() {
     $('#pro').show();
         $.ajax({
             type: 'POST',
-            url: "{% url 'register' %}",
+            url: "{% url 'customer_register' %}",
             data: data,
             cache: false,
             processData: false,

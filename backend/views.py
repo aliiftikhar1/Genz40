@@ -37,10 +37,11 @@ def generate_random_password(length=12):
 
 def get_country_info(request):
     ip = get_client_ip(request)
+    return ip
 
 def register(request):
     # ip = get_country_info(request)
-    ip = '103.135.189.214'
+    ip = "103.135.189.223"
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
@@ -60,26 +61,25 @@ def register(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(random_password)
-
             user = form.save()
              # Create a new UserProfile record
             # PostCommunity.objects.create(user=user, name='GENZ40', description='community_description')  # Modify or add fields as necessary
             # login(request, user)
 
-            template_name = "email/welcome_email.html"
-            subject = request.POST.get('subject', 'Default Subject')
+            # template_name = "email/welcome_email.html"
+            # subject = request.POST.get('subject', 'Default Subject')
             # message = request.POST.get('message', 'No message provided.')
-            recipient_email = request.POST.get('email', 'arvind.blues@gmail.com')
-            context = {
-                'user': user,
-                'password': random_password
-            }
-            send_custom_email(
-                template_name,
-                subject=subject,
-                message=context,
-                recipient_list=[recipient_email],
-            )
+            # recipient_email = request.POST.get('email', 'arvind.blues@gmail.com')
+            # context = {
+            #     'user': user,
+            #     'password': random_password
+            # }
+            # send_custom_email(
+            #     template_name,
+            #     subject=subject,
+            #     message=context,
+            #     recipient_list=[recipient_email],
+            # )
 
 
             return redirect(settings.LOGIN_REDIRECT_URL)
@@ -124,7 +124,7 @@ class CustomPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmVi
     template_name = 'registration/password_reset_confirm.html'
     form_class = CustomPasswordResetConfirmForm
     success_message = "Your password has been reset successfully. You can now log in with the new password."
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('customer_login')
 
 
 class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):

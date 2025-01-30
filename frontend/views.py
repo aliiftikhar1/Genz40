@@ -39,7 +39,8 @@ def index(request):
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
     random_password = generate_random_password()
-    ip = get_country_info(request)
+    # ip = get_country_info(request)
+    ip = "103.135.189.223"
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
@@ -124,6 +125,9 @@ def custom_login(request):
             return JsonResponse({"message": 'Login successfully.', 'is_success': True})
         else:
             return JsonResponse({"message": 'Invalid username or password.', 'is_success': False})
+    else:
+        return render(request, 'registration/login.html')
+
 
 @login_required
 def dashboard(request):
@@ -189,7 +193,8 @@ def car_details(request, slug):
     # package = items.details.filter(is_active=True).order_by('position')
     print('---------package', package_details[0].amount_due)
     random_password = generate_random_password()
-    ip = get_country_info(request)
+    # ip = get_country_info(request)
+    ip = "103.135.189.223"
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
