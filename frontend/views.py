@@ -405,7 +405,7 @@ def my_vehicle_details(request, id):
 
 @login_required
 def payment_history(request):
-    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id))
+    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
     context = {
         'reserverd_vehicles':reserverd_vehicles
     }
