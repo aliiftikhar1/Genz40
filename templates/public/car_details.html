@@ -747,7 +747,7 @@ width: 0;
 
                                 <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
                                     <h4 class="mb-0">Due Today
-                                        <span class="mb-0 float-end mt-2">${{ amount_due }}</span>
+                                        <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
                                     </h4>
                                     <!-- <h4 class="mb-0 float-end">$100</h4> -->
                                     <small>Fully Refundable</small>
@@ -801,7 +801,7 @@ width: 0;
                                 <div class="col-md-6 text-dark">
                                     <div class="flex-1">
                                         <h4 class="text-dark mb-0">
-                                            {{ package.name }} From ${{ package.amount }} 
+                                            {{ package.name }} From $ {{ package.amount }} 
                                             <!-- <span class="wrapper text-primary fs-6">
                                                 <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
                                                 <div class="tooltip">
@@ -815,7 +815,7 @@ width: 0;
                                                 
                                         </h4>
                                         <h6 class="text-black-50 mb-0">
-                                            Original Price <span class="text-decoration-line-through">${{ package.amount_reserve }}</span>
+                                            Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve }}</span>
                                         </h6>
                                         <div class="wrapper text-primary fs-6">
                                             Learn More
