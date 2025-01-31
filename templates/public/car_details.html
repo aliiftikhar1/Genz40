@@ -800,7 +800,23 @@ width: 0;
                                 {% for package in packages %}
                                 <div class="col-md-6 text-dark">
                                     <div class="flex-1">
-                                        <h4 class="text-dark mb-0">{{ package.name }} From ${{ package.amount }}</h4>
+                                        <h4 class="text-dark mb-0">
+                                            {{ package.name }} From ${{ package.amount }} 
+                                            <!-- <span class="wrapper text-primary fs-6">
+                                                <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
+                                                <div class="tooltip">
+                                                    Price valid until March 31, 2025
+
+                                                </div>
+                                            </span> -->
+                                            <!-- <button class="btn btn-icon btn-sm" title="Price valid until March 31, 2025"><i data-feather="info" class="fea icon-sm"></i> -->
+                                                <!-- <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i> -->
+                                            <!-- </button> -->
+                                                
+                                        </h4>
+                                        <h6 class="text-black-50 mb-0">
+                                            Original Price <span class="text-decoration-line-through">${{ package.amount_reserve }}</span>
+                                        </h6>
                                         <div class="wrapper text-primary fs-6">
                                             Learn More
                                             <div class="tooltip">

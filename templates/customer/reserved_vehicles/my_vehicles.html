@@ -21,10 +21,10 @@
                 <div class="row">
                     <div class="col-12 mb-4 pb-2">
                         <div class="section-title text-md-start">
-                            <h4 class="title mb-">My Vehicles</h4>
+                            <h4 class="title mb-">{{ user_data.full_name }}'s Vehicles</h4>
                         </div>
                         {% for reserverd_vehicle in reserverd_vehicles %}
-                        <div class="card blog blog-primary rounded border-0 shadow overflow-hidden">
+                        <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
                             <div class="row align-items-center g-0">
                                 <div class="col-md-6">
                                     {% if reserverd_vehicle.package_name == 'Mark I' %}
@@ -48,7 +48,7 @@
 
                                 <div class="col-md-6">
                                     <div class="card-body content">
-                                        <h5><a href="javascript:void(0)" class="card-title title text-dark">GEN-Z - {{ reserverd_vehicle.package_name }}</a></h5>
+                                        <h5><a href="{% url 'my_vehicle_details' reserverd_vehicle.id %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ reserverd_vehicle.package_name }}</h5>
                                         <p class="text-muted mb-0">{{ reserverd_vehicle.rn_number }}</p>
                                         <div class="post-meta d-flex justify-content-between mt-3">
                                            
