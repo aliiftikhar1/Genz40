@@ -1,4 +1,5 @@
 import json
+import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import get_client_ip
@@ -341,17 +342,16 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
-# STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
 
 @csrf_exempt  # Webhooks don't require CSRF protection
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.headers.get('STRIPE_SIGNATURE')
-    print('-------sig_header', sig_header)
     
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_KEY
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
         )
     except ValueError as e:
         # Invalid payload
@@ -363,12 +363,12 @@ def stripe_webhook(request):
     # Handle the event
     if event['type'] == 'payment_intent.created':
         payment_intent = event['data']['object']
-        print('------payment_intent', payment_intent)
+        # print('------payment_intent', payment_intent)
         # getting user id
         user_id = payment_intent.get('description')
-        print('---------user_iduser_id', user_id)
+        user_uuid = uuid.UUID(user_id)
         PostPayment.objects.create(
-            user_id=user_id,
+            user_id=user_uuid,
             package_name=payment_intent['metadata']['product_name'],
             stripe_payment_id=payment_intent['id'],
             amount='100',  # Convert to dollars
@@ -377,29 +377,36 @@ def stripe_webhook(request):
             status='created',
         )
     elif event['type'] == 'charge.updated':
-        print('=======================1111',  event['data']['object'])
         payment_intent = event['data']['object']
         payment = PostPayment.objects.get(stripe_payment_id=payment_intent['payment_intent'])
         payment.status = payment_intent['status']
         payment.save()
     elif event['type'] == 'payment_intent.succeeded':
-        print('=======================',  event['data']['object'])
+        print('=======================')
     else:
         print(f"Unhandled event type: {event['type']}")
 
     return JsonResponse({'success': True})
 
 @login_required
+def my_vehicles(request):
+    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
+    context = {
+        'reserverd_vehicles':reserverd_vehicles
+    }
+    return render(request, 'customer/reserved_vehicles/my_vehicles.html', context, {'is_footer_required': True})
+
+@login_required
+def my_vehicle_details(request, id):
+    reserverd_vehicle = PostPayment.objects.get(id=id)
+    context = {
+        'reserverd_vehicle':reserverd_vehicle
+    }
+    return render(request, 'customer/reserved_vehicles/vehicle_details.html', context, {'is_footer_required': True})
+
+@login_required
 def payment_history(request):
     return render(request, 'customer/reserved_vehicles/payments.html', {'is_footer_required': True})
-
-@login_required
-def my_vehicles(request):
-    return render(request, 'customer/reserved_vehicles/my_vehicles.html', {'is_footer_required': True})
-
-@login_required
-def my_vehicle_details(request):
-    return render(request, 'customer/reserved_vehicles/vehicle_details.html', {'is_footer_required': True})
 
 @login_required
 def profile_settings(request):

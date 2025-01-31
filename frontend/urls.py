@@ -24,7 +24,7 @@ urlpatterns = [
     path('webhook/', views.stripe_webhook, name='stripe_webhook'),
     path('payment-history/', views.payment_history, name='payment_history'),
     path('my-vehicles/', views.my_vehicles, name='my_vehicles'),
-    path('my-vehicle-details/', views.my_vehicle_details, name='my_vehicle_details'),
+    path('my-vehicle-details/<uuid:id>/', views.my_vehicle_details, name='my_vehicle_details'),
     path('profile-settings/', views.profile_settings, name='profile_settings'),
     path('customer-message/', views.customer_message, name='customer_message'),
     
