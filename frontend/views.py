@@ -193,7 +193,8 @@ def car_details(request, slug):
     # package = items.details.filter(is_active=True).order_by('position')
     print('---------package', package_details[0].amount_due)
     random_password = generate_random_password()
-    ip = get_country_info(request)
+    # ip = get_country_info(request)
+    ip = "103.135.189.223"
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
@@ -404,7 +405,11 @@ def my_vehicle_details(request, id):
 
 @login_required
 def payment_history(request):
-    return render(request, 'customer/reserved_vehicles/payments.html', {'is_footer_required': True})
+    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id))
+    context = {
+        'reserverd_vehicles':reserverd_vehicles
+    }
+    return render(request, 'customer/reserved_vehicles/payments.html', context, {'is_footer_required': True})
 
 @login_required
 def profile_settings(request):

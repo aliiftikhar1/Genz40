@@ -465,7 +465,7 @@ class PostPayment(models.Model):
     updated_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
     
     class Meta:
         db_table = 'payment'
