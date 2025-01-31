@@ -342,7 +342,7 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
-STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+# STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
 
 @csrf_exempt  # Webhooks don't require CSRF protection
 def stripe_webhook(request):
@@ -351,7 +351,7 @@ def stripe_webhook(request):
     
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, settings.STRIPE_WEBHOOK_KEY
         )
     except ValueError as e:
         # Invalid payload
