@@ -40,8 +40,7 @@ def get_country_info(request):
     return ip
 
 def register(request):
-    # ip = get_country_info(request)
-    ip = "103.135.189.223"
+    ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
     country_code = data.get('country')
@@ -86,7 +85,6 @@ def register(request):
     else:
         form = RegisterForm()
         # # ip = get_country_info(request)
-        # ip = '103.135.189.214'
         # response = requests.get(f'https://ipinfo.io/{ip}/json')
         # data = response.json()
         # country_code = data.get('country')
