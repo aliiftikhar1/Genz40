@@ -1,5 +1,6 @@
 {% extends "public/layout/base.html" %}
 {% load static %}
+{% load humanize %}
 {% block header %}
 <style>
     .btn.btn-outline-light {
@@ -801,7 +802,7 @@ width: 0;
                                 <div class="col-md-6 text-dark">
                                     <div class="flex-1">
                                         <h4 class="text-dark mb-0">
-                                            {{ package.name }} From $ {{ package.amount }} 
+                                            {{ package.name }} From $ {{ package.amount|intcomma }} 
                                             <!-- <span class="wrapper text-primary fs-6">
                                                 <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
                                                 <div class="tooltip">
@@ -815,7 +816,7 @@ width: 0;
                                                 
                                         </h4>
                                         <h6 class="text-black-50 mb-0">
-                                            Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve }}</span>
+                                            Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve|intcomma }}</span>
                                         </h6>
                                         <div class="wrapper text-primary fs-6">
                                             Learn More
