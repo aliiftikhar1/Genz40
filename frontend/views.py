@@ -335,10 +335,10 @@ def create_checkout_session(product_name, amount, email, full_name, user_id, new
             'quantity': 1,
         }],
         mode='payment',
-        # success_url='https://genz40.com/success/',
-        # cancel_url='https://genz40.com/cancel/',
-        success_url='http://127.0.0.1:8000/success/',
-        cancel_url='http://127.0.0.1:8000/cancel/',
+        success_url='https://genz40.com/success/',
+        cancel_url='https://genz40.com/cancel/',
+        # success_url='http://127.0.0.1:8000/success/',
+        # cancel_url='http://127.0.0.1:8000/cancel/',
         customer_email=email,  # Pass email to prefill the Stripe Checkout form
         metadata={
             'full_name': full_name,  # Pass full name as metadata
@@ -389,7 +389,6 @@ def stripe_webhook(request):
     # Handle the event
     if event['type'] == 'payment_intent.created':
         payment_intent = event['data']['object']
-        # print('------payment_intent', payment_intent)
         # getting user id
         user_id = payment_intent.get('description')
         user_uuid = uuid.UUID(user_id)
