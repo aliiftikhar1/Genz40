@@ -183,13 +183,15 @@ $(document).ready(function() {
                     location.href = "{% url 'customer_login' %}";
                     $('#login-form')[0].reset();
                 } else {
-                    toastr.error(response.message);
+                    toastr.error(response['message']);
                 }
                 $('#pro').hide();
             },
             error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
                 // alert the error if any error occurred
-                alert(response["error"]);
                 $('#pro').hide();
             }
         })

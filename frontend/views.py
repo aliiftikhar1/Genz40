@@ -101,17 +101,40 @@ def get_register_community(request):
 
 def get_register(request):
     if request.method == 'POST':
-        if not CustomUser.objects.filter(email=request.POST['email']).exists():
+        email = request.POST['email']
+        phone_number = request.POST['phone_number']
+
+        # Check if a user already exists with the same email or phone number
+        if CustomUser.objects.filter(email=email).exists():
+            return JsonResponse({"message": "This email is already registered!", 'is_success': False})
+
+        if CustomUser.objects.filter(phone_number=phone_number).exists():
+            return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
+
+        if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
                 random_password = generate_random_password()
                 user.set_password(random_password)
                 user.save()
+
+                subject = 'Thank you for Joining us - www.genz40.com'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = ['arvind.blues@gmail.com']
+                c = {
+                    'user': user,
+                    'password': random_password
+                }
+                html_content = render_to_string('email/welcome_email.html', c)
+                send_mail(subject, html_content, email_from, recipient_list, fail_silently=False,
+                            html_message=html_content)
                 return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
         else:
+            print('------phone_number11')
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
-      
+
+  
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -239,7 +262,6 @@ def privacy_policy(request):
 def save_contact(request):
     if request.method == 'POST':
         form = PostContactForm(request.POST)
-        print('--------form', form)
         if form.is_valid():
             form.save()
             subject = 'Thank you for Newsletter subscribe - www.genz40.com'
@@ -274,6 +296,8 @@ def create_account_before_checkout(request):
         new_ref = generate_reference_number()
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
+        email = request.POST['email']
+
         if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
             form = RegisterForm(request.POST)
             if form.is_valid():
@@ -282,14 +306,17 @@ def create_account_before_checkout(request):
                 user.set_password(random_password)
                 user.zip_code = request.POST['zip_code']
                 user.save()
-                # user = form.get_user()
+                user = form.get_user()
                 login(request, user)
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
                     return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)     
         else:
-            fullName = request.user.first_name+ ' '+request.user.last_name
-            return create_checkout_session(product_name, amount, request.user.email, fullName, request.user.id, new_ref)
+            user = CustomUser.objects.filter(email=email).first()
+            if user:
+                login(request, user)
+                fullName = user.first_name+ ' '+user.last_name
+                return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
              
 def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
     currency = "usd"
@@ -308,10 +335,10 @@ def create_checkout_session(product_name, amount, email, full_name, user_id, new
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://genz40.com/success/',
-        cancel_url='https://genz40.com/cancel/',
-        # success_url='http://127.0.0.1:8000/success/',
-        # cancel_url='http://127.0.0.1:8000/cancel/',
+        # success_url='https://genz40.com/success/',
+        # cancel_url='https://genz40.com/cancel/',
+        success_url='http://127.0.0.1:8000/success/',
+        cancel_url='http://127.0.0.1:8000/cancel/',
         customer_email=email,  # Pass email to prefill the Stripe Checkout form
         metadata={
             'full_name': full_name,  # Pass full name as metadata
@@ -341,7 +368,7 @@ def payment_success(request):
 def payment_cancel(request):
     return render(request, 'public/payment/cancel.html', {'is_footer_required': False})
 
-# STRIPE_WEBHOOK_SECRET= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
+# STRIPE_WEBHOOK_KEY= 'whsec_559bd2071b3e1bf765d4ad825586dcaab38522c998fcccd802bc40f1d90f84c9'
 
 @csrf_exempt  # Webhooks don't require CSRF protection
 def stripe_webhook(request):

@@ -6,7 +6,7 @@ urlpatterns = [
     # Public urls
     path('', views.index, name='index'),
     path('customer-register-community/', views.get_register_community, name='customer_register_community'),
-    path('customer-register-page/', views.register_page, name='register_page'),
+    path('customer-onboarding/', views.register_page, name='register_page'),
     path('customer-register/', views.get_register, name='customer_register'),
     path('customer-login/', views.custom_login, name='customer_login'),
     path('dashboard/', views.dashboard, name='dashboard'),
