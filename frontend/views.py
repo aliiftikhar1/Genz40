@@ -134,7 +134,6 @@ def get_register(request):
             print('------phone_number11')
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
 
-  
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -150,7 +149,6 @@ def custom_login(request):
             return JsonResponse({"message": 'Invalid username or password.', 'is_success': False})
     else:
         return render(request, 'registration/login.html')
-
 
 @login_required
 def dashboard(request):
@@ -232,6 +230,34 @@ def car_details(request, slug):
                     'country_flag_url': country_flag_url,
                     'random_password': random_password})
 
+def reserve_now(request, slug):
+    email = request.GET.get('email', '')
+
+    if not PostSubscribers.objects.filter(email=email).exists():
+        PostSubscribers.objects.create(email=email)
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    amount_due = package_details[0].amount_due
+    # package = items.details.filter(is_active=True).order_by('position')
+    print('---------package', package_details[0].amount_due)
+    random_password = generate_random_password()
+    ip = get_country_info(request)
+    # ip = "103.135.189.223"
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+
+    return render(request, 'public/reserve_now.html',
+                  {'items': items,
+                   'packages': package_details,
+                   'amount_due': amount_due,
+                   'country_code': country_code,
+                    'country_flag_url': country_flag_url,
+                    'random_password': random_password,
+                    'email': email})
+
 def about(request):
     return render(request, 'public/about.html', {
         'navbar_style': 'dark'
@@ -306,7 +332,7 @@ def create_account_before_checkout(request):
                 user.set_password(random_password)
                 user.zip_code = request.POST['zip_code']
                 user.save()
-                user = form.get_user()
+                # user = form.get_user()
                 login(request, user)
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name

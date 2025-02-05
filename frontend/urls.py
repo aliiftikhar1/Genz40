@@ -27,10 +27,9 @@ urlpatterns = [
     path('my-vehicle-details/<uuid:id>/', views.my_vehicle_details, name='my_vehicle_details'),
     path('profile-settings/', views.profile_settings, name='profile_settings'),
     path('customer-message/', views.customer_message, name='customer_message'),
-    
     path('genz-blog/', views.blog, name='blog'),
     path('genz-blog-details/', views.blog_details, name='blog_details'),
     # path('<slug:slug>/', navitem_detail, name='navitem_detail'),
-    path('<slug:slug>/', car_details, name='car_details'),
+    path('<slug:slug>/', views.reserve_now, name='car_details'),
     
 ]
