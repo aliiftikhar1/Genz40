@@ -27,6 +27,16 @@
     .title-font {
         font-size: 25px !important;
     }
+    .subcribe-form form {
+        max-width: 450px;
+        margin: 0;
+    }
+    .subcribe-form a{
+        position: absolute;
+top: 2px;
+right: 3px;
+outline: 0!important;
+    }
 </style>
 {% endblock %}
 
@@ -53,14 +63,27 @@
               <div class="title-heading text-start mt-100">
                     <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
                               <p class="fw-bold text-white">{{ section_1.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_1.title_data }}</span></p>
+                              <p>
+                                Lock your exclusive discount by signing up today.
+                              </p>
+                              <div class="text-center subcribe-form mb-3 pt-2">
+                                <form class="">
+                                    <input type="email" id="email" name="email" class="border rounded-pill" required placeholder="Email Address">
+                                    <!-- {% for item in nav_items %}
+                                        {% if forloop.first %} -->
+                                            <a  id="getStartedBtn" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                                        <!-- {% endif %}
+                                    {% endfor %} -->
+                                </form>
+                            </div>
                               <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
                     <div class="pt-2 align-items-center gap-2">
                         {% for item in nav_items %}
                             {% if forloop.first %}
-                                <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
+                                <!-- <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
                                     href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                     Reserve Now   
-                                </a>
+                                </a> -->
                                 <a class="btn btn-lg btn-light text-uppercase"
                                 href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                 Learn More    
@@ -88,21 +111,32 @@
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
                   <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
                   <p class="para-desc text-white">{{ section_1.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_1.title_data }}</span></p>
+                  <p>
+                    Lock your exclusive discount by signing up today.
+                  </p>
+                  
               </div>
       
             </div><!--end col-->
             </div>
-            <div class="row mb-4 justify-content-center d-lg-none mt-100">
+            <div class="row mb-4 justify-content-center d-lg-none">
               <div class="col-12 mt-60">
                   <div class="pt-2 d-grid gap-2 mt-100">
                       <!-- <a href="" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
                       <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a> -->
+                      <div class="text-center subcribe-form mb-3 pt-2">
+                        <form>
+                            <input type="email" id="emailM" name="email" class="border rounded-pill" required placeholder="Email Address">
+                            <a  id="getStartedBtnM" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                        </form>
+                    </div>
                       {% for item in nav_items %}
                             {% if forloop.first %}
-                                <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
+                            
+                                <!-- <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
                                     href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                     Reserve Now   
-                                </a>
+                                </a> -->
                                 <a class="btn btn-outline-dark text-uppercase mt-2"
                                 href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                 Learn More    
@@ -128,14 +162,28 @@
               <div class="title-heading text-start mt-100">
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
                               <p class="fw-bold text-white">{{ section_2.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_2.title_data }}</span></p>
+                              <p>
+                                Lock your exclusive discount by signing up today.
+                              </p>
+                              <div class="text-center subcribe-form mb-3 pt-2">
+                                <form class="">
+                                    <input type="email" id="email2" name="email" class="border rounded-pill" required placeholder="Email Address">
+                                    <!-- {% for item in nav_items %}
+                                        {% if forloop.first %} -->
+                                            <a  id="getStartedBtn2" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                                        <!-- {% endif %}
+                                    {% endfor %} -->
+                                </form>
+                            </div>
+
                               <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
                   <div class="pt-2 align-items-center gap-2">
                     {% for item in nav_items %}
                     {% if forloop.counter == 2 %}
-                        <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
+                        <!-- <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
                             href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                             Reserve Now   
-                        </a>
+                        </a> -->
                         <a class="btn btn-lg btn-light text-uppercase"
                         href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                         Learn More    
@@ -165,6 +213,9 @@
                   <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
                   <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_2.title }}</h4>
                   <p class="para-desc text-white">{{ section_2.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_2.title_data }}</span></p>
+                  <p>
+                    Lock your exclusive discount by signing up today.
+                  </p>
               </div>
       
             </div><!--end col-->
@@ -174,10 +225,17 @@
                   <div class="pt-2 d-grid gap-2 mt-100">
                     {% for item in nav_items %}
                     {% if forloop.counter == 2 %}
-                        <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
+                    <div class="text-center subcribe-form mb-3 pt-2">
+                        <form class="">
+                            <input type="email" id="emailM2" name="email2" class="border rounded-pill" required placeholder="Email Address">
+                                    <a  id="getStartedBtnM2" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                        </form>
+                    </div>
+
+                        <!-- <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
                             href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                             Reserve Now   
-                        </a>
+                        </a> -->
                         <a class="btn btn-outline-dark text-uppercase mt-2"
                         href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                         Learn More    
@@ -717,6 +775,100 @@
         })
     })
 
+</script>
+
+<script>
+    document.getElementById("getStartedBtn").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+        let emailInput = document.getElementById("email").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            // alert("Please enter a valid email address.");
+            return;
+        }
+        let nextPageUrl;
+        {% for item in nav_items %}
+            {% if forloop.first %}
+                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+            {% endif %}
+        {% endfor %}
+        // Redirect to next page with email as a query parameter
+        
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+<script>
+
+    document.getElementById("getStartedBtnM").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+        
+        let emailInput = document.getElementById("emailM").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            // alert("Please enter a valid email address.");
+            return;
+        }
+        let nextPageUrl;
+        {% for item in nav_items %}
+            {% if forloop.first %}
+                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+            {% endif %}
+        {% endfor %}
+        // Redirect to next page with email as a query parameter
+        
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+
+<script>
+    document.getElementById("getStartedBtn2").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+
+        let emailInput = document.getElementById("email2").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            // alert("Please enter a valid email address.");
+            return;
+        }
+        let nextPageUrl;
+        {% for item in nav_items %}
+            {% if forloop.counter == 2 %}
+                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+            {% endif %}
+        {% endfor %}
+        // Redirect to next page with email as a query parameter
+        
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+<script>
+    document.getElementById("getStartedBtnM2").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+
+        let emailInput = document.getElementById("emailM2").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            // alert("Please enter a valid email address.");
+            return;
+        }
+        let nextPageUrl;
+        {% for item in nav_items %}
+            {% if forloop.counter == 2 %}
+                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+            {% endif %}
+        {% endfor %}
+        // Redirect to next page with email as a query parameter
+        
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
 </script>
 
 {% endblock script %}
