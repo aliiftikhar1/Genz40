@@ -813,21 +813,7 @@ $(document).ready(function () {
     });
 
 });
-    function secondAjaxFunction(response) {
-        console.log("Calling second AJAX function with response:", response);
-    $.ajax({
-        headers: { "X-CSRFToken": "{{ csrf_token }}" },
-        url: "{% url 'create_checkout_session' %}",
-        type: "POST",
-        data: response,
-        success: function(response) {
-            console.log("Second AJAX Success:", response);
-        },
-        error: function(xhr, status, error) {
-            console.error("Error in second AJAX:", error);
-        }
-    });
-}
+
 
 </script>
 <script>

@@ -4,6 +4,13 @@
 {% block header %}
 
 <style>
+    .bottom-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Pushes form to bottom */
+    min-height: 60vh; /* Ensures section has full height */
+}
+
     a.text-light:focus, a.text-light:hover {
         color: #000 !important;
     }
@@ -56,34 +63,123 @@ outline: 0!important;
 </div>
 
 <!-- 1st Hero Start web -->
-<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_1.web_image.url}}') center center;">
-    <div class="container-fluid ms-5">
-        <div class="row justify-content-start ms-5">
-            <div class="col-md-6 mt-100 py-5">
+<section class="bg-home d-flex align-items-end d-none d-lg-block" style="background: url('{{section_1.web_image.url}}') center center; height: 105vh;">
+
+    <div class="container">
+        <div class="row mt-5 justify-content-center">
+            <div class="col-6">
+                <div class="title-heading text-center">
+                    <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+                    <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+
+    <div class="container bottom-section">
+        <div class="row mt-5 justify-content-center">
+            <div class="col-6">
+                <div class="title-heading text-center">
+                    <form class="card p-4 shadow rounded bg-white">
+                        <p class="fw-bold text-light">{{ section_1.subtitle }} 
+                            <span class="text-decoration-line-through text-muted" style="font-size: 14px;">
+                                $ {{ section_1.title_data }}
+                            </span>
+                        </p>
+                        <p class="mb-3 text-light">Lock your exclusive discount by signing up today.</p>
+                        <div class="row text-start">
+                            <div class="col-lg-12">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="mb-3 mb-lg-0 text-light">
+                                            <input type="email" id="email" name="email" class="form-control text-light p-2" required placeholder="Email Address" style="color: #000 !important;">
+                                        </div>
+                                    </div><!--end col-->
+                
+                                    <div class="col-md-4">
+                                        <div class="d-grid">
+                                            <a id="getStartedBtn" href="#" type="submit" class="btn btn-success">Get Started</a>
+                                        </div>
+                                    </div><!--end col-->
+                
+                                    {% for item in nav_items %}
+                                    {% if forloop.first %}
+                                        <a class="mt-2"
+                                            href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                            Learn More    
+                                        </a>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div> 
+                        </div>
+                    </form>
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+
+    <!-- <div class="container-fluid ms-5">
+        <div class="row mt-5 justify-content-center ms-5">
+            <div class="col-12 mt-100 py-5">
               <div class="title-heading text-start mt-100">
                     <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
                               <p class="fw-bold text-white">{{ section_1.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_1.title_data }}</span></p>
-                              <p>
+                              <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
+                              <form class="card p-4 shadow rounded bg-white">
+                                <p class="mb-3 text-light">Lock your exclusive discount by signing up today.</p>
+                                <div class="row text-start">
+                                    <div class="col-lg-12">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <div class="mb-3 mb-lg-0 text-light">
+                                                    <input type="email" id="email" name="email" class="form-control text-light p-2" required placeholder="Email Address" style="color: #000 !important;">
+                                                </div>
+                                            </div>
+    
+                                            <div class="col-md-4">
+                                                <div class="d-grid">
+                                                    <a id="getStartedBtn" href="#" type="submit" class="btn btn-success">Get Started</a>
+                                                </div>
+                                            </div>
+                                            {% for item in nav_items %}
+                                            {% if forloop.first %}
+                                                <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
+                                                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                                    Reserve Now   
+                                                </a>
+                                                <a class="mt-2"
+                                                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                                    Learn More    
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        </div>
+                                    </div> 
+                                </div>
+                             </form> -->
+
+                              <!-- <p>
                                 Lock your exclusive discount by signing up today.
-                              </p>
-                              <div class="text-center subcribe-form mb-3 pt-2">
+                              </p> -->
+                              <!-- <div class="text-center subcribe-form mb-3 pt-2">
                                 <form class="">
                                     <input type="email" id="email" name="email" class="border rounded-pill" required placeholder="Email Address">
-                                    <!-- {% for item in nav_items %}
+                                    {% for item in nav_items %}
                                         {% if forloop.first %} -->
-                                            <a  id="getStartedBtn" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                                            <!-- <a  id="getStartedBtn" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a> -->
                                         <!-- {% endif %}
                                     {% endfor %} -->
-                                </form>
-                            </div>
-                              <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
-                    <div class="pt-2 align-items-center gap-2">
+                                <!-- </form>
+                            </div> -->
+                              
+                    <!-- <div class="pt-2 align-items-center gap-2">
                         {% for item in nav_items %}
                             {% if forloop.first %}
-                                <!-- <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
+                                <a class="btn btn-lg me-2 btn-light text-uppercase" onclick="triggerToggleButton()"
                                     href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                     Reserve Now   
-                                </a> -->
+                                </a>
                                 <a class="btn btn-lg btn-light text-uppercase"
                                 href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
                                 Learn More    
@@ -91,65 +187,80 @@ outline: 0!important;
                             {% endif %}
                         {% endfor %}
 
-                  </div>
-              </div>
-          </div><!--end col-->
-      </div><!--end row-->
-  </div><!--end container-->
+                  </div> -->
+              <!-- </div>
+          </div>
+      </div>
+  </div> -->
   
   </section><!--end section-->
   <!-- Hero End -->
   
    <!-- 1st Hero Start Mobile -->
-  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.image.url}}') center center; padding-top: 0px !important; height: 88vh;">
+  <section class="bg-home d-flex align-items-start d-lg-none" style="background: url('{{section_1.web_image.url}}') center center; padding-top: 0px !important; height: 88vh;">
       <!--  <div class="bg-overlay bg-gradient-overlay"></div>-->
       <div class="container">
                  <!-- Mobile -->
                 <div class="row mb-4 justify-content-center d-lg-none">
-                  <div class="col-12">
-                <div class="title-heading text-center">
-                  <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
-                  <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
-                  <p class="para-desc text-white">{{ section_1.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_1.title_data }}</span></p>
-                  <p>
-                    Lock your exclusive discount by signing up today.
-                  </p>
-                  
-              </div>
+                    <div class="col-12">
+                        <div class="title-heading text-center">
+                            <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+                            <h4 class="fw-bold text-white title-dark text-uppercase title-font">{{ section_1.title }}</h4>
+                            <!-- <p class="para-desc text-white">{{ section_1.subtitle }} <span class="text-decoration-line-through text-muted" style="font-size: 14px;"> $ {{ section_1.title_data }}</span></p> -->
+                        
+                        </div>
+                    </div>
       
-            </div><!--end col-->
-            </div>
-            <div class="row mb-4 justify-content-center d-lg-none">
-              <div class="col-12 mt-60">
-                  <div class="pt-2 d-grid gap-2 mt-100">
-                      <!-- <a href="" class="mt-5 btn btn-outline-dark text-uppercase">Reserve Now</a>
-                      <a href="javascript:void(0)" class="btn btn-outline-dark text-uppercase mt-2">Learn More </a> -->
-                      <div class="text-center subcribe-form mb-3 pt-2">
-                        <form>
-                            <input type="email" id="emailM" name="email" class="border rounded-pill" required placeholder="Email Address">
-                            <a  id="getStartedBtnM" href="#" class="btn btn-pills btn-primary" type="submit">Get Started</a>
+                <!--end row-->
+                </div>
+        </div>
+        <!--end container-->
+
+        <div class="container bottom-section">
+            <div class="row mt-5 justify-content-center">
+                <div class="col-12">
+                    <div class="title-heading text-center">
+                        <form class="card p-4 shadow rounded bg-white">
+                            <p class="fw-bold text-light">{{ section_1.subtitle }} 
+                                <span class="text-decoration-line-through text-muted" style="font-size: 14px;">
+                                    $ {{ section_1.title_data }}
+                                </span>
+                            </p>
+                            <p class="mb-3 text-light">Lock your exclusive discount by signing up today.</p>
+                            <div class="row text-start">
+                                <div class="col-lg-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="mb-3 mb-lg-0 text-light">
+                                                <input type="email" id="email" name="email" class="form-control text-light p-2" required placeholder="Email Address" style="color: #000 !important;">
+                                            </div>
+                                        </div><!--end col-->
+                    
+                                        <div class="col-md-4">
+                                            <div class="d-grid">
+                                                <a id="getStartedBtn" href="#" type="submit" class="btn btn-success">Get Started</a>
+                                            </div>
+                                        </div><!--end col-->
+                    
+                                        {% for item in nav_items %}
+                                        {% if forloop.first %}
+                                            <a class="mt-2"
+                                                href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
+                                                Learn More    
+                                            </a>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div> 
+                            </div>
                         </form>
                     </div>
-                      {% for item in nav_items %}
-                            {% if forloop.first %}
-                            
-                                <!-- <a class="mt-5 btn btn-outline-dark text-uppercase" onclick="triggerToggleButton()"
-                                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
-                                    Reserve Now   
-                                </a> -->
-                                <a class="btn btn-outline-dark text-uppercase mt-2"
-                                href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}">
-                                Learn More    
-                                </a>
-                            {% endif %}
-                        {% endfor %}
-                  </div>
-              </div>
-          </div>
-      
-          <!--end row-->
-      </div>
-        <!--end container-->
+                </div><!--end col-->
+            </div><!--end row-->
+        </div><!--end container-->
+
+
+
   </section><!--end section-->
   <!-- Hero End -->
 
