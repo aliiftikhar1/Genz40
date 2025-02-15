@@ -807,13 +807,13 @@
                         <div class="text-left">
                             <p class="title">
                                 Builder Package Starting at 
-                                <span class="discount text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+                                <span class="discount" style="text-decoration: line-through; color: gray; font-size: 0.85rem;">
                                     {{ section_3.title_data }}
-                                </span>
+                                </span> 
                                 {{ section_3.subtitle }}
                             </p>
                             
-                            <p class="description">This car is not available until July 2025.</p>
+                            <p class="description">Lock your exclusive discount by signing up today.</p>
 
                             {% for item in nav_items %}
                             {% if forloop.counter == 3 %}
@@ -828,19 +828,62 @@
                             {% endfor %}
                         </div>
 
-                        <a class="btn btn-secondary" href="#" onclick="notAvailable()">
-                            Not Available Until July 2025
-                        </a>
+                        <!-- Updated Form for Mailchimp Subscription -->
+                        <form method="POST">
+                            <div style="display: flex; align-items: center;">
+                                <input name="email" id="email-desktop-third" type="email"
+                                    class="custom-input"
+                                    placeholder="Email" required>
+                                <button type="submit" class="custom-button" id="getStartedBtnThird">
+                                    GET STARTED
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <style>
+                            /* Custom styling for input field */
+                            .custom-input {
+                                width: 250px; /* Adjust width as needed */
+                                height: 50px;
+                                padding: 10px 15px;
+                                font-size: 16px;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                                outline: none;
+                                color: #000;
+                                background-color: #fff;
+                                box-shadow: none;
+                            }
+                        
+                            .custom-input::placeholder {
+                                color: #ccc; /* Light grey placeholder */
+                                font-size: 16px;
+                            }
+                        
+                            /* Styling for button */
+                            .custom-button {
+                                height: 50px;
+                                background-color: #28a745;
+                                color: white;
+                                font-size: 16px;
+                                font-weight: bold;
+                                border: none;
+                                padding: 0 20px;
+                                margin-left: 10px;
+                                cursor: pointer;
+                                border-radius: 5px;
+                                text-transform: uppercase;
+                            }
+                        
+                            .custom-button:hover {
+                                background-color: #218838;
+                            }
+                        </style>
+                        
                     </div>
                 </div>
             </div>
         </div>
-
-        <script>
-            function notAvailable() {
-                alert("This car is not available until July 2025.");
-            }
-        </script>
 
     </section>
 </div>
@@ -858,19 +901,31 @@
 
     <div class="white-box">
         <p class="fw-bold text-black mb-1"
-        style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        Builder Package Starting at 
-        <span class="text-decoration-line-through text-muted" style="font-size: 0.85rem;">
-            {{ section_3.title_data }}
-        </span> 
-        {{ section_3.subtitle }}
-     </p>
-     
-        <p class="text-muted" style="font-size: 0.85rem;">This car is not available until July 2025.</p>
+    style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    Builder Package Starting at 
+    <span class="text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+        {{ section_3.title_data }}
+    </span>
+    {{ section_3.subtitle }}
+</p>
+        <p class="text-muted" style="font-size: 0.75rem;">Lock your exclusive discount by signing up today.</p>
 
-        <a class="btn btn-lg btn-secondary w-100 p-2 text-uppercase" href="#" onclick="notAvailable()">
-            Not Available Until July 2025
-        </a>
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-mthird" name="email" class="p-3 border rounded w-100" required
+                    placeholder="Email Address"
+                    style="color: #000 !important; font-size: 1rem; height: 50px; border: 1px solid #ccc; text-align: left;">
+
+                {% for item in nav_items %}
+                {% if forloop.counter == 3 %}
+                <button id="getStartedBtnMthird" type="submit" class="btn btn-success w-100 mt-2"
+                    style="height: 50px; font-size: 1rem; font-weight: bold; background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
     </div>
 
     {% for item in nav_items %}
@@ -884,12 +939,6 @@
     {% endif %}
     {% endfor %}
 </div>
-
-<script>
-    function notAvailable() {
-        alert("This car is not available until July 2025.");
-    }
-</script>
 
 
 <!-- Community Form (Desktop) -->
@@ -1205,19 +1254,6 @@
 {% endblock content %}
 
 {% block script %}
-<script>
-    function triggerToggleButton() {
-        // Set a flag in local storage to signal the other page
-        localStorage.setItem('triggerToggle', 'true');
-    }
-</script>
-
-<script>
-    function notAvailable() {
-        // Set a flag in local storage to signal the other page
-        alert('Not Available Until July 2025');
-    }
-</script>
 
 <!-- Ajax request for community form -->
 <script>
@@ -1397,6 +1433,49 @@
     });
 </script>
 
+
+<!-- Get Started button scripts getStartedBtnThird web -->
+<script>
+    document.getElementById("getStartedBtnThird").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-third").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
+    });
+</script>
+<!-- Get Started button scripts getStartedBtnMthird mobile -->
+<script>
+    document.getElementById("getStartedBtnMthird").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-mthird").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
+    });
+</script>
 
 
 <script>
