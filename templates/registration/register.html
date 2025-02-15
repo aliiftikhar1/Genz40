@@ -179,8 +179,11 @@ $(document).ready(function() {
             crossDomain: true,
             success: function (response) {
                 if (response.is_success) {
-                    toastr.success(response.message);
-                    location.href = "{% url 'customer_login' %}";
+                    toastr.success(response['message']);
+                    setTimeout(function() {
+                        location.href = "{% url 'customer_login' %}";
+                    }, 3000);
+                    
                     $('#login-form')[0].reset();
                 } else {
                     toastr.error(response['message']);

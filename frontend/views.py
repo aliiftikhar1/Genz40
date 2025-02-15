@@ -20,6 +20,12 @@ from django.views.decorators.csrf import csrf_exempt
 import stripe
 from django.http import HttpResponse
 import datetime
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str 
+from .tokens import account_activation_token
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -57,12 +63,32 @@ def index(request):
 
     return render(request, 'public/index.html', context)
 
+MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
+
+def subscribe_email(email):
+    """Subscribe an email to Mailchimp Audience List."""
+    url = f"{MAILCHIMP_API_URL}/lists/{settings.MAILCHIMP_LIST_ID}/members/"
+    data = {
+        "email_address": email,
+        "status": "subscribed"  # Can be "pending" for double opt-in
+    }
+    headers = {
+        "Authorization": f"apikey {settings.MAILCHIMP_API_KEY}"
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        return {"message": "Successfully subscribed!"}
+    else:
+        return response.json()  # Return Mailchimp's error response
+    
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(random.choice(characters) for i in range(length))
     return password
 
 def register_page(request):
+    form = RegisterForm()
     random_password = generate_random_password()
     ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
@@ -73,10 +99,23 @@ def register_page(request):
     context = {
         'country_code': country_code,
         'country_flag_url': country_flag_url,
-        'random_password': random_password
+        'random_password': random_password,
+        'form': form
     }
     return render(request, 'registration/register.html', context)
 
+def send_activation_email(request, user, random_password):
+    current_site = get_current_site(request)
+    mail_subject = "Activate Your Account"
+    message = render_to_string("email/activation_email.html", {
+        "email": user.email,
+        "password": random_password,
+        "user": user,
+        "domain": current_site.domain,
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        "token": account_activation_token.make_token(user),
+    })
+    send_mail(mail_subject, message, settings.EMAIL_FROM, [user.email])
 
 def get_register_community(request):
     if request.method == 'POST':
@@ -117,23 +156,44 @@ def get_register(request):
                 user = form.save(commit=False)
                 random_password = generate_random_password()
                 user.set_password(random_password)
+                user.is_active = False
                 user.save()
+                send_activation_email(request, user, random_password)
 
-                subject = 'Thank you for Joining us - www.genz40.com'
-                email_from = settings.EMAIL_HOST_USER
-                recipient_list = ['arvind.blues@gmail.com']
-                c = {
-                    'user': user,
-                    'password': random_password
-                }
-                html_content = render_to_string('email/welcome_email.html', c)
-                send_mail(subject, html_content, email_from, recipient_list, fail_silently=False,
-                            html_message=html_content)
+                # subject = 'Thank you for Joining us - www.genz40.com'
+                # email_from = settings.EMAIL_HOST_USER
+                # recipient_list = ['arvind.blues@gmail.com']
+                # c = {
+                #     'user': user,
+                #     'password': random_password
+                # }
+                # html_content = render_to_string('email/welcome_email.html', c)
+                # send_mail(subject, html_content, email_from, recipient_list, fail_silently=False,
+                #             html_message=html_content)
                 return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
         else:
             print('------phone_number11')
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.is_email_verified = True
+        user.save()
+        # return JsonResponse({"message": 'Your account has been activated successfully!'})
+        messages.success(request, 'Your account has been activated successfully!')
+        return redirect('customer_login')
+    else:
+        messages.error(request, 'Invalid activation link!')
+        return redirect('customer_login')
+        # return JsonResponse({"message": 'Invalid activation link!'})
+    
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -185,10 +245,12 @@ def dashboard(request):
     
 def subscribe(request):
     if request.method == 'POST':
+        subscribe_email(request.POST['email'])
         if not PostSubscribers.objects.filter(email=request.POST['email']).exists():
             form = PostSubscribeForm(request.POST)
             if form.is_valid():
                 form.save()
+                subscribe_email(request.POST['email'])
                 subject = 'Thank you for Newsletter subscribe - www.genz40.com'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [settings.ADMIN_EMAIL]
@@ -232,7 +294,6 @@ def car_details(request, slug):
 
 def reserve_now(request, slug):
     email = request.GET.get('email', '')
-
     if not PostSubscribers.objects.filter(email=email).exists():
         PostSubscribers.objects.create(email=email)
     items = get_object_or_404(PostNavItem, slug=slug)

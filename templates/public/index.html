@@ -2,437 +2,897 @@
 {% load static %}
 {% load frontend_custom_filters %}
 {% block header %}
-
 <style>
     .bottom-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end; /* Pushes form to bottom */
-    min-height: 60vh; /* Ensures section has full height */
-}
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        /* Pushes form to bottom */
+        min-height: 60vh;
+        /* Ensures section has full height */
+    }
 
-    a.text-light:focus, a.text-light:hover {
+    a.text-light:focus,
+    a.text-light:hover {
         color: #000 !important;
     }
+
     .form-control {
         color: #fff !important;
         padding: .675rem .75rem;
         font-size: 16px !important;
         background-color: transparent !important;
     }
+
     .form-icon .icons {
         top: 16px !important;
         color: #fff;
     }
+
     .container-fluid-index {
         padding-left: 100px !important;
         padding-right: 100px !important;
     }
+
     .title-heading .heading.heading-lg {
-        font-size: 30px !important;
+        font-size: 24px !important;
     }
+
     .title-font {
         font-size: 25px !important;
     }
+
     .subcribe-form form {
         max-width: 450px;
         margin: 0;
     }
-    .subcribe-form a{
+
+    .subcribe-form a {
         position: absolute;
-top: 2px;
-right: 3px;
-outline: 0!important;
+        top: 2px;
+        right: 3px;
+        outline: 0 !important;
+    }
+
+    /* DESKTOP: Increase gap between sections */
+    @media (min-width: 992px) {
+        .hero-section {
+            margin-bottom: 100px;
+            /* extra space between sections */
+        }
+    }
+
+    /* MOBILE: Adjust hero sections and images */
+    @media (max-width: 767.98px) {
+
+        /* Make each hero section occupy one full viewport height */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Override mobile image styles */
+        .d-block.d-md-none img {
+            width: 100% !important;
+            /* increase image width to full viewport */
+            max-height: 80px !important;
+            /* decrease image height */
+            object-fit: cover;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- <div class="container-fluid bg-black">
-    <div class="rounded py-5">
-        <div class="container bg-black">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title align-items-end">
-                        <!-- <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
-<section class="hero-section position-relative mt-5">
-    <!-- Top Heading Section -->
-    <div class="container text-center pt-1 pb-0"> 
-        <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
-        <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
-    </div>
-    
-    <!-- Image Section (Desktop) -->
-    <div class="hero-image position-relative d-none d-md-block" 
-         style="background: url('{{section_1.web_image.url}}') center center/cover no-repeat; height: 50vh;">
-    </div>
+<!-- Section 1 -->
+<style>
+    /* General Container Styling */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
 
-    <!-- Image Section (Mobile) -->
-    <div class="container d-block d-md-none text-center">
-        <img src="{{ section_1.image.url }}" alt="Mobile Image" class="img-fluid rounded" style="box-shadow: none !important;  object-fit: cover;">
-    </div>
+    /* Mobile View */
+    @media (max-width: 767.98px) {
+        .mobile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+        }
 
-    <section class="hero-section position-relative ">
-        <!-- Top Heading Section -->
-        <div class="container text-center pt-2 pb-0"> 
-            <h4 class="heading heading-lg fw-bold text-uppercase text-black">{{ section_1.title }}</h4>
+        .image-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .image-container img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 180px; /* Prevents cropping */
+    object-fit: contain; /* Ensures the full image is visible */
+    display: block;
+    margin: 0 auto;
+}
+
+/* Fix for iPhone 14 Pro Max */
+@media screen and (max-width: 430px) {
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        min-height: 200px; /* Ensures full visibility */
+    }
+}
+
+
+        .white-box {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: #ffffff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #218838;
+        }
+    }
+
+
+
+
+
+    .hero-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 60vh; /* Adjust height if needed */
+    object-fit: contain;
+}
+
+</style>
+
+
+<!-- Section 1 -->
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative mt-5">
+        <div class="container text-center pt-4 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
         </div>
-        
-        <!-- Desktop View -->
-        <div class="container position-relative mb-3 d-none d-md-block"> 
+
+        <div class="hero-image position-relative"
+            style="background: url('{{ section_1.web_image.url }}') center center/cover no-repeat; height: 60vh;">
+        </div>
+
+        <style>
+            /* White Box Styling */
+            .white-box {
+                width: 100%;
+                max-width: 900px;
+                padding: 20px;
+                background: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 30px; /* Added margin to create space */
+            }
+
+            /* Updated Text Colors */
+            .white-box .title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #000; /* Black text */
+                margin-bottom: 5px;
+            }
+
+            .white-box .discount {
+                font-size: 1rem;
+                color: #777; /* Gray for strike-through price */
+                text-decoration: line-through;
+            }
+
+            .white-box .description {
+                font-size: 1rem;
+                color: #444; /* Lighter black for description */
+            }
+
+            /* Input Field */
+            .email-input {
+                width: 100%;
+                max-width: 250px;
+                padding: 10px;
+                font-size: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                color: #000 !important;
+                outline: none;
+            }
+
+            /* Button Styling */
+            .btn-success {
+                font-size: 1rem;
+                text-transform: uppercase;
+                padding: 10px 15px;
+                font-weight: bold;
+                background-color: #28a745;
+                border: none;
+                transition: background 0.3s ease-in-out;
+            }
+
+            .btn-success:hover {
+                background-color: #218838;
+            }
+        </style>
+
+        <div class="container position-relative mb-3">
             <div class="row justify-content-center">
                 <div class="col-md-10">
-                    <div class="d-flex flex-row align-items-center justify-content-between p-3 shadow rounded bg-white" style="max-width: 900px; margin: auto;">
+                    <div class="white-box">
                         <div class="text-left">
-                            <p class="fw-bold text-black mb-1" style="font-size: 1.2rem;">{{ section_1.subtitle }}
-                                <span class="text-decoration-line-through text-muted" style="font-size: 1rem;">
-                                    ${{ section_1.title_data }}
-                                </span>
+                            <p class="title">
+                                Builder Package Starting at 
+                                <span class="discount" style="text-decoration: line-through; color: gray; font-size: 0.85rem;">
+                                    {{ section_1.title_data }}
+                                </span> 
+                                {{ section_1.subtitle }}
                             </p>
-                            <p class="text-muted" style="font-size: 1rem;">Lock your exclusive discount by signing up today.</p>
-        
+                            
+                            <p class="description">Lock your exclusive discount by signing up today.</p>
+
                             {% for item in nav_items %}
-                                {% if forloop.first %}
-                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                        class="text-primary fw-bold text-uppercase d-block mt-1"
-                                        style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
-                                        onmouseover="this.style.textDecoration='underline';" 
-                                        onmouseout="this.style.textDecoration='none';">
-                                        Learn More
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        
-                        <form class="d-flex flex-grow-1 mx-3">
-                            <input type="email" id="email" name="email" class="form-control me-2 p-2 border rounded" required placeholder="Email" style="max-width: 250px; color: #000 !important;">
-                            {% for item in nav_items %}
-                                {% if forloop.first %}
-                                    <a id="getStartedBtn" href="#" type="submit" class="btn btn-success">Get Started</a>
-                                {% endif %}
-                            {% endfor %}
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mobile View -->
-        <div class="container position-relative mb-3 d-block d-md-none"> 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="d-flex flex-column align-items-center p-3 shadow rounded bg-white text-center" style="max-width: 350px; margin: auto; min-height: 40px;">
-                        <p class="fw-bold text-black mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ section_1.subtitle }}
-                            <span class="text-decoration-line-through text-muted" style="font-size: 0.85rem;">
-                                ${{ section_1.title_data }}
-                            </span>
-                        </p>
-                        <p class="text-muted" style="font-size: 0.85rem;">Lock your discount by signing up today.</p>
-                        
-                        <form class="w-100">
-                            <input type="email" id="email-mobile" name="email" class="form-control p-2 mb-2 border rounded" required placeholder="Email Address" style="color: #000 !important; font-size: 0.9rem;">
-                            {% for item in nav_items %}
-                                {% if forloop.first %}
-                                    <a id="getStartedBtnM" href="#" type="submit" class="btn btn-success">Get Started</a>
-                                {% endif %}
-                            {% endfor %}
-                        </form>
-                    </div>
-                    {% for item in nav_items %}
-                        {% if forloop.first %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-                                style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-                                onmouseover="this.style.textDecoration='underline';" 
+                            {% if forloop.first %}
+                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                class="text-primary fw-bold text-uppercase d-block mt-1"
+                                style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
+                                onmouseover="this.style.textDecoration='underline';"
                                 onmouseout="this.style.textDecoration='none';">
                                 Learn More
                             </a>
-                        {% endif %}
-                    {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- Updated Form for Mailchimp Subscription -->
+                        <form method="POST">
+                            <div style="display: flex; align-items: center;">
+                                <input name="email" id="email-desktop-first" type="email"
+                                    class="custom-input"
+                                    placeholder="Email" required>
+                                <button type="submit" class="custom-button" id="getStartedBtnFirst">
+                                    GET STARTED
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <style>
+                            /* Custom styling for input field */
+                            .custom-input {
+                                width: 250px; /* Adjust width as needed */
+                                height: 50px;
+                                padding: 10px 15px;
+                                font-size: 16px;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                                outline: none;
+                                color: #000;
+                                background-color: #fff;
+                                box-shadow: none;
+                            }
+                        
+                            .custom-input::placeholder {
+                                color: #ccc; /* Light grey placeholder */
+                                font-size: 16px;
+                            }
+                        
+                            /* Styling for button */
+                            .custom-button {
+                                height: 50px;
+                                background-color: #28a745;
+                                color: white;
+                                font-size: 16px;
+                                font-weight: bold;
+                                border: none;
+                                padding: 0 20px;
+                                margin-left: 10px;
+                                cursor: pointer;
+                                border-radius: 5px;
+                                text-transform: uppercase;
+                            }
+                        
+                            .custom-button:hover {
+                                background-color: #218838;
+                            }
+                        </style>
+                        
+                    </div>
                 </div>
             </div>
         </div>
-        
     </section>
-    
-    <script>
-        function triggerToggleButton() {
-            alert("Reservation process triggered!");
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none pt-4">
+    <div class="container text-center pt-4">
+        <h5 class="heading text-success fw-bold text-uppercase pt-4">{{ section_1.tag }}</h5>
+        <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
+    </div>
+
+    <div class="image-container">
+        <img src="{{ section_1.image.url }}" alt="Mobile Image">
+    </div>
+
+    <div class="white-box text-center">
+        <p class="fw-bold text-black mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Builder Package Starting at 
+            <span class="text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+                {{ section_1.title_data }}
+            </span> 
+            {{ section_1.subtitle }}
+        </p>
+        
+        <p class="text-muted" style="font-size: 0.75rem;">Lock your exclusive discount by signing up today.</p>
+
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-mfirst" name="email" class="p-3 border rounded w-100" required
+                    placeholder="Email Address"
+                    style="color: #000 !important; font-size: 1rem; height: 50px; border: 1px solid #ccc; text-align: left;">
+                
+                {% for item in nav_items %}
+                {% if forloop.counter == 2 %}
+                <button id="getStartedBtnMfirst" type="submit" class="btn btn-success w-100 mt-2"
+                    style="height: 50px; font-size: 1rem; font-weight: bold; background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    {% for item in nav_items %}
+    {% if forloop.first %}
+    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+        class="text-primary fw-bold text-uppercase d-block text-center mt-2"
+        style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+        onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">
+        Learn More
+    </a>
+    {% endif %}
+    {% endfor %}
+</div>
+
+
+<!-- Section 2 -->
+<style>
+    /* General Container Styling */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Mobile View */
+    @media (max-width: 767.98px) {
+        .mobile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
         }
-    </script>
-    
-    
-    
-    
-</section>
 
+        .image-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
 
-<section class="hero-section position-relative ">
-    <!-- Top Heading Section -->
-    <div class="container text-center pt-2 pb-0"> 
+        .image-container img {
+            width: 90%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .white-box {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: #ffffff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #218838;
+        }
+    }
+</style>
+
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative">
+        <div class="container text-center pt-2 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
+        </div>
+
+        <div class="hero-image position-relative"
+            style="background: url('{{ section_2.web_image.url }}') center center/cover no-repeat; height: 50vh;">
+        </div>
+
+        <style>
+            /* White Box Styling */
+            .white-box {
+                width: 100%;
+                max-width: 900px;
+                padding: 20px;
+                background: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* Updated Text Colors */
+            .white-box .title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #000;
+                /* Black text */
+                margin-bottom: 5px;
+            }
+
+            .white-box .discount {
+                font-size: 1rem;
+                color: #777;
+                /* Dark gray for strike-through */
+                text-decoration: line-through;
+            }
+
+            .white-box .description {
+                font-size: 1rem;
+                color: #444;
+                /* Medium gray for readability */
+            }
+
+            /* Button Styling */
+            .btn-success {
+                font-size: 1rem;
+                text-transform: uppercase;
+                padding: 10px 15px;
+            }
+
+            /* Input Field */
+            .form-control {
+                max-width: 250px;
+                color: #000 !important;
+            }
+        </style>
+
+        <div class="container position-relative mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="white-box">
+                        <div class="text-left">
+                            <p class="title">
+                                Builder Package Starting at 
+                                <span class="text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+                                    {{ section_2.title_data }}
+                                </span> 
+                                {{ section_2.subtitle }}
+                            </p>
+                            
+                            <p class="description">Lock your exclusive discount by signing up today.</p>
+
+                            {% for item in nav_items %}
+                            {% if forloop.counter == 2 %}
+                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                class="text-primary fw-bold text-uppercase d-block mt-1"
+                                style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
+                                onmouseover="this.style.textDecoration='underline';"
+                                onmouseout="this.style.textDecoration='none';">
+                                Learn More
+                            </a>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <form class="d-flex flex-grow-1 mx-3">
+                            <input type="email" id="email-desktop-second" name="email"
+                                class="form-control me-2 p-2 border rounded w-100" required placeholder="Email">
+                            {% for item in nav_items %}
+                            {% if forloop.counter == 2 %}
+                            <a id="getStartedBtnSecond" href="#" type="submit" class="btn btn-success">Get Started</a>
+                            {% endif %}
+                            {% endfor %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none">
+    <div class="container text-center">
         <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
         <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_2.title }}</h4>
     </div>
-    
-    <!-- Image Section (Desktop) -->
-    <div class="hero-image position-relative d-none d-lg-block" 
-         style="background: url('{{section_2.web_image.url}}') center center/cover no-repeat; height: 50vh;">
+
+    <div class="image-container">
+        <img src="{{ section_2.image.url }}" alt="Mobile Image">
     </div>
 
-    <!-- Image Section (Mobile) -->
-    <div class="container d-block d-md-none text-center">
-        <img src="{{ section_2.image.url }}" alt="Mobile Image" class="img-fluid rounded" style="box-shadow: none !important;  object-fit: cover;">
+    <div class="white-box">
+        <p class="fw-bold text-black mb-1"
+    style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    Builder Package Starting at 
+    <span class="text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+        {{ section_2.title_data }}
+    </span>
+    {{ section_2.subtitle }}
+</p>
+        <p class="text-muted" style="font-size: 0.75rem;">Lock your exclusive discount by signing up today.</p>
+
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-msecond" name="email" class="p-3 border rounded w-100" required
+                    placeholder="Email Address"
+                    style="color: #000 !important; font-size: 1rem; height: 50px; border: 1px solid #ccc; text-align: left;">
+
+                {% for item in nav_items %}
+                {% if forloop.counter == 2 %}
+                <button id="getStartedBtnMsecond" type="submit" class="btn btn-success w-100 mt-2"
+                    style="height: 50px; font-size: 1rem; font-weight: bold; background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
     </div>
 
-    <!-- White Box Section -->
-    <section class="hero-section position-relative mt-0">
-        <!-- Top Heading Section -->
-        <div class="container text-center  pb-0"> 
-            <h4 class="heading heading-lg fw-bold text-uppercase text-black">{{ section_2.title }}</h4>
+
+
+    {% for item in nav_items %}
+    {% if forloop.counter == 2 %}
+    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+        class="text-primary fw-bold text-uppercase d-block text-center mt-2"
+        style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+        onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">
+        Learn More
+    </a>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- Section 3 -->
+<style>
+    /* General Styling */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Mobile Section Styling */
+    @media (max-width: 767.98px) {
+        .mobile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .image-container img {
+            width: 90%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .white-box {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: #ffffff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    }
+</style>
+
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative">
+        <div class="container text-center pt-2 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
         </div>
-        
-        <!-- Desktop View -->
-        <div class="container position-relative mb-3 d-none d-md-block"> 
+
+        <div class="hero-image position-relative"
+            style="background: url('{{ section_3.web_image.url }}') center center/cover no-repeat; height: 50vh;">
+        </div>
+
+        <style>
+            /* White Box Styling */
+            .white-box {
+                width: 100%;
+                max-width: 900px;
+                padding: 20px;
+                background: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* Updated Text Colors */
+            .white-box .title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #000;
+                /* Black text */
+                margin-bottom: 5px;
+            }
+
+            .white-box .discount {
+                font-size: 1rem;
+                color: #777;
+                /* Dark gray for strike-through */
+                text-decoration: line-through;
+            }
+
+            .white-box .description {
+                font-size: 1rem;
+                color: #444;
+                /* Medium gray for readability */
+            }
+
+            /* Button Styling */
+            .btn-secondary {
+                font-size: 1rem;
+                text-transform: uppercase;
+                padding: 10px 15px;
+                background: #777;
+                /* Dark gray button */
+                color: white;
+                border: none;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .btn-secondary:hover {
+                background: #555;
+                /* Slightly darker gray on hover */
+            }
+        </style>
+
+        <div class="container position-relative mb-3">
             <div class="row justify-content-center">
                 <div class="col-md-10">
-                    <div class="d-flex flex-row align-items-center justify-content-between p-3 shadow rounded bg-white" style="max-width: 900px; margin: auto;">
+                    <div class="white-box">
                         <div class="text-left">
-                            <p class="fw-bold text-black mb-1" style="font-size: 1.2rem;">
-                                {{ section_2.subtitle }}
-                                <span class="text-decoration-line-through text-muted" style="font-size: 1rem;">
-                                    ${{ section_2.title_data }}
+                            <p class="title">
+                                Builder Package Starting at 
+                                <span class="discount text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+                                    {{ section_3.title_data }}
                                 </span>
+                                {{ section_3.subtitle }}
                             </p>
-                            <p class="text-muted" style="font-size: 1rem;">Lock your exclusive discount by signing up today.</p>
-        
+                            
+                            <p class="description">This car is not available until July 2025.</p>
+
                             {% for item in nav_items %}
-                                {% if forloop.counter == 2 %}
-                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                        class="text-primary fw-bold text-uppercase d-block mt-1"
-                                        style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
-                                        onmouseover="this.style.textDecoration='underline';" 
-                                        onmouseout="this.style.textDecoration='none';">
-                                        Learn More
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        
-                        <form class="d-flex flex-grow-1 mx-3">
-                            <input type="email" id="email2" name="email" class="form-control me-2 p-2 border rounded" required placeholder="Email" style="max-width: 250px; color: #000 !important;">
-                            {% for item in nav_items %}
-                                {% if forloop.counter == 2 %}
-                                    <a id="getStartedBtn2" href="#" type="submit" class="btn btn-success">Get Started</a>
-                                {% endif %}
-                            {% endfor %}
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        
-        
-        
-    
-        <!-- Mobile View -->
-        <div class="container position-relative mb-3 d-block d-md-none"> 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="d-flex flex-column align-items-center p-3 shadow rounded bg-white text-center" style="max-width: 350px; margin: auto; min-height: 40px;">
-                        <p class="fw-bold text-black mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ section_2.subtitle }}
-                            <span class="text-decoration-line-through text-muted" style="font-size: 0.85rem;">
-                                ${{ section_2.title_data }}
-                            </span>
-                        </p>
-                        <p class="text-muted" style="font-size: 0.85rem;">Lock your exclusive discount by signing up today.</p>
-                        
-                        <form class="w-100">
-                            <input type="email" id="email2-mobile" name="email" class="form-control p-2 mb-2 border rounded" required placeholder="Email Address" style="color: #000 !important; font-size: 0.9rem;">
-                            {% for item in nav_items %}
-                                {% if forloop.counter == 2 %}
-                                    <a id="getStartedBtnM2" href="#" type="submit" class="btn btn-success">Get Started</a>
-                                {% endif %}
-                            {% endfor %}
-                        </form>
-                    </div>
-                    {% for item in nav_items %}
-                        {% if forloop.counter == 2 %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-                                style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-                                onmouseover="this.style.textDecoration='underline';" 
+                            {% if forloop.counter == 3 %}
+                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                class="text-primary fw-bold text-uppercase d-block mt-1"
+                                style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
+                                onmouseover="this.style.textDecoration='underline';"
                                 onmouseout="this.style.textDecoration='none';">
                                 Learn More
                             </a>
-                        {% endif %}
-                    {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <a class="btn btn-secondary" href="#" onclick="notAvailable()">
+                            Not Available Until July 2025
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        
-    </section>
-    
-    <script>
-        document.getElementById("getStartedBtnM2").addEventListener("click", function(event) {
-            event.preventDefault(); // Prevent default anchor behavior
-            
-            let emailInput = document.getElementById("email2-mobile").value.trim();
-            let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
-            if (!emailPattern.test(emailInput)) {
-                toastr.error("Please enter a valid email address.");
-                return;
-            }
-            let nextPageUrl;
-            {% for item in nav_items %}
-                {% if forloop.counter == 2 %}
-                    nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-                {% endif %}
-            {% endfor %}
-            
-            window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-        });
-    </script>
-    
-    
-    
-    
-    <script>
-        function triggerToggleButton() {
-            alert("Reservation process triggered!");
-        }
-    </script>
-    
-</section>
 
-<section class="hero-section position-relative mt-12">
-    <!-- Top Heading Section -->
-    <div class="container text-center pt-2 pb-0"> 
+        <script>
+            function notAvailable() {
+                alert("This car is not available until July 2025.");
+            }
+        </script>
+
+    </section>
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none">
+    <div class="container text-center">
         <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
         <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_3.title }}</h4>
     </div>
-    
-    <!-- Image Section (Desktop) -->
-    <div class="hero-image position-relative d-none d-md-block" 
-         style="background: url('{{section_3.web_image.url}}') center center/cover no-repeat; height: 50vh;">
+
+    <div class="image-container">
+        <img src="{{ section_3.image.url }}" alt="Mobile Image">
     </div>
 
-    <!-- Image Section (Mobile) -->
-    <div class="container d-block d-md-none text-center">
-        <img src="{{ section_3.image.url }}" alt="Mobile Image" class="img-fluid rounded" style="box-shadow: none !important;  object-fit: cover;">
+    <div class="white-box">
+        <p class="fw-bold text-black mb-1"
+        style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        Builder Package Starting at 
+        <span class="text-decoration-line-through text-muted" style="font-size: 0.85rem;">
+            {{ section_3.title_data }}
+        </span> 
+        {{ section_3.subtitle }}
+     </p>
+     
+        <p class="text-muted" style="font-size: 0.85rem;">This car is not available until July 2025.</p>
+
+        <a class="btn btn-lg btn-secondary w-100 p-2 text-uppercase" href="#" onclick="notAvailable()">
+            Not Available Until July 2025
+        </a>
     </div>
-    
 
-    <!-- White Box Section -->
-    <section class="hero-section position-relative ">
-        <!-- Top Heading Section -->
-        <div class="container text-center pt-2 pb-0"> 
-            <h4 class="heading heading-lg fw-bold text-uppercase text-black">{{ section_3.title }}</h4>
-        </div>
-        
-        <!-- Desktop View -->
-        <div class="container position-relative mb-3 d-none d-md-block"> 
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <div class="d-flex flex-row align-items-center justify-content-between p-3 shadow rounded bg-white" style="max-width: 900px; margin: auto;">
-                        <div class="text-left">
-                            <p class="fw-bold text-black mb-1" style="font-size: 1.2rem;">
-                                {{ section_3.subtitle }}
-                                <span class="text-decoration-line-through text-muted" style="font-size: 1rem;">
-                                    ${{ section_3.title_data }}
-                                </span>
-                            </p>
-                            <p class="text-muted" style="font-size: 1rem;">This car is not available until July 2025.</p>
-        
-                            {% for item in nav_items %}
-                                {% if forloop.counter == 3 %}
-                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                        class="text-primary fw-bold text-uppercase d-block mt-2"
-                                        style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
-                                        onmouseover="this.style.textDecoration='underline';" 
-                                        onmouseout="this.style.textDecoration='none';">
-                                        Learn More
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-        
-                        <a class="btn btn-lg btn-secondary px-4 py-2 text-uppercase" href="#" onclick="notAvailable()">
-                            Not Available Until July 2025
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    
-        <!-- Mobile View -->
-        <div class="container position-relative mb-3 d-block d-md-none"> 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="d-flex flex-column align-items-center p-3 shadow rounded bg-white text-center" style="max-width: 350px; margin: auto;">
-                        <p class="fw-bold text-black mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ section_3.subtitle }}
-                            <span class="text-decoration-line-through text-muted" style="font-size: 0.85rem;">
-                                ${{ section_3.title_data }}
-                            </span>
-                        </p>
-                        <p class="text-muted" style="font-size: 0.85rem;">This car is not available until July 2025.</p>
-        
-                        <a class="btn btn-lg btn-secondary w-100 p-2 text-uppercase" href="#" onclick="notAvailable()">
-                            Not Available Until July 2025
-                        </a>
-                    </div>
-                    
-                    {% for item in nav_items %}
-                        {% if forloop.counter == 3 %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" 
-                                class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-                                style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-                                onmouseover="this.style.textDecoration='underline';" 
-                                onmouseout="this.style.textDecoration='none';">
-                                Learn More
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        
-    </section>
-    
-    <script>
-        function notAvailable() {
-            alert("This car is not available until July 2025.");
-        }
-    </script>
-    
-</section> 
+    {% for item in nav_items %}
+    {% if forloop.counter == 3 %}
+    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+        class="text-primary fw-bold text-uppercase d-block text-center mt-2"
+        style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+        onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">
+        Learn More
+    </a>
+    {% endif %}
+    {% endfor %}
+</div>
 
-  <!-- <div class="container-fluid bg-black">
-    <div class="rounded py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title">
-                        <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
+<script>
+    function notAvailable() {
+        alert("This car is not available until July 2025.");
+    }
+</script>
 
-<!-- Start Form web -->
+
+<!-- Community Form (Desktop) -->
 <section class="section bg-black d-none d-lg-block">
     <div class="container-fluid">
         <div class="row align-items-start">
@@ -441,105 +901,106 @@ outline: 0!important;
                 <div class="section-title me-lg-4">
                     <h4 class="title title-light mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
                     <h4 class="title mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
-                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z 40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
+                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z 40? Join the most sort out
+                        community of Builders & Enthusiats. Ask questions, and share your experience.</p>
                     <div class="mt-4 pt-2">
                         <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
                         <ul class="list-unstyled">
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Build & Technical Support</li>
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Live Chat with Member & Group Experts</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Build & Technical Support
+                            </li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Live Chat with Member &
+                                Group Experts</li>
                         </ul>
                     </div>
                 </div>
-            </div><!--end col-->
+            </div>
             <div class="col-md-2"></div>
             <div class="col-md-4">
                 <div class="card rounded shadow border-0 bg-black">
                     <div class="card-body pt-0">
                         <div class="section-title">
                             <h4 class="title title-light text-center">BECOME A MEMBER</h4>
-                            <!-- <div class="pt-2"> -->
-                                <form method="post" id="community-form" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{ random_password }}" name="password1">
-                                    <input type="hidden" value="{{ random_password }}" name="password2">
-                                    <input type="hidden" value="{{ country_code }}" name="country">
-                                    <input type="hidden" value="customer" name="role">
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
-                                                
-        
-                                                <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="user" class="fea icon-sm icons text-white"></i>
-                                                    <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
-                                                </div>
+                            <form method="post" id="community-form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ random_password }}" name="password1">
+                                <input type="hidden" value="{{ random_password }}" name="password2">
+                                <input type="hidden" value="{{ country_code }}" name="country">
+                                <input type="hidden" value="customer" name="role">
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">First Name <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons text-white"></i>
+                                                <input name="first_name" id="first_name" type="text"
+                                                    class="form-control ps-5 bg-transparent text-white"
+                                                    placeholder="First Name" required>
                                             </div>
-                                        </div><!--end col-->
-        
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
-                                                
-                                                <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="user" class="fea icon-sm icons"></i>
-                                                    <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
-                                                </div>
-                                            </div>
-                                        </div><!--end col-->
-        
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
-                                                
-                                                <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
-                                                <div class="form-icon position-relative">
-                                                    <i data-feather="mail" class="fea icon-sm icons"></i>
-                                                    <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
-                                                </div>
-                                            </div>
-                                        </div><!--end col-->
-        
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                                                <div class="form-icon position-relative">
-                                                    <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
-                                                    <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
-                                                </div>
-                                            </div> 
-                                        </div><!--end col-->
-                                        <div class="col-md-12 mb-2">
-                                            <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
                                         </div>
-        
-                                        <div class="col-md-12 mb-0">
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-success">Join now
-                                                    <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
-                                                </button>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">Last Name <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons"></i>
+                                                <input name="last_name" id="last_name" type="text"
+                                                    class="form-control ps-5" placeholder="Last Name" required>
                                             </div>
-                                        </div><!--end col-->
-                                    </div><!--end row-->
-                                </form><!--end form-->
-                            <!-- </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">Email <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="mail" class="fea icon-sm icons"></i>
+                                                <input type="email" id="email" class="form-control ps-5"
+                                                    placeholder="Email" name="email" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">Phone Number</label>
+                                            <div class="form-icon position-relative">
+                                                <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                    alt="Country Flag"
+                                                    style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                                <input name="phone_number" id="phone_number" type="number"
+                                                    class="form-control ps-5" placeholder="Phone Number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-check-label text-white">By continuing, you agree to our <a
+                                                href="{% url 'privacy_policy' %}" target="_blank"
+                                                class="text-primary">Privacy Policy</a></label>
+                                    </div>
+                                    <div class="col-md-12 mb-0">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success">Join now
+                                                <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                                    aria-hidden="true" style="display: none;"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <!-- <h5 class="text-center text-white">Become A Member</h5> -->
-                        <!-- <h4 class="text-center title title-dark mb-4 text-uppercase">Become A Member</h4> -->
-                       
                     </div>
-                </div>                             
-            </div><!--end col-->
-        </div><!--end row-->
+                </div>
+            </div>
+        </div>
     </div>
-    <!--end container-->
-</section><!--end section-->
-<!-- End Form -->
+</section>
 
-<!-- Start Form Mobile-->
+<!-- Community Form (Mobile) -->
 <section class="section bg-black d-lg-none">
     <div class="container">
         <div class="row align-items-start">
@@ -547,23 +1008,26 @@ outline: 0!important;
                 <div class="section-title me-lg-4">
                     <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
                     <h4 class="title title-dark mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
-                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z 40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</p>
+                    <p class="text-white para-dark para-desc mb-0">Interested in GEN-Z 40? Join the most sort out
+                        community of Builders & Enthusiats. Ask questions, and share your experience.</p>
                     <div class="mt-4 pt-2">
                         <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
                         <ul class="list-unstyled">
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Build & Technical Support</li>
-                            <li class="mb-1"><span class="text-success h5 me-2"><i class="uil uil-check-circle align-middle"></i></span>Live Chat with Member & Group Experts</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Exclusive Offers</li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Build & Technical Support
+                            </li>
+                            <li class="mb-1"><span class="text-success h5 me-2"><i
+                                        class="uil uil-check-circle align-middle"></i></span>Live Chat with Member &
+                                Group Experts</li>
                         </ul>
                     </div>
                 </div>
-            </div><!--end col-->
-
+            </div>
             <div class="col-md-6 mt-4">
                 <div class="card rounded shadow border-0 bg-black">
                     <div class="card-body p-0">
-                        <!-- <h5 class="text-center text-white">Become A Member</h5> -->
-
                         <form method="post" id="community-form" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="hidden" value="{{ random_password }}" name="password1">
@@ -571,215 +1035,173 @@ outline: 0!important;
                             <input type="hidden" value="{{ country_code }}" name="country">
                             <input type="hidden" value="customer" name="role">
                             <div class="row mt-4">
-                                <div class="col-md-12">
+                                <div class="col-md-12 ">
                                     <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label> -->
-                                        
-
-                                        <label class="form-label text-white text-uppercase">First Name <span class="text-danger">*</span></label>
+                                        <label class="form-label text-white text-uppercase">First Name <span
+                                                class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
                                             <i data-feather="user" class="fea icon-sm icons text-white"></i>
-                                            <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent text-white" placeholder="First Name" required="">
+                                            <input name="first_name" id="first_name" type="text"
+                                                class="ps-5 bg-transparent text-white" style="width: 100%;
+                                            padding: 12px;
+                                            font-size: 14px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 5px;
+                                            outline: none;
+                                            margin-bottom: 10px;" placeholder="First Name" required>
                                         </div>
                                     </div>
-                                </div><!--end col-->
-
+                                </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.last_name.id_for_label }}">Last Name <span class="text-danger">*</span></label> -->
-                                        
-                                        <label class="form-label text-white text-uppercase">Last Name <span class="text-danger">*</span></label>
+                                        <label class="form-label text-white text-uppercase">Last Name <span
+                                                class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
                                             <i data-feather="user" class="fea icon-sm icons"></i>
-                                            <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
+                                            <input name="last_name" id="last_name" type="text" class=" ps-5"  style="width: 100%;
+                                            padding: 12px;
+                                            font-size: 14px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 5px;
+                                            outline: none;
+                                            margin-bottom: 10px;
+                                            background-color: black;
+                                            
+                                            "
+                                                placeholder="Last Name" required>
                                         </div>
                                     </div>
-                                </div><!--end col-->
-
+                                </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <!-- <label class="form-label text-white text-uppercase" for="{{ form.email.id_for_label }}">Email <span class="text-danger">*</span></label> -->
-                                        
-                                        <label class="form-label text-white text-uppercase">Email <span class="text-danger">*</span></label>
+                                        <label class="form-label text-white text-uppercase">Email <span
+                                                class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
                                             <i data-feather="mail" class="fea icon-sm icons"></i>
-                                            <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
+                                            <input type="email" id="email" class=" ps-5" placeholder="Email"
+                                            style="width: 100%;
+                                            padding: 12px;
+                                            font-size: 14px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 5px;
+                                            outline: none;
+                                            margin-bottom: 10px;
+                                            background-color: black;
+                                            
+                                            "
+                                                name="email" required>
                                         </div>
                                     </div>
-                                </div><!--end col-->
-
+                                </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label text-white text-uppercase" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                        <label class="form-label text-white text-uppercase">Phone Number</label>
                                         <div class="form-icon position-relative">
-                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
-                                            <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                alt="Country Flag"
+                                                style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number" type="number"
+                                                class=" ps-5" placeholder="Phone Number" style="width: 100%;
+                                                padding: 12px;
+                                                font-size: 14px;
+                                                border: 1px solid #ccc;
+                                                border-radius: 5px;
+                                                outline: none;
+                                                margin-bottom: 10px;
+                                                background-color: black;
+                                                
+                                                ">
                                         </div>
-                                    </div> 
-                                </div><!--end col-->
-                                <div class="col-md-12 mb-2">
-                                    <label class="form-check-label text-white" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
+                                    </div>
                                 </div>
-
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label text-white">By continuing, you agree to our <a
+                                            href="{% url 'privacy_policy' %}" target="_blank"
+                                            class="text-primary">Privacy Policy</a></label>
+                                </div>
                                 <div class="col-md-12 mb-0">
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-success">Join now
-                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                            <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                                aria-hidden="true" style="display: none;"></span>
                                         </button>
                                     </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form><!--end form-->
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </div>                             
-            </div><!--end col-->
-        </div><!--end row-->
+                </div>
+            </div>
+        </div>
     </div>
-    <!--end container-->
-</section><!--end section-->
-<!-- End Form -->
+</section>
 
-
-<!-- Blog STart -->
-<!-- <section class="section">
-<div class="container-fluid">
-    <div class="row">
-        <div class="section-title">
-            <h4 class="title title-dark mb-4 text-center text-uppercase">News</h4>
-        </div>
-        <div class="col-lg-4 col-md-6 mb-4 pb-2">
-            <div class="card blog blog-primary rounded border-0 shadow overflow-hidden">
-                <div class="position-relative">
-                    <img src="/static/images/blog/01.jpg" class="card-img-top" alt="...">
-                    <div class="overlay rounded-top"></div>
-                </div>
-                <div class="card-body content">
-                    <h5><a href="{% url 'blog_details' %}" class="card-title title text-dark">Design your apps in your own way</a></h5>
-                    <div class="post-meta d-flex justify-content-between mt-3">
-                        <ul class="list-unstyled mb-0">
-                            <li class="list-inline-item me-2 mb-0"><a href="javascript:void(0)" class="text-muted like"><i class="uil uil-heart me-1"></i>33</a></li>
-                            <li class="list-inline-item"><a href="javascript:void(0)" class="text-muted comments"><i class="uil uil-comment me-1"></i>08</a></li>
-                        </ul>
-                        <a href="{% url 'blog_details' %}" class="text-muted readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
-                    </div>
-                </div>
-                <div class="author">
-                    <small class="user d-block"><i class="uil uil-user"></i> Calvin Carlo</small>
-                    <small class="date"><i class="uil uil-calendar-alt"></i> 25th June 2021</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 col-md-6 mb-4 pb-2">
-            <div class="card blog blog-primary rounded border-0 shadow overflow-hidden">
-                <div class="position-relative">
-                    <img src="/static/images/blog/02.jpg" class="card-img-top" alt="...">
-                    <div class="overlay rounded-top"></div>
-                </div>
-                <div class="card-body content">
-                    <h5><a href="javascript:void(0)" class="card-title title text-dark">How apps is changing the IT world</a></h5>
-                    <div class="post-meta d-flex justify-content-between mt-3">
-                        <ul class="list-unstyled mb-0">
-                            <li class="list-inline-item me-2 mb-0"><a href="javascript:void(0)" class="text-muted like"><i class="uil uil-heart me-1"></i>33</a></li>
-                            <li class="list-inline-item"><a href="javascript:void(0)" class="text-muted comments"><i class="uil uil-comment me-1"></i>08</a></li>
-                        </ul>
-                        <a href="blog-detail.html" class="text-muted readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
-                    </div>
-                </div>
-                <div class="author">
-                    <small class="user d-block"><i class="uil uil-user"></i> Calvin Carlo</small>
-                    <small class="date"><i class="uil uil-calendar-alt"></i> 25th June 2021</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 col-md-6 mb-4 pb-2">
-            <div class="card blog blog-primary rounded border-0 shadow overflow-hidden">
-                <div class="position-relative">
-                    <img src="/static/images/blog/03.jpg" class="card-img-top" alt="...">
-                    <div class="overlay rounded-top"></div>
-                </div>
-                <div class="card-body content">
-                    <h5><a href="javascript:void(0)" class="card-title title text-dark">Smartest Applications for Business</a></h5>
-                    <div class="post-meta d-flex justify-content-between mt-3">
-                        <ul class="list-unstyled mb-0">
-                            <li class="list-inline-item me-2 mb-0"><a href="javascript:void(0)" class="text-muted like"><i class="uil uil-heart me-1"></i>33</a></li>
-                            <li class="list-inline-item"><a href="javascript:void(0)" class="text-muted comments"><i class="uil uil-comment me-1"></i>08</a></li>
-                        </ul>
-                        <a href="blog-detail.html" class="text-muted readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
-                    </div>
-                </div>
-                <div class="author">
-                    <small class="user d-block"><i class="uil uil-user"></i> Calvin Carlo</small>
-                    <small class="date"><i class="uil uil-calendar-alt"></i> 25th June 2021</small>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-</div>
-</section> -->
-<!-- Blog End -->
-
-<!-- Testi Subscribe Start Web -->
+<!-- Subscribe (Desktop) -->
 <section class="section bg-black d-none d-lg-block" style="border-top: 0.9px solid #cacaca;">
     <div class="container-fluid">
         <div class="row align-items-center">
             <div class="col-md-1"></div>
-          <div class="col-lg-4">
-              <div class="section-title mb-4 pb-2">
-                  <h4 class="title text-white title-dark mb-4 text-uppercase">Be a part of our journey</h4>
-                  <h5 class="text-white para-dark">Get all the relevant news and updates about <span class="text-success fw-bold logo-font">GEN-Z</span> Vehicles delivered to your inbox.</h5>
-              </div>
-          </div><!--end col-->
-          <div class="col-md-2"></div>
-          <div class="col-md-4 mt-4">
-            <div class="subcribe-form">
-                <form method="POST" id="subscribe-form">
-                  {% csrf_token %}
-                    <input name="email" id="email" type="email" class="form-control border shadow rounded-pill text-dark" placeholder="Your email :" required>
-                    <button type="submit" class="btn btn-pills btn-success" id="newssubscribebtn">Subscribe
-                        <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
-                    </button>
-                </form><!--end form-->
+            <div class="col-lg-4">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title text-white title-dark mb-4 text-uppercase">Be a part of our journey</h4>
+                    <h5 class="text-white para-dark">Get all the relevant news and updates about <span
+                            class="text-success fw-bold logo-font">GEN-Z</span> Vehicles delivered to your inbox.</h5>
+                </div>
             </div>
-        </div><!--end col-->
-      </div><!--end row-->
+            <div class="col-md-2"></div>
+            <div class="col-md-4 mt-4">
+                <div class="subcribe-form">
+                    <form method="POST" id="subscribe-form">
+                        {% csrf_token %}
+                        <input name="email" id="email" type="email"
+                            class="border shadow rounded-pill text-dark" placeholder="Your email :"
+                            required>
+                        <button type="submit" class="btn btn-pills btn-success"  id="newssubscribebtn">Subscribe
+                            <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true"
+                                style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-  </div>
-  <!--end container-->
-</section><!--end section-->
-<!-- Testi Subscribe End -->
-
-<!-- Testi Subscribe Start Mobile-->
+<!-- Subscribe (Mobile) -->
 <section class="section bg-black d-lg-none" style="border-top: 0.9px solid #cacaca;">
     <div class="container">
         <div class="row align-items-center">
-          <div class="col-lg-6">
-              <div class="section-title mb-4 pb-2">
-                  <h4 class="title text-white title-dark mb-4 text-uppercase">Be a part of our journey</h4>
-                  <h5 class="text-white para-dark">Get all the relevant news and updates about <span class="text-success fw-bold logo-font">GEN-Z</span> Vehicles delivered to your inbox.</h5>
-              </div>
-          </div><!--end col-->
-
-          <div class="col-lg-6 col-md-8 mt-4">
-            <div class="subcribe-form">
-                <form method="POST" id="subscribe-form">
-                  {% csrf_token %}
-                    <input name="email" id="email" type="email" class="form-control rounded-pill shadow" placeholder="Your email :" required style="background-color: #fff !important;">
-                    <button type="submit" class="btn btn-pills btn-success" id="newssubscribebtn">Subscribe
-                        <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
-                    </button>
-                </form><!--end form-->
+            <div class="col-lg-6">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title text-white title-dark mb-4 text-uppercase">Be a part of our journey</h4>
+                    <h5 class="text-white para-dark">Get all the relevant news and updates about <span
+                            class="text-success fw-bold logo-font">GEN-Z</span> Vehicles delivered to your inbox.</h5>
+                </div>
             </div>
-        </div><!--end col-->
-      </div><!--end row-->
-
-  </div>
-  <!--end container-->
-</section><!--end section-->
-<!-- Testi Subscribe End -->
-
+            <div class="col-lg-6 col-md-8 mt-4">
+                <div class="subcribe-form">
+                    <form method="POST" id="subscribe-form-mobile">
+                        {% csrf_token %}
+                        <input name="email" id="email" type="email" class=" rounded-pill shadow" style="width: 100%;
+                        padding: 12px;
+                        font-size: 14px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        outline: none;
+                        margin-bottom: 10px;
+                        background-color: white;
+                        "
+                            placeholder="Your email :" required style="background-color: #fff !important;">
+                        <button type="submit" class="btn btn-pills btn-success" style="width:30%" id="newssubscribebtn">Subscribe
+                            <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true"
+                                style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}
 
 {% block script %}
@@ -797,12 +1219,12 @@ outline: 0!important;
     }
 </script>
 
-<!-- Ajax request on button click -->
+<!-- Ajax request for community form -->
 <script>
     $("#community-form").submit(function (e) {
-    event.preventDefault();
-    var data = new FormData($('#community-form').get(0));
-    $('#pro').show();
+        event.preventDefault();
+        var data = new FormData($('#community-form').get(0));
+        $('#pro').show();
         $.ajax({
             type: 'POST',
             url: "{% url 'customer_register_community' %}",
@@ -821,20 +1243,19 @@ outline: 0!important;
                 $('#pro').hide();
             },
             error: function (response) {
-                // alert the error if any error occurred
                 alert(response["error"]);
                 $('#pro').hide();
             }
-        })
-    })
-
+        });
+    });
 </script>
 
+<!-- Ajax request for subscribe form -->
 <script>
     $("#subscribe-form").submit(function (e) {
-    event.preventDefault();
-    var data = new FormData($('#subscribe-form').get(0));
-    $('#pro1').show();
+        event.preventDefault();
+        var data = new FormData($('#subscribe-form').get(0));
+        $('#pro1').show();
         $.ajax({
             type: 'POST',
             url: "{% url 'subscribe' %}",
@@ -853,118 +1274,165 @@ outline: 0!important;
                 $('#pro1').hide();
             },
             error: function (response) {
-                // alert the error if any error occurred
                 alert(response["error"]);
                 $('#pro1').hide();
             }
-        })
-    })
-
+        });
+    });
 </script>
-<!-- //reseve now for first section web version -->
-<script>
-    document.getElementById("getStartedBtn").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-        let emailInput = document.getElementById("email").value.trim();
-        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+<script>
+    $("#subscribe-form-mobile").submit(function (e) {
+        event.preventDefault();
+        var data = new FormData($('#subscribe-form-mobile').get(0));
+        $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#subscribe-form-mobile')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        });
+    });
+</script>
+
+<!-- Get Started button scripts getStartedBtnFirst web -->
+<script>
+    document.getElementById("getStartedBtnFirst").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-first").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailPattern.test(emailInput)) {
             toastr.error("Please enter a valid email address.");
-            // alert("Please enter a valid email address.");
             return;
         }
+        mailChimpSubscribe(emailInput);
         let nextPageUrl;
         {% for item in nav_items %}
-            {% if forloop.first %}
-                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-            {% endif %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
         {% endfor %}
-        // Redirect to next page with email as a query parameter
-        
         window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
+    });
+</script>
+<!-- Get Started button scripts getStartedBtnMfirst mobile -->
+<script>
+    document.getElementById("getStartedBtnMfirst").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-mfirst").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
+    });
+</script>
+
+<!-- Get Started button scripts getStartedBtnSecond web -->
+<script>
+    document.getElementById("getStartedBtnSecond").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-second").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
+    });
+</script>
+<!-- Get Started button scripts getStartedBtnMsecond mobile -->
+<script>
+    document.getElementById("getStartedBtnMsecond").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-msecond").value.trim();
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        
     });
 </script>
 
 
 
 <script>
-
-    document.getElementById("getStartedBtnM").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-        
-        let emailInput = document.getElementById("email-mobile").value.trim();
-        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            // alert("Please enter a valid email address.");
-            return;
-        }
-        let nextPageUrl;
-        {% for item in nav_items %}
-            {% if forloop.first %}
-                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-            {% endif %}
-        {% endfor %}
-        // Redirect to next page with email as a query parameter
-        
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
+function mailChimpSubscribe(email){
+    $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: {
+                "email": email
+            },
+            headers: {
+			'X-CSRFToken': getCookie('csrftoken') // Use this if you have CSRF protection enabled
+		},
+            success: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+}
 </script>
-
+ 
 <script>
-    document.getElementById("getStartedBtn2").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-
-        let emailInput = document.getElementById("email2").value.trim();
-        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            // alert("Please enter a valid email address.");
-            return;
-        }
-        let nextPageUrl;
-        {% for item in nav_items %}
-            {% if forloop.counter == 2 %}
-                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-            {% endif %}
-        {% endfor %}
-        // Redirect to next page with email as a query parameter
-        
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			// Does this cookie string begin with the name we want?
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
 </script>
-<script>
-    document.getElementById("getStartedBtnM2").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-
-        let emailInput = document.getElementById("emailM2").value.trim();
-        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            // alert("Please enter a valid email address.");
-            return;
-        }
-        let nextPageUrl;
-        {% for item in nav_items %}
-            {% if forloop.counter == 2 %}
-                nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-            {% endif %}
-        {% endfor %}
-        // Redirect to next page with email as a query parameter
-        
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
-</script>
-
-
-
-
-
 {% endblock script %}
-
-
-
-
