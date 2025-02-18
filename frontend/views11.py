@@ -531,10 +531,3 @@ def profile_settings(request):
 @login_required
 def customer_message(request):
     return render(request, 'customer/message/message.html', {'is_footer_required': True})
-
-
-
-
-
-def car_selector(request):
-    return render(request, "public/car_selector.html")  # Ensure this matches your template name

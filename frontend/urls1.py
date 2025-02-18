@@ -1,8 +1,6 @@
 from django.urls import path, re_path
 from . import views
 from .views import navitem_detail, car_details
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     # Public urls
@@ -33,7 +31,6 @@ urlpatterns = [
     path('genz-blog/', views.blog, name='blog'),
     path('genz-blog-details/', views.blog_details, name='blog_details'),
     # path('<slug:slug>/', navitem_detail, name='navitem_detail'),
-    path("car-selector/", views.car_selector, name="car_selector"),  # Fixed URL
-    path('<slug:slug>/', views.reserve_now, name='car_details'),  # Slug should be last
+    path('<slug:slug>/', views.reserve_now, name='car_details'),
     
-]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+]

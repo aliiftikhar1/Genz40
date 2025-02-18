@@ -18,69 +18,41 @@
 
 {% block content %}
 <section class="bg-half-100 d-table w-100">
-
-
-
-
-
-    
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12 d-flex justify-content-between align-items-center">
-                <!-- Lock Your Price Button (Visible Only on Mobile) -->
-                <a href="javascript:void(0)" 
-                   class="btn btn-light btn-sm text-uppercase d-block d-lg-none"
-                   data-bs-toggle="offcanvas" 
-                   data-bs-target="#offcanvasRight" 
-                   aria-controls="offcanvasRight">
-                    Lock your price now
-                </a>
-    
-                <!-- Spacer to keep alignment correct on desktop -->
-                <div class="d-none d-lg-block flex-grow-1"></div>
-    
-                <!-- Technical Specs Link (Always Visible & Positioned on the Right) -->
+            <div class="col-md-12">
                 <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-                   class="text-decoration-underline ms-auto">
-                    Technical Specs
-                </a>
+                        class="text-decoration-underline float-end">
+                        Technical Specs
+            </a>
             </div>
         </div>
     </div>
 
-    
-    
-
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-lg-6">{{items.title }}
-                <div class="mb-3 mt-2">
-                    <label for="car-select" class="fw-bold text-black me-2">Select Car Model:</label>
-                    <select id="car-select" class="form-select d-inline-block w-auto">
-                        <option value="Mark I"  {% if items.title == "Mark I"  %}selected{% endif %}>Mark I</option>
-                        <option value="Mark II" {% if items.title == "Mark II" %}selected{% endif %}>Mark II</option>
-                        <option value="Mark IV" {% if items.title == "Mark IV" %}selected{% endif %}>Mark IV</option>
-                    </select>
-                </div>
-                
-
-
-
-                <div class="">{{items.title }}
-                    {% if items.title == 'Mark I' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
-                    {% elif items.title == 'Mark II' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk2.gif' %}" alt="Mark II GIF">
-                    {% elif items.title == 'Mark IV' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk4.gif' %}" alt="Mark IV GIF">
-                    {% endif %}
-                    
-                </div>
+                {% if items.title == 'Mark I' %}
+                    <video class="w-100 rounded h-100" autoplay muted loop>
+                        <source src="{% static 'images/genz/mk1.mp4' %}" type="video/mp4">
+                        Your browser does not support the video tag.
+                </video>
+                {% elif items.title == 'Mark II' %}
+                <video class="w-100 rounded h-100" autoplay muted loop>
+                    <source src="{% static 'images/genz/mk4.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+            </video>
+                {% elif items.title == 'Mark IV' %}
+                <video class="w-100 rounded h-100" autoplay muted loop>
+                    <source src="{% static 'images/genz/mk4.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                {% endif %}
                 
             </div>
             <div class="col-md-6 col-lg-6 text-center">
                 
-                <h1 class="text-light text-center pt-4">
+                <h1 class="text-light text-center">
                     Save your spot & lock in a 20% discount with $100 deposit today.
                 </h1>
                 <p class="text-light text-center">
@@ -197,7 +169,7 @@
                             <div class="col-md-6 text-dark">
                                 <div class="flex-1">
                                     <h4 class="text-dark mb-0">
-                                        <!-- {{ package.name }} From $ {{ package.amount|intcomma }} -->
+                                        {{ package.name }} From $ {{ package.amount|intcomma }}
                                         <!-- <span class="wrapper text-primary fs-6">
                                                 <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
                                                 <div class="tooltip">
@@ -210,26 +182,26 @@
                                         <!-- </button> -->
 
                                     </h4>
-                                    <!-- <h6 class="text-black-50 mb-0">
+                                    <h6 class="text-black-50 mb-0">
                                         Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve|intcomma }}</span>
-                                    </h6> -->
-                                    <!-- <div class="wrapper text-primary fs-6">
+                                    </h6>
+                                    <div class="wrapper text-primary fs-6">
                                         Learn More
                                         <div class="tooltip">
                                             {{ package.description }}
-                                            Package comes with body mounted to chassis with dash unit and suspension pre
+                                            <!-- Package comes with body mounted to chassis with dash unit and suspension pre
                                                 installed.
                                                 You will be able to choose more options as add-on features to this package
-                                                when your car is in production to make your car as close to turnkey.
+                                                when your car is in production to make your car as close to turnkey. -->
                                         </div>
-                                    </div> -->
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
 
                         </div>
 
-                        <div class="col-md-12 ">
+                        <div class="col-md-12 mt-4 pt-2">
                             <h1 class="text-dark mt-4">Technical Specs</h1>
                             <div class="accordion" id="accordionExample">
                                 <!-- Accordion Item 1 -->
@@ -244,21 +216,15 @@
                                     <div id="collapseDimension" class="accordion-collapse collapse"
                                         aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
                                         <div class="accordion-body bg-white text-dark">
+                                            <p>- Length: 163"</p>
                                             <p>- Height: 40.5"</p>
-                                        
                                             {% if items.title == 'Mark I' %}
-                                                <p>- Length: 163"</p>
-                                                <p>- Width: 71" (Intermediate rear) or 78" (Wide rear) or 80" (Extra Wide rear)</p>
-                                            
+                                            <p>- Width: 71" (intermediate rear) or 78" (Wide rear) or 79" (Extra Wide rear)</p>
                                             {% elif items.title == 'Mark II' %}
-                                                <p>- Length: 163"</p>
-                                                <p>- Width: 71"</p>
-                                        
+                                            <p>- Width: 71"</p>
                                             {% elif items.title == 'Mark IV' %}
-                                                <p>- Length: 171"</p>  <!-- Updated Length for Mark IV -->
-                                                <p>- Width: 70.5"</p>
+                                            <p>- Width: 71"</p>
                                             {% endif %}
-                                        
                                             <p>- Wheelbase: 95"</p>
                                             <p>- Front Wheels: Options Available</p>
                                             <p>- Rear Wheels: Options Available</p>
@@ -266,7 +232,6 @@
                                             <p>- Rear Tires: Options Available</p>
                                             <p>- Fuel Tank: Aluminum 22 Gallons</p>
                                         </div>
-                                        
                                     </div>
                                 </div>
                                 <div class="accordion-item">
@@ -428,13 +393,12 @@
                         <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5"
                             alt="">
                         {% elif items.title == 'Mark IV' %}
-                        <img src="{% static 'mk4.jpg' %}" class="img-fluid rounded shadow mb-5"
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
                             alt="">
                         {% endif %}
 
 
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -577,49 +541,6 @@
     </div>
 </div>
 <!-- Offcanvas End -->
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("closeModalButton").addEventListener("click", function () {
-            var modal = bootstrap.Modal.getInstance(document.getElementById("fullscreenModal"));
-            modal.hide(); // Close the modal
-
-            var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasRight"));
-            offcanvas.show(); // Open the sidebar
-        });
-    });
-</script>
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const carSelect = document.getElementById("car-select");
-        
-        // Determine the current car model from the URL path and set the dropdown value
-        const path = window.location.pathname;
-        if (path.includes("/mark1/")) {
-            carSelect.value = "Mark I";
-        } else if (path.includes("/mark2/")) {
-            carSelect.value = "Mark II";
-        } else if (path.includes("/mark3/")) {
-            carSelect.value = "Mark IV";
-        }
-    
-        // When the dropdown selection changes, redirect to the new URL
-        carSelect.addEventListener("change", function () {
-            const selectedCar = this.value;
-            let newUrl = "/mark1/"; // Default to Mark I
-            if (selectedCar === "Mark II") {
-                newUrl = "/mark2/";
-            } else if (selectedCar === "Mark IV") {
-                newUrl = "/mark3/";
-            }
-            window.location.href = newUrl;
-        });
-    });
-    </script>
-    
-
 
 {% endblock content %}
 
