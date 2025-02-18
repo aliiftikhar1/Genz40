@@ -608,11 +608,11 @@
         // When the dropdown selection changes, redirect to the new URL
         carSelect.addEventListener("change", function () {
             const selectedCar = this.value;
-            let newUrl = "/mark1/"; // Default to Mark I
+            let newUrl = "/genz40-mark-I/"; // Default to Mark I
             if (selectedCar === "Mark II") {
-                newUrl = "/mark2/";
+                newUrl = "/genz40-mark-II/";
             } else if (selectedCar === "Mark IV") {
-                newUrl = "/mark3/";
+                newUrl = "/genz40-mark-IV/";
             }
             window.location.href = newUrl;
         });
