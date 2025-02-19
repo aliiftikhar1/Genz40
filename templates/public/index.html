@@ -136,8 +136,8 @@
   text-decoration: line-through;
 }
 .white-box .description {
-  font-size: 1rem;
-  color: #444;
+  font-size: 1.25rem;
+  color: #000000;
 }
 /* Desktop-specific .white-box adjustments */
 @media (min-width: 768px) {
@@ -231,7 +231,7 @@ a.text-light:hover {
         <!-- The container now has a min-height so the background image 
              can show up on iPad/desktop -->
         <div class="hero-image position-relative"
-             style="background: url('{{ section_1.web_image.url }}') center center/cover no-repeat;">
+             style="background: url('{{ section_1.web_image.url }}') center center/contain no-repeat;">
         </div>
 
         <div class="container position-relative mb-3">
@@ -302,7 +302,7 @@ a.text-light:hover {
             </span>
             {{ section_1.subtitle }}
         </p> -->
-        <p class="text-muted text-black" style="font-size: 0.85rem;">
+        <p class="description" style="font-size: 0.85rem;">
             Lock your exclusive discount by signing up today.
         </p>
 
@@ -329,12 +329,13 @@ a.text-light:hover {
     {% for item in nav_items %}
     {% if forloop.first %}
     <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-       class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-       style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-       onmouseover="this.style.textDecoration='underline';"
-       onmouseout="this.style.textDecoration='none';">
-       Learn More
-    </a>
+   class="fw-bold text-uppercase d-block text-center mt-2"
+   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+   onmouseover="this.style.color='#28a745'; this.style.textDecoration='underline';" 
+   onmouseout="this.style.color='#2ECA8B'; this.style.textDecoration='none';">
+   Learn More
+</a>
+
     {% endif %}
     {% endfor %}
 </div>
@@ -351,7 +352,7 @@ a.text-light:hover {
         </div>
 
         <div class="hero-image position-relative"
-             style="background: url('{{ section_2.web_image.url }}') center center/cover no-repeat;">
+             style="background: url('{{ section_2.web_image.url }}') center center/contain no-repeat;">
         </div>
 
         <div class="container position-relative mb-3">
@@ -431,7 +432,7 @@ a.text-light:hover {
             </span>
             {{ section_2.subtitle }}
         </p> -->
-        <p class="text-muted" style="font-size: 0.85rem;">
+        <p class="description" style="font-size: 0.85rem;">
             Lock your exclusive discount by signing up today.
         </p>
 
@@ -459,12 +460,13 @@ a.text-light:hover {
     {% for item in nav_items %}
     {% if forloop.counter == 2 %}
     <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-       class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-       style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-       onmouseover="this.style.textDecoration='underline';"
-       onmouseout="this.style.textDecoration='none';">
-       Learn More
-    </a>
+   class="fw-bold text-uppercase d-block text-center mt-2"
+   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+   onmouseover="this.style.textDecoration='underline';" 
+   onmouseout="this.style.textDecoration='none';">
+   Learn More
+</a>
+
     {% endif %}
     {% endfor %}
 </div>
@@ -481,7 +483,7 @@ a.text-light:hover {
         </div>
 
         <div class="hero-image position-relative"
-             style="background: url('{{ section_3.web_image.url }}') center center/cover no-repeat;">
+             style="background: url('{{ section_3.web_image.url }}') center center/contain no-repeat;">
         </div>
 
         <div class="container position-relative mb-3">
@@ -557,7 +559,7 @@ a.text-light:hover {
             </span>
             {{ section_3.subtitle }}
         </p> -->
-        <p class="text-muted" style="font-size: 0.85rem;">
+        <p class="description" style="font-size: 0.85rem;">
             Lock your exclusive discount by signing up today.
         </p>
 
@@ -585,12 +587,13 @@ a.text-light:hover {
     {% for item in nav_items %}
     {% if forloop.counter == 3 %}
     <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-       class="text-primary fw-bold text-uppercase d-block text-center mt-2"
-       style="text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-       onmouseover="this.style.textDecoration='underline';" 
-       onmouseout="this.style.textDecoration='none';">
-       Learn More
-    </a>
+   class="fw-bold text-uppercase d-block text-center mt-2"
+   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+   onmouseover="this.style.textDecoration='underline';" 
+   onmouseout="this.style.textDecoration='none';">
+   Learn More
+</a>
+
     {% endif %}
     {% endfor %}
 </div>
