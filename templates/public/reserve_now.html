@@ -18,24 +18,13 @@
 
 {% block content %}
 <section class="bg-half-100 d-table w-100">
-
-
-
-
-
-    
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 d-flex justify-content-between align-items-center">
                 <!-- Lock Your Price Button (Visible Only on Mobile) -->
-                <a href="javascript:void(0)" 
-                   class="btn btn-light btn-sm text-uppercase d-block d-lg-none"
-                   data-bs-toggle="offcanvas" 
-                   data-bs-target="#offcanvasRight" 
-                   aria-controls="offcanvasRight">
+                <a href="{% url 'lock_your_price_now' items.slug %}" class="btn btn-light btn-sm text-uppercase d-block d-lg-none">
                     Lock your price now
                 </a>
-    
                 <!-- Spacer to keep alignment correct on desktop -->
                 <div class="d-none d-lg-block flex-grow-1"></div>
     
@@ -47,9 +36,6 @@
             </div>
         </div>
     </div>
-
-    
-    
 
     <div class="container">
         <div class="row">
@@ -63,9 +49,6 @@
                     </select>
                 </div>
                 
-
-
-
                 <div class="">{{items.title }}
                     {% if items.title == 'Mark I' %}
                     <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
@@ -98,27 +81,11 @@
                         
                     </div>
                     {% endfor %}
-
-                    <!-- <div class="col-md-6">
-                        <p class="text-light text-center">
-                           Roller
-                        </p>
-                        <h6 class="text-center text-black-50 text-decoration-line-through">$34,999</h6>
-                        <h2 class="text-center text-light">$27,999</h2>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="text-light text-center">
-                            TurnKey Minus
-                        </p>
-                        <h6 class="text-center text-black-50 text-decoration-line-through">$34,999</h6>
-                        <h2 class="text-center text-light">$27,999</h2>
-                    </div> -->
                 </div>
-                <a href="javascript:void(0)" class="btn btn-lg me-2 btn-light text-uppercase mt-4 mb-3 text-center" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+
+                <a href="{% url 'lock_your_price_now' items.slug %}" class="btn btn-lg me-2 btn-light text-uppercase mt-4 mb-3 text-center">
                     Lock your price now
                 </a>
-                <!-- <button id="toggleButton" type="button"
-                class="btn btn-lg me-2 btn-light text-uppercase mt-4 mb-3 text-center">Lock your price now</button> -->
                 <br>
                 <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
                         class="text-center text-decoration-underline">
@@ -186,49 +153,10 @@
                 </h1>
                 <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
                     data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
-                <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
             </div>
             <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
                 <div class="row">
-
                     <div class="col-md-6 text-dark">
-                        <div class="row">
-                            {% for package in packages %}
-                            <div class="col-md-6 text-dark">
-                                <div class="flex-1">
-                                    <h4 class="text-dark mb-0">
-                                        <!-- {{ package.name }} From $ {{ package.amount|intcomma }} -->
-                                        <!-- <span class="wrapper text-primary fs-6">
-                                                <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
-                                                <div class="tooltip">
-                                                    Price valid until March 31, 2025
-
-                                                </div>
-                                            </span> -->
-                                        <!-- <button class="btn btn-icon btn-sm" title="Price valid until March 31, 2025"><i data-feather="info" class="fea icon-sm"></i> -->
-                                        <!-- <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i> -->
-                                        <!-- </button> -->
-
-                                    </h4>
-                                    <!-- <h6 class="text-black-50 mb-0">
-                                        Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve|intcomma }}</span>
-                                    </h6> -->
-                                    <!-- <div class="wrapper text-primary fs-6">
-                                        Learn More
-                                        <div class="tooltip">
-                                            {{ package.description }}
-                                            Package comes with body mounted to chassis with dash unit and suspension pre
-                                                installed.
-                                                You will be able to choose more options as add-on features to this package
-                                                when your car is in production to make your car as close to turnkey.
-                                        </div>
-                                    </div> -->
-                                </div>
-                            </div>
-                            {% endfor %}
-
-                        </div>
-
                         <div class="col-md-12 ">
                             <h1 class="text-dark mt-4">Technical Specs</h1>
                             <div class="accordion" id="accordionExample">
@@ -410,10 +338,10 @@
                             </div>
                         </div><!--end col-->
                         <div class="col-md-12 d-grid">
-                            <button data-bs-dismiss="modal" id="closeModalButton" type="button"
+                            <a href="{% url 'lock_your_price_now' items.slug %}"
                                 class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
                                 Reserve Now
-                            </button>
+                            </a>
                             <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
                                 * Reservation today will save your spot and lock your price for either Package "Roller
                                 or Turnkey Minus"
@@ -441,156 +369,9 @@
     </div>
 </div>
 
-<!-- Offcanvas Start -->
-<div class="offcanvas offcanvas-end shadow border-0 bg-dark" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <!-- <div class="offcanvas-header p-4 border-bottom">
-        <h5 id="offcanvasRightLabel" class="mb-0">
-            <span class="l-dark logo-font">GEN-Z 40</span>
-        </h5>
-        <button type="button" class="btn-close d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
-    </div> -->
-    <div class="offcanvas-body p-4">
-        <div class="row">
-            <div class="col-md-12 mt-3">
-                <button data-bs-dismiss="offcanvas" type="button"
-                    class="btn btn-sm btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
-                        class="mdi mdi-arrow-left-thin"></i>Back</button>
-                <h3 class="display-5 fw-bold mb-0 text-uppercase text-dark">{{ items.title }}</h3>
-                {{items.amount_due}}
-                <span class="badge bg-info">Est. Delivery - Mar 31, 2025</span>
-            </div>
-            <div class="col-md-12">
-                <form id="checkout-form" method="POST" action="{% url 'create_account_before_checkout' %}">
-                    {% csrf_token %}
-                    <input type="text" value="{{ random_password }}" name="password1" hidden>
-                    <input type="text" value="{{ random_password }}" name="password2" hidden>
-                    <input type="text" value="{{ country_code }}" name="country" hidden>
-                    <input type="text" value="customer" name="role" hidden>
+{% endblock content %}
 
-                    <div class="alert alert-info alert-dismissible fade show text-dark mt-3" role="alert"
-                        style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
-                        <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i><strong
-                            class="text-uppercase">Reserve now, Configure later</strong><br>
-                        This reservation will save your position in line. When you car is available
-                        for production, we will invite you to configure and choose from dozens of options to make it
-                        complete personalized and unique.
-                        <button type="button" class="btn-close btn btn-icon btn-sm text-white float-end"
-                            style="width: 20px; height: 20px; color: #fff !important; background-color: rgb(59 130 246 / .5) !important;"
-                            data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-                    <h3 class="mt-2 text-dark">Reserve Now</h3>
-                    <div class="col-md-12 pt-2">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label text-dark">First Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control bg-white text-dark" name="first_name"
-                                    id="first_name" value="{{user_data.first_name}}" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-dark">Last Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control bg-white text-dark" name="last_name"
-                                    id="last_name" value="{{user_data.last_name}}" required />
-                            </div>
-
-                            <div class="col-md-12 mt-2">
-                                <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
-                                <input type="email" class="form-control bg-white text-dark" name="email" id="email"
-                                    value="{{user_data.email}}" required />
-                            </div>
-                            <!-- <div class="col-md-12 mt-2">
-                                <label class="form-label text-dark">Confirm Email<span
-                                        class="text-danger">*</span></label>
-                                <input type="email" class="form-control bg-white text-dark" name="confirm_email"
-                                    id="confirm_email" value="{{user_data.email}}" required />
-                            </div>
-                            <div id="errorMessage" style="color: red; display: none;"></div> -->
-                            <div class="col-md-6 mt-2 position-relative">
-                                <label class="form-label text-dark">Phone Number <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <!-- Add wrapper to hold the flag -->
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-white border-0 p-0">
-                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
-                                                alt="Country Flag" style="width: 28px; height: 28px;" />
-                                        </span>
-                                    </div>
-                                    <!-- Input field -->
-                                    <input type="tel" class="form-control bg-white text-dark pl-5" name="phone_number"
-                                        value="{{user_data.phone_number}}" id="phone_number" maxlength="10"
-                                        style="border-radius: .375rem !important;" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <label class="form-label text-dark">Delivery Zip Code<span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control bg-white text-dark" name="zip_code" id="zip_code"
-                                    value="{{ user_data.zip_code }}" maxlength="5" required />
-                            </div>
-
-                            <div class="col-md-12 text-dark">
-                                <small class="text-gray text-sm" style="font-size: 11px;">
-                                    By entering my contact information above, I authorize Alvi Automobiles to
-                                    contact me about this request and Alvi Automobiles Updates including other Alvi
-                                    Automobiles
-                                    products, services and events. I can opt out in the Alvi Automobiles app or by
-                                    unsubscribing. This is not a purchase requirement.</span>
-
-                                </small>
-                            </div>
-
-                            <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
-                                <h4 class="mb-0">Due Today
-                                    <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
-                                </h4>
-                                <!-- <h4 class="mb-0 float-end">$100</h4> -->
-                                <small>Fully Refundable</small>
-                            </div>
-                        </div>
-                        <input type="hidden" value="{{ amount_due }}" name="amount" />
-                        <input type="hidden" value="{{ items.title }}" name="package" />
-                        <!-- {{user_data.is_authenticated}}
-                            {{user_data.user_id}} -->
-                        <div class="d-grid mt-3 mb-1">
-                            <button type="submit"
-                                class="mb-1 btn btn-secondary text-dark text-uppercase">
-                                <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
-                                Reserve Now
-                                <span class="spinner-border spinner-border-sm" id="pro1" role="status"
-                                    aria-hidden="true" style="display: none;"></span>
-                            </button>
-                        </div>
-                        <div class="col-md-12 text-dark mb-5">
-                            <small class="text-dark text-sm mb-5" style="font-size: 11px;">
-                                By placing this order, I understand that this is just the reservation fee and not a
-                                car purchase price.
-                                The Final price of the car will depend on options and features I choose. Reservation
-                                today will save your spot and lock your price for either Package "Roller or Turnkey
-                                Minus"
-                            </small>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Offcanvas End -->
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("closeModalButton").addEventListener("click", function () {
-            var modal = bootstrap.Modal.getInstance(document.getElementById("fullscreenModal"));
-            modal.hide(); // Close the modal
-
-            var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasRight"));
-            offcanvas.show(); // Open the sidebar
-        });
-    });
-</script>
-
-
+{% block script %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const carSelect = document.getElementById("car-select");
@@ -618,11 +399,4 @@
         });
     });
     </script>
-    
-
-
-{% endblock content %}
-
-{% block script %}
-
 {% endblock script %}

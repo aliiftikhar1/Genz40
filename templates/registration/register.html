@@ -8,6 +8,10 @@
     #id_phone_number {
         padding-left: 50px !important;
     }
+    .form-control{
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+    }
 </style>
 {% endblock %}
 
@@ -18,7 +22,7 @@
         <div class="row align-items-center">
             <div class="col-lg-7 col-md-6">
                 <div class="me-lg-5">   
-                    <img src="{% static 'images/user/recovery.svg' %}" class="img-fluid d-block mx-auto" alt="">
+                    <img src="{% static 'images/logo.jpg' %}" class="img-fluid d-block mx-auto" alt="">
                 </div>
             </div>
             <div class="col-lg-5 col-md-6">
@@ -32,19 +36,21 @@
                             <input type="text" value="{{ country_code }}" name="country" hidden>
                             <input type="text" value="customer" name="role" hidden>
                             <div class="row mt-4">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="mb-3">
                                         <label class="form-label">First Name <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute"></i>
                                             {{ form.first_name|without_label }}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="mb-3">
                                         <label class="form-label">Last Name <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute"></i>
                                             {{ form.last_name|without_label }}
                                         </div>
                                     </div>
@@ -53,6 +59,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Email <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons position-absolute"></i>
                                             {{ form.email|without_label }}
                                             {% if form.email.errors %}
                                                 <div class="alert alert-danger mt-2">
@@ -130,7 +137,7 @@
                                 </div> -->
 
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
+                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a></label>
                                 </div>
 
                                 <div class="col-md-12 mb-0">
@@ -140,7 +147,7 @@
                                         </button>
                                     </div>
                                     <div class="mx-auto">
-                                        <p class="mb-0 mt-3"><small class="text-dark me-2">Already have an account ?</small><a href="{% url 'customer_login' %}" class="text-center">Login</a></p>
+                                        <p class="mb-0 mt-3"><small class="text-dark me-2">Already have an account ?</small><a href="{% url 'customer_login' %}" class="text-dark fw-bold text-decoration-underline">Login</a></p>
                                     </div>
                                 </div><!--end col-->
                             </div>
@@ -163,7 +170,31 @@ $(document).ready(function() {
     }, 5000);
 });
 </script>
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let phoneInput = document.getElementById("{{ form.phone_number.id_for_label }}"); // Get the form field
+    
+        if (phoneInput) {
+            phoneInput.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+                if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+                let formattedValue = value;
+    
+                if (value.length > 6) {
+                    formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+                } else if (value.length > 3) {
+                    formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+                } else if (value.length > 0) {
+                    formattedValue = `(${value}`;
+                }
+    
+                e.target.value = formattedValue;
+            });
+        }
+    });
+    </script>
 <script>
     $("#register-form").submit(function (e) {
     event.preventDefault();

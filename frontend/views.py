@@ -8,6 +8,7 @@ from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, Post
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from frontend.forms import PostSubscribeForm
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -27,17 +28,15 @@ from django.utils.encoding import force_bytes, force_str
 from .tokens import account_activation_token
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
+MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
 
 def get_country_info(request):
     ip = get_client_ip(request)
-
     # response = requests.get(f'http://api.ipstack.com/{ip}?access_key={settings.IPSTACK_API_KEY}')
     # data = response.json()
     # country_code = data.get('country_code')
     return ip
 
-# Create your views here.
 def index(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -63,7 +62,32 @@ def index(request):
 
     return render(request, 'public/index.html', context)
 
-MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
+def about(request):
+    return render(request, 'public/about.html', {
+        'navbar_style': 'dark'
+    })
+
+def blog(request):
+    # items = get_object_or_404(PostNavItem, slug=slug)
+    return render(request, 'public/blog.html', {
+        'navbar_style': 'dark'
+    })
+
+def blog_details(request):
+    # items = get_object_or_404(PostNavItem, slug=slug)
+    return render(request, 'public/blog_details.html', {
+        'navbar_style': 'dark',
+        # 'details': items
+    })
+
+def contact_us(request):
+    return render(request, 'public/contact_us.html')
+
+def terms_conditions(request):
+    return render(request, 'public/terms_conditions.html')
+
+def privacy_policy(request):
+    return render(request, 'public/privacy_policy.html')
 
 def subscribe_email(email):
     """Subscribe an email to Mailchimp Audience List."""
@@ -209,40 +233,7 @@ def custom_login(request):
             return JsonResponse({"message": 'Invalid username or password.', 'is_success': False})
     else:
         return render(request, 'registration/login.html')
-
-@login_required
-def dashboard(request):
-    header = 'Dashboard'
-    print('-request.user.role', request.user.role)
-    if request.user.role == 'admin':
-        return render(request, "admin/dashboard.html", {'header': header })
-    elif request.user.role == 'customer':
-        return redirect('my_vehicles')
-        # return render(request, "customer/dashboard.html", {'header': header })
-    else:
-        section_1 = get_object_or_404(PostLandingPageImages, section=1)
-        section_2 = get_object_or_404(PostLandingPageImages, section=2)
-        section_3 = get_object_or_404(PostLandingPageImages, section=3)
-        random_password = generate_random_password()
-        ip = get_country_info(request)
-        response = requests.get(f'https://ipinfo.io/{ip}/json')
-        data = response.json()
-        country_code = data.get('country')
-        # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-        country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
-        context = {
-            'country_code': country_code,
-            'country_flag_url': country_flag_url,
-            'section_1': section_1,
-            'section_2': section_2,
-            'section_3': section_3,
-            'random_password': random_password
-        }
-
-        return render(request, 'public/index.html', context)
-        # return render(request, "customer/dashboard.html", {'header': header })
-        # return redirect('index')
-    
+  
 def subscribe(request):
     if request.method == 'POST':
         subscribe_email(request.POST['email'])
@@ -269,28 +260,28 @@ def navitem_detail(request, slug):
                   {'items': items,
                    'packages': package})
 
-def car_details(request, slug):
-    items = get_object_or_404(PostNavItem, slug=slug)
-    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
-    amount_due = package_details[0].amount_due
-    # package = items.details.filter(is_active=True).order_by('position')
-    print('---------package', package_details[0].amount_due)
-    random_password = generate_random_password()
-    ip = get_country_info(request)
-    # ip = "103.135.189.223"
-    response = requests.get(f'https://ipinfo.io/{ip}/json')
-    data = response.json()
-    country_code = data.get('country')
-    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+# def car_details(request, slug):
+#     items = get_object_or_404(PostNavItem, slug=slug)
+#     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+#     amount_due = package_details[0].amount_due
+#     # package = items.details.filter(is_active=True).order_by('position')
+#     print('---------package', package_details[0].amount_due)
+#     random_password = generate_random_password()
+#     ip = get_country_info(request)
+#     # ip = "103.135.189.223"
+#     response = requests.get(f'https://ipinfo.io/{ip}/json')
+#     data = response.json()
+#     country_code = data.get('country')
+#     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+#     country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
 
-    return render(request, 'public/car_details.html',
-                  {'items': items,
-                   'packages': package_details,
-                   'amount_due': amount_due,
-                   'country_code': country_code,
-                    'country_flag_url': country_flag_url,
-                    'random_password': random_password})
+#     return render(request, 'public/car_details.html',
+#                   {'items': items,
+#                    'packages': package_details,
+#                    'amount_due': amount_due,
+#                    'country_code': country_code,
+#                     'country_flag_url': country_flag_url,
+#                     'random_password': random_password})
 
 def reserve_now(request, slug):
     email = request.GET.get('email', '')
@@ -319,32 +310,29 @@ def reserve_now(request, slug):
                     'random_password': random_password,
                     'email': email})
 
-def about(request):
-    return render(request, 'public/about.html', {
-        'navbar_style': 'dark'
-    })
-
-def blog(request):
-    # items = get_object_or_404(PostNavItem, slug=slug)
-    return render(request, 'public/blog.html', {
-        'navbar_style': 'dark'
-    })
-
-def blog_details(request):
-    # items = get_object_or_404(PostNavItem, slug=slug)
-    return render(request, 'public/blog_details.html', {
-        'navbar_style': 'dark',
-        # 'details': items
-    })
-
-def contact_us(request):
-    return render(request, 'public/contact_us.html')
-
-def terms_conditions(request):
-    return render(request, 'public/terms_conditions.html')
-
-def privacy_policy(request):
-    return render(request, 'public/privacy_policy.html')
+def lock_your_price_now(request, slug):
+    email = request.GET.get('email', '')
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    amount_due = package_details[0].amount_due
+    # package = items.details.filter(is_active=True).order_by('position')
+    print('---------package', package_details[0].amount_due)
+    random_password = generate_random_password()
+    ip = get_country_info(request)
+    # ip = "103.135.189.223"
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    return render(request, 'public/lock_your_price_now.html',
+                  {'items': items,
+                   'packages': package_details,
+                   'amount_due': amount_due,
+                   'country_code': country_code,
+                    'country_flag_url': country_flag_url,
+                    'random_password': random_password,
+                    'email': email})
 
 def save_contact(request):
     if request.method == 'POST':
@@ -365,27 +353,56 @@ def save_contact(request):
 def generate_reference_number():
     # Get today's date in MMDDYY format
     today_date = datetime.datetime.today().strftime('%m%d%y')
-
     # Get the last inserted number from the database
     last_entry = PostPayment.objects.order_by('-created_at').first()  # Get last record
     last_number = int(last_entry.rn_number[-4:]) if last_entry else 1004  # Start from 1000 if no entry exists
-    print('-------last_number', last_number)
     # Increment the last number
     new_number = last_number + 1
-
     # Generate the new reference number
     reference_number = f"RN{today_date}{new_number:04d}"  # Ensures 4-digit number format
-
     return reference_number
 
+# @csrf_exempt
 def create_account_before_checkout(request):
     if request.method == 'POST':
         new_ref = generate_reference_number()
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
         email = request.POST['email']
+        user = CustomUser.objects.filter(email=email, phone_number=request.POST['phone_number']).first()
 
-        if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
+        if user:
+            # Both email and phone exist in the same account → Proceed further
+            login(request, user)
+            fullName = user.first_name+ ' '+user.last_name
+            # session_data = create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
+            session_data = {'product_name': product_name, 'amount': amount, 
+                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
+            # Ensure session_data is returned as a JSON response
+            return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
+            # return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
+            # return JsonResponse({"message": "User exists, continue further"}, status=200
+                        
+        # Check if a user already exists with the same email or phone number
+        email_exists = CustomUser.objects.filter(email=email).exists()
+        phone_exists = CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists()
+
+        # if CustomUser.objects.filter(email=email).exists():
+        #     return JsonResponse({"message": "This email is already registered!", 'is_success': False})
+
+        # if CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists():
+        #     return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
+        
+        if email_exists and phone_exists:
+            return JsonResponse({"message": "This email and phone number belong to different users.", 'is_success': False})
+        elif email_exists:
+            return JsonResponse({"message": "This email is already registered.", 'is_success': False})
+        elif phone_exists:
+            return JsonResponse({"message": "This phone number is already registered.", 'is_success': False})
+        else:
+
+        # if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
+            print('-----not')
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
@@ -397,15 +414,72 @@ def create_account_before_checkout(request):
                 login(request, user)
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
-                    return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)     
-        else:
-            user = CustomUser.objects.filter(email=email).first()
-            if user:
-                login(request, user)
-                fullName = user.first_name+ ' '+user.last_name
-                return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
-             
-def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
+                    session_data = {'product_name': product_name, 'amount': amount, 
+                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
+                    return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
+                    # return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)     
+        # else:
+        #     print('-----else')
+        #     user = CustomUser.objects.filter(email=email).first()
+        #     if user:
+        #         login(request, user)
+        #         fullName = user.first_name+ ' '+user.last_name
+        #         return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
+
+def create_checkout_session(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON request body
+            email = data.get("email")
+            product_name = data.get("product_name")
+            amount = data.get("amount")
+            full_name = data.get("full_name")
+            user_id = data.get("id")
+            new_ref = data.get("new_ref")
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': "usd",
+                        'product_data': {
+                            'name': product_name,
+                            'description': 'This is a test product.',
+                        },
+                        'unit_amount': int(amount) * 100,  # Convert to cents
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url='https://genz40.com/success/',
+                cancel_url='https://genz40.com/cancel/',
+                # success_url='http://127.0.0.1:8000/success/',
+                # cancel_url='http://127.0.0.1:8000/cancel/',
+                customer_email=email,
+                metadata={
+                    'full_name': full_name,
+                    'email': email,
+                    'new_ref': new_ref,
+                    'product_name': product_name
+                },
+            )
+
+            return JsonResponse({"is_success": True, "checkout_url": session.url})
+        except Exception as e:
+            return JsonResponse({"is_success": False, "message": str(e)}, status=400)
+
+    return JsonResponse({"is_success": False, "message": "Invalid request"}, status=405)
+
+# def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
+def create_checkout_session11(request):
+    if request.method == "POST":
+        data = json.loads(request.body)  # Parse JSON request body
+        email = data.get("email")
+        product_name = data.get("product_name")
+        amount = data.get("amount")
+        full_name = data.get("full_name")
+        user_id = data.get("id")
+        new_ref = data.get("new_ref")
     currency = "usd"
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
@@ -501,10 +575,48 @@ def stripe_webhook(request):
     return JsonResponse({'success': True})
 
 @login_required
+def dashboard(request):
+    header = 'Dashboard'
+    print('-request.user.role', request.user.role)
+    if request.user.role == 'admin':
+        return render(request, "admin/dashboard.html", {'header': header })
+    elif request.user.role == 'customer':
+        return redirect('my_vehicles')
+        # return render(request, "customer/dashboard.html", {'header': header })
+    else:
+        section_1 = get_object_or_404(PostLandingPageImages, section=1)
+        section_2 = get_object_or_404(PostLandingPageImages, section=2)
+        section_3 = get_object_or_404(PostLandingPageImages, section=3)
+        random_password = generate_random_password()
+        ip = get_country_info(request)
+        response = requests.get(f'https://ipinfo.io/{ip}/json')
+        data = response.json()
+        country_code = data.get('country')
+        # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+        country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+        context = {
+            'country_code': country_code,
+            'country_flag_url': country_flag_url,
+            'section_1': section_1,
+            'section_2': section_2,
+            'section_3': section_3,
+            'random_password': random_password
+        }
+
+        return render(request, 'public/index.html', context)
+        # return render(request, "customer/dashboard.html", {'header': header })
+        # return redirect('index')
+  
+@login_required
 def my_vehicles(request):
     reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
+    order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
+    print('-----order_vehicles', order_vehicles)
+    # amount_due = order_vehicles[0].amount_due
     context = {
-        'reserverd_vehicles':reserverd_vehicles
+        'reserverd_vehicles':reserverd_vehicles,
+        'order_vehicles': order_vehicles,
+
     }
     return render(request, 'customer/reserved_vehicles/my_vehicles.html', context, {'is_footer_required': True})
 
@@ -532,8 +644,40 @@ def profile_settings(request):
 def customer_message(request):
     return render(request, 'customer/message/message.html', {'is_footer_required': True})
 
+@login_required
+def email_verify_from_dashboard(request):
+    print('------request.user.is_authenticated', request.user.is_authenticated)
+    if request.user.is_authenticated:
+        current_site = get_current_site(request)
+        mail_subject = "Activate Your Account"
+        context = {
+        "user": request.user,
+            "domain": current_site.domain,
+            "uid": urlsafe_base64_encode(force_bytes(request.user.pk)),
+            "token": account_activation_token.make_token(request.user),
+        }
+        
+        html_content = render_to_string("email/send_email_verification.html", context)  # HTML content
+        plain_text = strip_tags(html_content) 
 
+        send_mail(
+        subject=mail_subject,
+        message=plain_text,
+        from_email="noreply@example.com",
+        recipient_list=[request.user.email],
+        html_message=html_content, 
+    )
 
+        # message = render_to_string("email/send_email_verification.html", {
+        #     "user": request.user,
+        #     "domain": current_site.domain,
+        #     "uid": urlsafe_base64_encode(force_bytes(request.user.pk)),
+        #     "token": account_activation_token.make_token(request.user),
+        # })
+        send_mail(mail_subject, html_content, settings.EMAIL_FROM, [request.user.email])
+        return JsonResponse({"is_success": True, "message": "Activation mail sent successfully."})
+    else:
+        return JsonResponse({"is_success": False, "message": "Failed to sent. Please try again."})
 
 
 def car_selector(request):

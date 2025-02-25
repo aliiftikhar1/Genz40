@@ -1,6 +1,5 @@
-from django.urls import path, re_path
+from django.urls import path
 from . import views
-from .views import navitem_detail, car_details
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -20,13 +19,16 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('save-contact/', views.save_contact, name='save_contact'),
 
+    path('lock-your-price-now/<slug:slug>/', views.lock_your_price_now, name='lock_your_price_now'),
     path('create-account-before-checkout/', views.create_account_before_checkout, name='create_account_before_checkout'),
-    # path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
+    path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
     path('success/', views.payment_success, name='payment_success'),
     path('cancel/', views.payment_cancel, name='payment_cancel'),
     path('webhook/', views.stripe_webhook, name='stripe_webhook'),
+    
     path('payment-history/', views.payment_history, name='payment_history'),
     path('my-vehicles/', views.my_vehicles, name='my_vehicles'),
+    path('email-verify-from-dashboard', views.email_verify_from_dashboard, name='email_verify_from_dashboard'),
     path('my-vehicle-details/<uuid:id>/', views.my_vehicle_details, name='my_vehicle_details'),
     path('profile-settings/', views.profile_settings, name='profile_settings'),
     path('customer-message/', views.customer_message, name='customer_message'),
