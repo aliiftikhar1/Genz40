@@ -5,13 +5,23 @@
 {% load frontend_custom_filters %}
 {% block header %}
 <style>
+    body{
+        background-color: #fff !important;
+    }
+    .shadow{
+        box-shadow: 0 0 3px rgba(173,181,189,1)!important
+    }
+
     #id_phone_number {
         padding-left: 50px !important;
     }
     .form-control{
         padding-left: 40px !important;
         padding-right: 40px !important;
+        color: #000 !important;
+        background-color: #fff !important;
     }
+
 </style>
 {% endblock %}
 
@@ -19,16 +29,10 @@
  <!-- Hero Start -->
  <section class="bg-home d-flex align-items-center">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7 col-md-6">
-                <div class="me-lg-5">   
-                    <img src="{% static 'images/logo.jpg' %}" class="img-fluid d-block mx-auto" alt="">
-                </div>
-            </div>
-            <div class="col-lg-5 col-md-6">
-                <div class="card shadow rounded border-0">
-                    <div class="card-body">
-                        <h4 class="card-title text-center">Sign Up</h4>  
+        <div class="row">
+            <div class="col-12">
+                <div class="card form-signin p-4 rounded shadow bg-dark">
+                    <h4 class="card-title text-center text-light">Sign Up</h4>  
                         <form method="post" id="register-form" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="text" value="{{ random_password }}" name="password1" hidden>
@@ -38,9 +42,9 @@
                             <div class="row mt-4">
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <label class="form-label text-light">First Name <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons position-absolute"></i>
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute text-light"></i>
                                             {{ form.first_name|without_label }}
                                         </div>
                                     </div>
@@ -48,18 +52,18 @@
 
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        <label class="form-label text-light">Last Name <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons position-absolute"></i>
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute text-light"></i>
                                             {{ form.last_name|without_label }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <label class="form-label text-light">Email <span class="text-danger">*</span></label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="mail" class="fea icon-sm icons position-absolute"></i>
+                                            <i data-feather="mail" class="fea icon-sm icons position-absolute text-light"></i>
                                             {{ form.email|without_label }}
                                             {% if form.email.errors %}
                                                 <div class="alert alert-danger mt-2">
@@ -74,7 +78,7 @@
 
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                        <label class="form-label text-light">Phone Number <span class="text-danger">*</span></label>
                                         {{form.phone_number.errors}}
                                         <div class="form-icon position-relative">
                                             <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
@@ -89,55 +93,8 @@
                                         </div>
                                     </div>
                                 </div>
-                               
-                                <!-- <div class="col-md-12">
-                                    <div class="mb-3">
-                                    
-                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons"></i>
-                                            <input name="first_name" id="first_name" type="text" class="form-control ps-5 bg-transparent" placeholder="First Name" required="">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                       
-                                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons"></i>
-                                            <input name="last_name" id="last_name" type="text" class="form-control ps-5" placeholder="Last Name" required="">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                    
-                                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                                        <div class="form-icon position-relative">
-                                            <i data-feather="mail" class="fea icon-sm icons"></i>
-                                            <input type="email" id="email" class="form-control ps-5" placeholder="Email" name="email" required="">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                                        <div class="form-icon position-relative">
-                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
-                                            <input name="phone_number" id="phone_number" type="number" class="form-control ps-5" placeholder="Phone Number">
-                                        </div>
-                                    </div> 
-                                </div>
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary">Privacy Policy</a></label>
-                                </div> -->
-
-                                <div class="col-md-12 mb-2">
-                                    <label class="form-check-label" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a></label>
+                                    <label class="form-check-label text-light" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a></label>
                                 </div>
 
                                 <div class="col-md-12 mb-0">
@@ -147,22 +104,28 @@
                                         </button>
                                     </div>
                                     <div class="mx-auto">
-                                        <p class="mb-0 mt-3"><small class="text-dark me-2">Already have an account ?</small><a href="{% url 'customer_login' %}" class="text-dark fw-bold text-decoration-underline">Login</a></p>
+                                        <p class="mb-0 mt-3"><small class=" text-light me-2">Already have an account ?</small><a href="{% url 'customer_login' %}" class="text-primary fw-bold text-decoration-underline">Login</a></p>
                                     </div>
                                 </div><!--end col-->
                             </div>
                             <!--end row-->
                         </form><!--end form-->
-                    </div>
                 </div>
-            </div> <!--end col-->
-        </div><!--end row-->
+            </div>
+        </div>
     </div> <!--end container-->
-</section><!--end section-->
-<!-- Hero End -->
+</section>
 {% endblock content %}
 
 {% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("{{ form.email.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.first_name.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.last_name.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.phone_number.id_for_label }}").removeAttribute("placeholder");
+    });
+</script>
 <script>
 $(document).ready(function() {
     setTimeout(function() {

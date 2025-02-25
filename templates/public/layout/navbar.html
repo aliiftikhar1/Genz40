@@ -32,7 +32,7 @@
         {% else %}
             <ul class="buy-button list-inline mb-0">
                 <li class="list-inline-item mb-0 text-uppercase">
-                    <a href="javascript:void(0)" class="text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <a href="{% url 'customer_login' %}" class="text-white">
                         <!-- <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-soft-success"><i data-feather="user" class="fea icon-sm"></i></span></div> -->
                         <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-success"><i data-feather="user" class="fea icon-sm"></i></span></div>
                     </a>
@@ -112,7 +112,7 @@
                 letter-spacing: 1px;
                 text-transform: uppercase;
                 font-family: var(--bs-font-sans-serif);">
-                <a href="javascript:void(0)" class="text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                <a href="{% url 'customer_login' %}" class="text-white">
                     Account
                 </a>
             </li>

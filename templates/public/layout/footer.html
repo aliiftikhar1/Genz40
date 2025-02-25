@@ -336,8 +336,13 @@
             contentType: false,
             crossDomain: true,
             success: function (response) {
+
                 if (response.is_success) {
                     toastr.success(response.message);
+                   // Close the Bootstrap offcanvas
+                    var offcanvasElement = document.getElementById("switcher-sidebar");
+                    var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    offcanvas.hide();
                 } else {
                     toastr.error(response.message);
                 }

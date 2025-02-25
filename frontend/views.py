@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import get_client_ip
 from .forms import PostContactForm, RegisterForm
-from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
+from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -336,20 +336,35 @@ def lock_your_price_now(request, slug):
 
 def save_contact(request):
     if request.method == 'POST':
-        form = PostContactForm(request.POST)
-        if form.is_valid():
-            form.save()
-            subject = 'Thank you for Newsletter subscribe - www.genz40.com'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [settings.ADMIN_EMAIL]
-            c = {'name': 'Salman'}
-            html_content = render_to_string('email/contact_admin.html', c)
-            send_mail(subject, html_content, email_from, recipient_list, fail_silently=False,
-                        html_message=html_content)
-            return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
-        else:
-            return JsonResponse({"message": 'Something went wrong. Please try again!', 'is_success': False})
+        mail_subject = "Thank you for contacting us"
+        context = {
+        'admin': 'Salman',
+        'name': request.POST['name'],
+        'email': request.POST['email'],
+        'phone_number': request.POST['phone_number'],
+        'car': request.POST['car'],
+        'comments': request.POST['comments']
+        }
+        html_content = render_to_string("email/contact_admin.html", context)  # HTML content
+        plain_text = strip_tags(html_content) 
 
+        send_mail(
+        subject=mail_subject,
+        message=plain_text,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[settings.ADMIN_EMAIL],
+        html_message=html_content, 
+         )
+        if not PostContactUs.objects.filter(email=request.POST['email']).exists():
+            form = PostContactForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+            else:
+                return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+        else:
+            return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+        
 def generate_reference_number():
     # Get today's date in MMDDYY format
     today_date = datetime.datetime.today().strftime('%m%d%y')
@@ -362,7 +377,6 @@ def generate_reference_number():
     reference_number = f"RN{today_date}{new_number:04d}"  # Ensures 4-digit number format
     return reference_number
 
-# @csrf_exempt
 def create_account_before_checkout(request):
     if request.method == 'POST':
         new_ref = generate_reference_number()
@@ -567,6 +581,20 @@ def stripe_webhook(request):
         payment = PostPayment.objects.get(stripe_payment_id=payment_intent['payment_intent'])
         payment.status = payment_intent['status']
         payment.save()
+
+        mail_subject = "New car reserved - GEN-Z 40"
+        context = {
+        'admin': 'Salman'
+        }
+        html_content = render_to_string("email/contact_admin.html", context)  # HTML content
+        plain_text = strip_tags(html_content) 
+        send_mail(
+        subject=mail_subject,
+        message=plain_text,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[settings.ADMIN_EMAIL],
+        html_message=html_content, 
+         )
     elif event['type'] == 'payment_intent.succeeded':
         print('=======================')
     else:
@@ -611,12 +639,13 @@ def dashboard(request):
 def my_vehicles(request):
     reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
     order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
+    vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
     print('-----order_vehicles', order_vehicles)
     # amount_due = order_vehicles[0].amount_due
     context = {
         'reserverd_vehicles':reserverd_vehicles,
         'order_vehicles': order_vehicles,
-
+        'vehicles': vehicles
     }
     return render(request, 'customer/reserved_vehicles/my_vehicles.html', context, {'is_footer_required': True})
 
@@ -646,12 +675,11 @@ def customer_message(request):
 
 @login_required
 def email_verify_from_dashboard(request):
-    print('------request.user.is_authenticated', request.user.is_authenticated)
     if request.user.is_authenticated:
         current_site = get_current_site(request)
         mail_subject = "Activate Your Account"
         context = {
-        "user": request.user,
+            "user": request.user.first_name +' '+ request.user.last_name,
             "domain": current_site.domain,
             "uid": urlsafe_base64_encode(force_bytes(request.user.pk)),
             "token": account_activation_token.make_token(request.user),
@@ -663,18 +691,10 @@ def email_verify_from_dashboard(request):
         send_mail(
         subject=mail_subject,
         message=plain_text,
-        from_email="noreply@example.com",
+        from_email=settings.EMAIL_FROM,
         recipient_list=[request.user.email],
         html_message=html_content, 
     )
-
-        # message = render_to_string("email/send_email_verification.html", {
-        #     "user": request.user,
-        #     "domain": current_site.domain,
-        #     "uid": urlsafe_base64_encode(force_bytes(request.user.pk)),
-        #     "token": account_activation_token.make_token(request.user),
-        # })
-        send_mail(mail_subject, html_content, settings.EMAIL_FROM, [request.user.email])
         return JsonResponse({"is_success": True, "message": "Activation mail sent successfully."})
     else:
         return JsonResponse({"is_success": False, "message": "Failed to sent. Please try again."})
