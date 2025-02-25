@@ -458,7 +458,8 @@ def create_checkout_session(request):
                         'currency': "usd",
                         'product_data': {
                             'name': product_name,
-                            'description': 'This is a test product.',
+                            'description': 'This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.',
+                            'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
                         },
                         'unit_amount': int(amount) * 100,  # Convert to cents
                     },
