@@ -249,15 +249,26 @@ a.text-light:hover {
                             <p class="description">Lock your exclusive discount by signing up today.</p>
 
                             {% for item in nav_items %}
-                            {% if forloop.first %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-                               class="text-primary fw-bold text-uppercase d-block mt-1"
-                               style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
-                               onmouseover="this.style.textDecoration='underline';"
-                               onmouseout="this.style.textDecoration='none';">
-                                Learn More
-                            </a>
-                            {% endif %}
+                                {% if forloop.first %}
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                           class="text-primary fw-bold text-uppercase">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                    <div class="col-auto">
+                                        <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="{% url 'tech_specs' item.slug %}" 
+                                           class="text-primary fw-bold text-uppercase">
+                                            Technical Specs
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                {% endif %}
                             {% endfor %}
                         </div>
 
@@ -315,18 +326,37 @@ a.text-light:hover {
 
                 {% for item in nav_items %}
                 {% if forloop.counter == 2 %}
-                <button id="getStartedBtnMfirst" type="submit" class="btn btn-success w-100 mt-2"
+
+                <button id="getStartedBtnMfirst" type="submit" class="btn btn-success w-100 mt-2 mb-3"
                         style="height: 50px; font-size: 1rem; font-weight: bold;
                                background-color: #28a745; border: none;">
                     GET STARTED
                 </button>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                           class="text-primary text-uppercase">
+                            Learn More
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'tech_specs' item.slug %}" 
+                           class="text-primary text-uppercase">
+                            Technical Specs
+                        </a>
+                    </div>
+                </div>
+
                 {% endif %}
                 {% endfor %}
             </div>
         </form>
     </div>
 
-    {% for item in nav_items %}
+    <!-- {% for item in nav_items %}
     {% if forloop.first %}
     <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
    class="fw-bold text-uppercase d-block text-center mt-2"
@@ -337,7 +367,7 @@ a.text-light:hover {
 </a>
 
     {% endif %}
-    {% endfor %}
+    {% endfor %} -->
 </div>
 
 <!-- Section 2 -->
@@ -372,13 +402,31 @@ a.text-light:hover {
 
                             {% for item in nav_items %}
                             {% if forloop.counter == 2 %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                       class="text-primary fw-bold text-uppercase">
+                                        Learn More
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'tech_specs' item.slug %}" 
+                                       class="text-primary fw-bold text-uppercase">
+                                        Technical Specs
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
                                class="text-primary fw-bold text-uppercase d-block mt-1"
                                style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
                                onmouseover="this.style.textDecoration='underline';"
                                onmouseout="this.style.textDecoration='none';">
                                 Learn More
-                            </a>
+                            </a> -->
                             {% endif %}
                             {% endfor %}
                         </div>
@@ -446,7 +494,7 @@ a.text-light:hover {
                 {% for item in nav_items %}
                 {% if forloop.counter == 2 %}
                 <button id="getStartedBtnMsecond" type="submit"
-                        class="btn btn-success w-100 mt-2"
+                        class="btn btn-success w-100 mt-2 mb-3"
                         style="height: 50px; font-size: 1rem; font-weight: bold;
                                background-color: #28a745; border: none;">
                     GET STARTED
@@ -455,20 +503,32 @@ a.text-light:hover {
                 {% endfor %}
             </div>
         </form>
-    </div>
 
-    {% for item in nav_items %}
+        {% for item in nav_items %}
     {% if forloop.counter == 2 %}
-    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-   class="fw-bold text-uppercase d-block text-center mt-2"
-   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-   onmouseover="this.style.textDecoration='underline';" 
-   onmouseout="this.style.textDecoration='none';">
-   Learn More
-</a>
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+               class="text-primary text-uppercase">
+                Learn More
+            </a>
+        </div>
+        <div class="col-auto">
+            <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'tech_specs' item.slug %}" 
+               class="text-primary text-uppercase">
+                Technical Specs
+            </a>
+        </div>
+    </div>
 
     {% endif %}
     {% endfor %}
+    </div>
+
+    
 </div>
 
 <!-- Section 3 -->
@@ -504,14 +564,23 @@ a.text-light:hover {
 
                             {% for item in nav_items %}
                             {% if forloop.counter == 3 %}
-                            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-                               class="text-primary fw-bold text-uppercase d-block mt-1"
-                               style="text-decoration: none; font-size: 1rem;
-                                      transition: all 0.3s ease-in-out;"
-                               onmouseover="this.style.textDecoration='underline';"
-                               onmouseout="this.style.textDecoration='none';">
-                                Learn More
-                            </a>
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                       class="text-primary fw-bold text-uppercase">
+                                        Learn More
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'tech_specs' item.slug %}" 
+                                       class="text-primary fw-bold text-uppercase">
+                                        Technical Specs
+                                    </a>
+                                </div>
+                            </div>
                             {% endif %}
                             {% endfor %}
                         </div>
@@ -573,7 +642,7 @@ a.text-light:hover {
                 {% for item in nav_items %}
                 {% if forloop.counter == 3 %}
                 <button id="getStartedBtnMthird" type="submit"
-                        class="btn btn-success w-100 mt-2"
+                        class="btn btn-success w-100 mt-2 mb-3"
                         style="height: 50px; font-size: 1rem; font-weight: bold;
                                background-color: #28a745; border: none;">
                     GET STARTED
@@ -582,20 +651,32 @@ a.text-light:hover {
                 {% endfor %}
             </div>
         </form>
+
+        {% for item in nav_items %}
+        {% if forloop.counter == 3 %}
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                   class="text-primary text-uppercase">
+                    Learn More
+                </a>
+            </div>
+            <div class="col-auto">
+                <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'tech_specs' item.slug %}" 
+                   class="text-primary text-uppercase">
+                    Technical Specs
+                </a>
+            </div>
+        </div>
+    
+        {% endif %}
+        {% endfor %}
     </div>
 
-    {% for item in nav_items %}
-    {% if forloop.counter == 3 %}
-    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
-   class="fw-bold text-uppercase d-block text-center mt-2"
-   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
-   onmouseover="this.style.textDecoration='underline';" 
-   onmouseout="this.style.textDecoration='none';">
-   Learn More
-</a>
-
-    {% endif %}
-    {% endfor %}
+   
 </div>
 
 <!-- Community Form (Desktop) -->
@@ -954,6 +1035,7 @@ a.text-light:hover {
         </div><!-- row end -->
     </div><!-- container end -->
 </section>
+
 {% endblock content %}
 
 {% block script %}
