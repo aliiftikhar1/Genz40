@@ -19,6 +19,7 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('save-contact/', views.save_contact, name='save_contact'),
 
+    path('tech-specs/<slug:slug>/', views.tech_specs, name='tech_specs'),
     path('lock-your-price-now/<slug:slug>/', views.lock_your_price_now, name='lock_your_price_now'),
     path('create-account-before-checkout/', views.create_account_before_checkout, name='create_account_before_checkout'),
     path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),

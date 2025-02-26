@@ -44,6 +44,7 @@ def index(request):
     section_1 = get_object_or_404(PostLandingPageImages, section=1)
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
+    items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
     ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
@@ -57,10 +58,21 @@ def index(request):
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
-        'random_password': random_password
+        'random_password': random_password,
+        'items': items
     }
 
     return render(request, 'public/index.html', context)
+
+def tech_specs(request, slug):
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    context = {
+        'items': items,
+        'package_details': package_details
+    }
+    print('-------con', context)
+    return render(request, 'public/technical_specs.html', context)
 
 def about(request):
     return render(request, 'public/about.html', {
@@ -699,7 +711,6 @@ def email_verify_from_dashboard(request):
         return JsonResponse({"is_success": True, "message": "Activation mail sent successfully."})
     else:
         return JsonResponse({"is_success": False, "message": "Failed to sent. Please try again."})
-
 
 def car_selector(request):
     return render(request, "public/car_selector.html")  # Ensure this matches your template name
