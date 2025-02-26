@@ -325,7 +325,7 @@ a.text-light:hover {
                               height: 50px; border: 1px solid #ccc; text-align: left;">
 
                 {% for item in nav_items %}
-                {% if forloop.counter == 2 %}
+                {% if forloop.first %}
 
                 <button id="getStartedBtnMfirst" type="submit" class="btn btn-success w-100 mt-2 mb-3"
                         style="height: 50px; font-size: 1rem; font-weight: bold;
