@@ -34,6 +34,10 @@ urlpatterns = [
     path('deactivate/<uuid:id>/', views.navitem_deactivate, name='navitem_deactivate'),
     path('upload-images/', views.upload_images, name='create_parent_and_images'),
 
+    path('customer-list', views.customer_list, name='customer_list'),
+    path('community-member-list', views.community_member_list, name='community_member_list'),
+    path('subscriber-list', views.subscriber_list, name='subscriber_list'),
+    
     path('packages/', package_list, name='package_list'),
     path('packages/add/', package_add, name='package_add'),
     path('packages/edit/<uuid:pk>/', package_edit, name='package_edit'),
@@ -62,39 +66,6 @@ urlpatterns = [
 
     path('package-details/<uuid:pk>/', views.all_package_details, name='package_details'),
 
-
+    path('reserved-cars/', views.reserved_car_list, name='reserved_car_list'),
 
 ]
-
-
-# COMPLETE SPACE FRAME
-#
-# Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box
-# DOM .134 wall roll bar
-# Front and Rear body supported and hinged
-# L & R Side Pods
-# Chassis is delivered in a satin black epoxy finish
-# Aluminum skin pre fitted and fastened, side pods, firewall
-# Custom steering rack installed
-# Steering column with quick release hub installed
-#
-#
-# COMPLETE FIBER GLASS BODY
-# Main Body
-# Rocker Panels
-# Roof
-# Doors
-# Nostril (drop down for single or Twin)
-# Tail
-# Windshield
-# Polycarbonate Headlight Covers
-# Polycarbonate Side and Rear Windows
-#
-# STEERING
-# Custom Rack and Pinion Steering Unit
-# Collapsible Steering Column
-#
-# SUSPENSION
-# Billet Aluminum Front and Rear Suspension Uprights
-# Billet Aluminum Front Upper and Lower Control Arms
-# Performance Tie Rods and Balljoints

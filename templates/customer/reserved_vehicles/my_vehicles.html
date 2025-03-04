@@ -5,7 +5,6 @@
 
 {% block content %}
 <section class="section bg-black">
-
     <div class="container">
         <div class="row mt-4">
             {% if user_data.is_email_verified == False %}
@@ -19,6 +18,18 @@
                     </div>
                 </div>
             {% endif %}
+
+            <!-- {% if user_data.is_phone_number_verified == False %}
+                <div class="col-12 mb-4 pb-2">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="uil uil-exclamation-triangle fs-5 align-middle me-1"></i>
+                        Phone number verification is pending. <a href="#" id="phone-activation-link" class="alert-link text-white text-decoration-underline">Click here to send OTP</a>.
+                        <button type="button" class="btn-close mt-1" data-bs-dismiss="alert" aria-label="Close"> </button>
+                        <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                            aria-hidden="true" style="display: none;"></span>
+                    </div>
+                </div>
+            {% endif %} -->
 
              <!-- START SIDEBAR -->
              <div class="col-lg-4 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0 hide-on-small">
@@ -158,6 +169,40 @@
         })
     });
 </script>
+
+<script>
+    $(document).on("click", "#phone-activation-link", function (e) {
+    e.preventDefault();
+    $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'send_otp' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'), // Fix CSRF Issue
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                    setTimeout(function() {
+                        location.href = "{% url 'otp_verify_page' %}";
+                    }, 2000);
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                // alert the error if any error occurred
+                $('#pro').hide();
+            }
+        })
+    });
+</script>
+
 <script>
     function getCookie(name) {
     let cookieValue = null;

@@ -35,6 +35,7 @@ def add_user_to_context(request):
         user_data['is_delete'] = request.user.is_delete
         user_data['phone_number'] = request.user.phone_number
         user_data['is_email_verified'] = request.user.is_email_verified
+        user_data['is_phone_number_verified'] = request.user.is_phone_number_verified
         user_data['zip_code'] = request.user.zip_code
         user_data['base_url'] = settings.BASE_URL
         user_data['role'] = request.user.role

@@ -1,14 +1,10 @@
 {% extends 'admin/layout/base.html' %}
  {% load static %}
 {% block header %}
-    <!-- Toastr -->
-  <link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
   <!-- DataTables -->
   <link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
   <link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
-  <!-- SweetAlert2 -->
-  <!-- <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}"> -->
-  
+
 {% endblock %}
 
 {% block content %}
@@ -19,12 +15,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0">Customers</h1>
+          <h1 class="m-0">Community Members</h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="{% url 'website:admin_dashboard' %}">Home</a></li>
-            <li class="breadcrumb-item active">Customers</li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Community Members</li>
           </ol>
         </div><!-- /.col -->
       </div><!-- /.row -->
@@ -52,23 +48,18 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Phone</th>
-                    <th scope="col">Email Verified</th>
+                    <th scope="col">Registered at</th>
 
                 </tr>
                 </thead>
                     <tbody>
-                            {% for user in users %}
+                            {% for member in members %}
                             <tr>
-                                <td>{{ user.first_name }} {{ user.last_name }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.phone_number }}</td>
-                                <td>
-                                    {% if user.is_email_verified  %}
-                                        <span class="badge badge-success">Verified</span>
-                                    {% else %}
-                                    <span class="badge badge-danger">Un-verified</span>
-                                    {% endif %}
-                                </td>
+                                <td>{{ member.user.first_name }} {{ member.user.last_name }}</td>
+                                <td>{{ member.user.email }}</td>
+                                <td>{{ member.user.phone_number }}</td>
+                                <td>{{ member.created_at }}</td>
+                                
                             </tr>
                             {% endfor %}
                     </tbody>
@@ -83,10 +74,6 @@
 {% endblock %}
 
 {% block javascript %}
-  <!-- SweetAlert2 -->
-  <script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
-  <!-- Toastr -->
-  <script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
 <!-- DataTables -->
 <script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
@@ -114,20 +101,5 @@ $(document).ready(function() {
 })
 
 } );
-</script>
-<script type="text/javascript">
-  $(document).ready(function () { 
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000
-    });
-  {% if messages %}
-    {% for message in messages %}
-    toastr.{{ message.tags }}('{{ message }}')
-    {% endfor %}
-  {% endif %} 
-});
 </script>
  {% endblock %}

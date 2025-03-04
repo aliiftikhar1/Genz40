@@ -32,7 +32,7 @@
         <!-- Brand Logo -->
     <a href="" class="brand-link">
 <!--      <img src="{% static 'admin/img/rimark-logo.svg' %}" alt="Logo" class="brand-image mb-2">-->
-      <span class="brand-text font-weight-heavy mb-2 text-dark">GENZ40</span>
+      <span class="brand-text font-weight-heavy mb-2 logo-font text-white">GEN-Z 40</span>
     </a>
     <!-- Sidebar -->
     <div class="sidebar text-sm">
@@ -60,6 +60,13 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{% url 'customer_list' %}" class="nav-link {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}">
+              <i class="nav-icon fa fa-users"></i>
+              <p class="text-bold">Customers</p>
+            </a>
+          </li>
+
             <li class="nav-item">
             <a href="{% url 'navitem_list' %}" class="nav-link {% if request.resolver_match.url_name == 'navitem_list' %}active{% endif %}">
               <i class="nav-icon fa fa-users"></i>
@@ -74,6 +81,26 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{% url 'reserved_car_list' %}" class="nav-link {% if request.resolver_match.url_name == 'reserved_car_list' %}active{% endif %}">
+              <i class="nav-icon fa fa-car"></i>
+              <p class="text-bold">Reserved Cars</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'community_member_list' %}" class="nav-link {% if request.resolver_match.url_name == 'community_member_list' %}active{% endif %}">
+              <i class="nav-icon fa fa-users"></i>
+              <p class="text-bold">Community Members</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'subscriber_list' %}" class="nav-link {% if request.resolver_match.url_name == 'subscriber_list' %}active{% endif %}">
+              <i class="nav-icon fa fa-users"></i>
+              <p class="text-bold">Subscribers</p>
+            </a>
+          </li>
+          
         </ul>
       </nav>
 

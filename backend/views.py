@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from .models import PostCommunity, PostPackageDetail, PostPackageFeature, PostPart, PostCharging, PostPaint
+from .models import CustomUser, PostCommunity, PostCommunityJoiners, PostPackageDetail, PostPackageFeature, PostPart, PostCharging, PostPaint, PostPayment, PostSubscribers
 from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm, PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
@@ -213,6 +213,12 @@ def upload_images(request):
         form = ImageModelForm()
     return render(request, 'admin/navbar/add_images.html', {'form': form})
 
+@login_required
+def customer_list(request):
+    header = 'Customers'
+    cutomers = CustomUser.objects.all().order_by('-created_at')
+    return render(request, 'admin/customer/list.html', {'cutomers': cutomers,'header':header})
+
 
 @login_required
 def package_list(request):
@@ -353,3 +359,20 @@ def all_package_details(request, pk):
         'paints': 'paints'
     }
     return render(request, 'admin/package/details.html', context)
+
+@login_required
+def reserved_car_list(request):
+    reserved_cars = PostPayment.objects.filter(status='succeeded').order_by('-created_at')
+    return render(request, 'admin/reserved_cars/list.html', {'reserved_cars': reserved_cars})
+
+@login_required
+def community_member_list(request):
+    header = 'Community Members'
+    members = PostCommunityJoiners.objects.all().order_by('-created_at')
+    return render(request, 'admin/community_members.html', {'members': members,'header':header})
+
+@login_required
+def subscriber_list(request):
+    header = 'Subscribers'
+    subscribers = PostSubscribers.objects.all().order_by('-created_at')
+    return render(request, 'admin/subscribers.html', {'subscribers': subscribers,'header':header})

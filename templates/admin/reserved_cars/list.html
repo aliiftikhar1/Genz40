@@ -15,12 +15,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Packages</h1>
+          <h1>Reserved Cars</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Packages</li>
+            <li class="breadcrumb-item active">Reserved Cars</li>
           </ol>
         </div>
       </div>
@@ -34,17 +34,9 @@
         <div class="col-12">
 
           <div class="card">
-<!--            <div class="card-header">-->
-<!--              <h3 class="card-title">DataTable with default features</h3>-->
-<!--            </div>-->
-            <!-- /.card-header -->
             <div class="card-body">
               <div class="row">
-                <div class="col-6 col-sm-6">
-<!--                  <a class="btn btn-sm btn-primary" href="{% url 'create_parent_and_images' %}">Add Images</a>-->
-                  <a class="btn btn-sm btn-primary" href="{% url 'package_add' %}">Add Package</a>
-                </div>
-                <div class="col-6 col-sm-6">
+                <div class="col-12">
                   <div class="input-group input-group-sm mb-2 float-right" style="width: 300px;">
                     <input type="text" name="table_search" id="myInputTextField" class="form-control float-right" placeholder="Search...">
                     <div class="input-group-append">
@@ -56,41 +48,31 @@
               </div>
               <table id="package_tbl" class="table table-bordered table-striped">
                 <thead>
-                <th>Name</th>
-                <th>Navbar</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Active</th>
+                <th>Vehicles</th>
+                <th>RN</th>
+                <th>Payment Status</th>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Reserved @</th>
                 <th>Actions</th>
                 </thead>
                 <tbody>
-                {% for package in packages %}
-                <tr>
-                  <td><a href="{% url 'package_details' package.id %}">{{ package.name }}</a></td>
-                  <td>{{ package.nav_item.title }}</td>
-                  <td>{{ package.description|truncate_chars:100|safe }}</td>
-                  <td>{{ package.amount }}</td>
-                  <td>{{ package.is_active }}</td>
-                  <td>
-                    <a href="{% url 'add_post_package_detail' %}" class="btn btn-sm btn-warning">test</a>
-                    <a href="{% url 'package_edit' package.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    {% if package.is_active %}
-                    <a href="{% url 'package_deactivate' package.id %}" class="btn btn-sm btn-danger">Deactivate</a>
-                    {% else %}
-                    <a href="{% url 'package_activate' package.id %}" class="btn btn-sm btn-success">Activate</a>
-                    {% endif %}
-                  </td>
-                </tr>
+                {% for reserved_car in reserved_cars %}
+                    <tr>
+                    <td>{{ reserved_car.package_name }}</td>
+                    <td>{{ reserved_car.rn_number }}</td>
+                    <td>{{ reserved_car.status }}</td>
+                    <td>{{ reserved_car.user.first_name }} {{ reserved_car.user.last_name }}</td>
+                    <td>{{ reserved_car.user.email }}</td>
+                    <td>{{ reserved_car.user.phone_number }}</td>
+                    <td>{{ reserved_car.created_at }}</td>
+                    <td>
+                        <a href="" class="btn btn-sm btn-primary">Update Status</a>
+                    </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
-                <!--                  <tfoot>-->
-                <!--                  <tr>-->
-                <!--                     <th>Name</th>-->
-                <!--                    <th>Amount</th>-->
-                <!--                    <th>Active</th>-->
-                <!--                    <th>Actions</th>-->
-                <!--                  </tr>-->
-                <!--                  </tfoot>-->
               </table>
             </div>
             <!-- /.card-body -->
@@ -110,6 +92,10 @@
 {% endblock %}
 
 {% block javascript %}
+<!-- SweetAlert2 -->
+<script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
 <!-- DataTables -->
 <script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>

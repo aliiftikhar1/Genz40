@@ -9,6 +9,18 @@
     .timeline-page .timeline-item .duration-right:after {
         background-color: #2eca8b!important;
     }
+    /* Active Step */
+.active-step {
+    background-color: #005c99; /* Blue */
+    color: white;
+    font-weight: bold;
+}
+
+/* Inactive Step */
+.inactive-step {
+    background-color: #f0f0f0; /* Light Gray */
+    color: #666;
+}
 </style>
 {% endblock %}
 
@@ -66,8 +78,24 @@
                                 <div class="timeline-item mt-4">
                                     <div class="row">
                                         <div class="col-lg-6 col-md-6 col-sm-6">
-                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5 {% if reserverd_vehicle.status == 'succeededs' %} active-step {% else %} inactive-step {% endif %}">
                                                 Order Confirmed - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            </div>
+
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                In Production - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            </div>
+
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                Built - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            </div>
+
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                Shipped - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            </div>
+
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                Final Preparation - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
                                             </div>
 
                                             <!-- <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mt-3">

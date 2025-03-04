@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from common.utils import validate_file_extension
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -61,6 +63,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(default=timezone.now)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    last_login = models.DateTimeField(auto_now_add = True, blank=True, null=True)
 
     objects = CustomUserManager()
 
@@ -79,6 +82,15 @@ REVIEW_STATUS = (
     (0, "Pending"),
     (2, "Declined")
 )
+
+# Define Default Steps
+DEFAULT_STATUSES = [
+    {"name": "Order Confirmed", "is_active": True},
+    {"name": "In Production", "is_active": False},
+    {"name": "Built", "is_active": False},
+    {"name": "Shipped", "is_active": False},
+    {"name": "Final Preparation", "is_active": False},
+]
 
 
 class PostReview(models.Model):
@@ -470,3 +482,48 @@ class PostPayment(models.Model):
     class Meta:
         db_table = 'payment'
 
+
+class PostOrderStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    payment = models.ForeignKey(PostPayment, on_delete=models.CASCADE, related_name="order_statuses")
+    status = models.CharField(max_length=255, blank=True, null=True)
+    position = models.PositiveIntegerField()  # Defines the order of steps
+    is_active = models.BooleanField(default=False)
+    status_updated_date = models.DateTimeField(auto_now_add=False, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ["position"]  # Ensures steps are retrieved in correct order
+        db_table = 'order_status'
+
+    def __str__(self):
+        return f"{self.status} - {'Active' if self.is_active else 'Inactive'}"
+
+    # Signal to create statuses when an order is created
+    @receiver(post_save, sender=PostPayment)
+    def create_order_statuses(sender, instance, created, **kwargs):
+        if created:  # Only create statuses for new orders
+            for index, status in enumerate(DEFAULT_STATUSES, start=1):
+                PostOrderStatus.objects.create(
+                    payment=instance,
+                    name=status["name"],
+                    position=index,
+                    is_active=status["is_active"]
+                )
+
+class PostSubStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order_status = models.ForeignKey(PostOrderStatus, on_delete=models.CASCADE, related_name="sub_statuses")
+    name = models.CharField(max_length=255)
+    position = models.PositiveIntegerField()  # Defines sub-status order
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["position"]
+        db_table = 'order_sub_status'
+
+    def __str__(self):
+        return f"{self.name} - {'Active' if self.is_active else 'Inactive'}"

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from backend.models import CustomUser, PostCommunity, PostReview, PostBlog, PostMeta, PostNavItem, PostPackage, PostPackageDetail, \
-    PostPackageFeature, PostPart, PostCharging, PostAccessories, PostPaint, PostImage, PostSubscribers, PostWheels, PostLandingPageImages
+    PostPackageFeature, PostPart, PostCharging, PostAccessories, PostPaint, PostImage, PostSubscribers, PostWheels, PostLandingPageImages, PostPayment, PostOrderStatus, PostSubStatus
 
 # Register your models here.
 admin.site.register(CustomUser)
@@ -12,6 +12,9 @@ admin.site.register(PostWheels)
 admin.site.register(PostLandingPageImages)
 admin.site.register(PostSubscribers)
 admin.site.register(PostCommunity)
+admin.site.register(PostPayment)
+admin.site.register(PostOrderStatus)
+admin.site.register(PostSubStatus)
 
 from adminsortable2.admin import SortableAdminMixin
 

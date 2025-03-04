@@ -1,6 +1,8 @@
 import json
+import re
 import uuid
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import get_client_ip
 from .forms import PostContactForm, RegisterForm
@@ -26,9 +28,13 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str 
 from .tokens import account_activation_token
+from common.utils import send_otp, verify_otp
+from django.core.cache import cache
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
+
+User = get_user_model()
 
 def get_country_info(request):
     ip = get_client_ip(request)
@@ -40,7 +46,6 @@ def get_country_info(request):
 def index(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
-
     section_1 = get_object_or_404(PostLandingPageImages, section=1)
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
@@ -71,7 +76,6 @@ def tech_specs(request, slug):
         'items': items,
         'package_details': package_details
     }
-    print('-------con', context)
     return render(request, 'public/technical_specs.html', context)
 
 def about(request):
@@ -155,24 +159,25 @@ def send_activation_email(request, user, random_password):
 
 def get_register_community(request):
     if request.method == 'POST':
-        if not CustomUser.objects.filter(email=request.POST['email']).exists():
+        user = CustomUser.objects.filter(email=request.POST['email']).exists()
+        if not user:
+            form = RegisterForm(request.POST)
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
                 random_password = generate_random_password()
                 user.set_password(random_password)
+                user.is_active = False
                 user.save()
                 PostCommunityJoiners.objects.create(user=user)
-                # login(request, user)
                 return JsonResponse({"message": "Thank You for Joining. This Feature is currently under progress and you will be automatically added in our community once it's developed.", 'is_success': True})       
         else:
-                user = CustomUser.objects.get(email=request.POST['email'])
-                if not PostCommunityJoiners.objects.filter(user=user.id).exists():
-                    PostCommunityJoiners.objects.create(user=user)
-                    return JsonResponse({"message": 'Successfully added.', 'is_success': True})
-                else:
-                    return JsonResponse({"message": 'Already joined.', 'is_success': False})
-        return JsonResponse({"message": 'Already joined.', 'is_success': False})
+            user = CustomUser.objects.get(email=request.POST['email'])
+            if not PostCommunityJoiners.objects.filter(user=user.id).exists():
+                PostCommunityJoiners.objects.create(user=user)
+                return JsonResponse({"message": 'Successfully added.', 'is_success': True})
+            else:
+                return JsonResponse({"message": 'Already joined.', 'is_success': False})
 
 def get_register(request):
     if request.method == 'POST':
@@ -208,7 +213,6 @@ def get_register(request):
                 #             html_message=html_content)
                 return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
         else:
-            print('------phone_number11')
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
 
 def activate(request, uidb64, token):
@@ -239,7 +243,6 @@ def custom_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            print('-------user', user.id)
             return JsonResponse({"message": 'Login successfully.', 'is_success': True})
         else:
             return JsonResponse({"message": 'Invalid username or password.', 'is_success': False})
@@ -303,7 +306,6 @@ def reserve_now(request, slug):
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
     amount_due = package_details[0].amount_due
     # package = items.details.filter(is_active=True).order_by('position')
-    print('---------package', package_details[0].amount_due)
     random_password = generate_random_password()
     ip = get_country_info(request)
     # ip = "103.135.189.223"
@@ -328,7 +330,6 @@ def lock_your_price_now(request, slug):
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
     amount_due = package_details[0].amount_due
     # package = items.details.filter(is_active=True).order_by('position')
-    print('---------package', package_details[0].amount_due)
     random_password = generate_random_password()
     ip = get_country_info(request)
     # ip = "103.135.189.223"
@@ -478,10 +479,10 @@ def create_checkout_session(request):
                     'quantity': 1,
                 }],
                 mode='payment',
-                success_url='https://genz40.com/success/',
-                cancel_url='https://genz40.com/cancel/',
-                # success_url='http://127.0.0.1:8000/success/',
-                # cancel_url='http://127.0.0.1:8000/cancel/',
+                # success_url='https://genz40.com/success/',
+                # cancel_url='https://genz40.com/cancel/',
+                success_url=settings.PAYMENT_SUCCESS_URL,
+                cancel_url=settings.PAYMENT_CANCEL_URL,
                 customer_email=email,
                 metadata={
                     'full_name': full_name,
@@ -712,5 +713,74 @@ def email_verify_from_dashboard(request):
     else:
         return JsonResponse({"is_success": False, "message": "Failed to sent. Please try again."})
 
+def clean_phone_number(phone_number):
+    """Removes all non-numeric characters from a phone number."""
+    return re.sub(r"\D", "", phone_number)
+                  
+@login_required
+def send_otp_view(request):
+    """Send OTP to the phone number"""
+    user = get_object_or_404(User, id=request.user.id)
+    phone_number = user.phone_number
+    if not phone_number:
+        return JsonResponse({"message": "Phone number is required", "is_success": False})
+
+     # Check OTP request count
+    cache_key = f"otp_attempts_{phone_number}"
+    attempts = cache.get(cache_key, 0)
+
+    if attempts >= settings.OTP_REQUEST_LIMIT:
+        return JsonResponse({"message": "Too many OTP requests. Try again later.", "is_success": False})
+
+    cleaned_number = clean_phone_number(phone_number)
+    
+    # Fetch country dialing code using an external API
+    phone_response = requests.get(f"https://restcountries.com/v3.1/alpha/{user.country}")
+    phone_data = phone_response.json()
+    
+    if phone_data:
+        cleaned_number = f"{phone_data[0]['idd']['root']}"+cleaned_number
+        # Send OTP using Twilio
+        status_otp = send_otp(cleaned_number)
+
+        # Update request count
+        cache.set(cache_key, attempts + 1, settings.OTP_TIME_WINDOW)
+
+        return JsonResponse({"message": "OTP sent", "status": status_otp, "is_success": True})
+
+def otp_verify_page(request):
+    return render(request, "customer/otp_verification.html")
+
+@login_required
+def verify_otp_view(request):
+    """Verify the OTP entered by the user"""
+    user = get_object_or_404(User, id=request.user.id)
+    phone_number = user.phone_number
+    if not phone_number:
+        return JsonResponse({"message": "Phone number is required", "is_success": False})
+
+    cleaned_number = clean_phone_number(phone_number)
+    # Fetch country dialing code using an external API
+    phone_response = requests.get(f"https://restcountries.com/v3.1/alpha/{user.country}")
+    phone_data = phone_response.json()
+    
+    if phone_data:
+        cleaned_number = f"{phone_data[0]['idd']['root']}"+cleaned_number
+        data = json.loads(request.body)  # Parse JSON request body
+        otp_code = data.get("otp")
+        if not cleaned_number or not otp_code:
+            return JsonResponse({"message": "Phone number and OTP are required", "is_success": False})
+
+        # Verify OTP
+        status_otp = verify_otp(cleaned_number, otp_code)
+        if status_otp == "approved":
+            user = get_object_or_404(User, phone_number=phone_number)
+            user.is_phone_number_verified = True
+            user.save()
+            return JsonResponse({"message": "Phone number verified", "is_success": True})
+
+    return JsonResponse({"message": "Invalid OTP", "is_success": False})
+
 def car_selector(request):
     return render(request, "public/car_selector.html")  # Ensure this matches your template name
+

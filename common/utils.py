@@ -7,6 +7,23 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from twilio.rest import Client
+
+client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+
+def send_otp(phone_number):
+    """Send OTP via Twilio"""
+    verification = client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
+        .verifications.create(to=phone_number, channel="sms")
+    return verification.status  # Expected: "pending"
+
+def verify_otp(phone_number, otp_code):
+    """Verify OTP via Twilio"""
+    verification_check = client.verify.v2.services(settings.TWILIO_VERIFY_SERVICE_SID) \
+        .verification_checks.create(to=phone_number, code=otp_code)
+    return verification_check.status  # Expected: "approved" if successful
+
+
 
 class EmailThread(threading.Thread):
     def __init__(self, subject, html_content, recipient_list, sender):
