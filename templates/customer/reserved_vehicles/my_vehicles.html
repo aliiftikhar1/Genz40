@@ -98,29 +98,28 @@
 
                                     <div class="row align-items-center g-0">
                                         <a href="{% url 'car_details' order_vehicle.slug %}">
-                                        <div class="col-md-6">
-                                            {% if order_vehicle.title == 'Mark I' %}
-                                                <img class="img-fluid" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
-                                            {% elif order_vehicle.title == 'Mark II' %}
-                                                <img class="img-fluid" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
-                                            {% elif order_vehicle.title == 'Mark IV' %}
-                                                <img class="img-fluid" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
-                                            {% endif %}
-                                        </div>
-                                        </a>
-                                        <a href="{% url 'car_details' order_vehicle.slug %}">
-                                        <div class="col-md-6">
-                                            <div class="card-body content">
-                                                <h5><a href="{% url 'car_details' order_vehicle.slug %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ order_vehicle.title }}</a></h5>
-                                                <p class="text-muted mb-0">{{ order_vehicle.content }}</p>
-                                                <div class="post-meta d-flex justify-content-between mt-3">
-                                                    <a href="{% url 'car_details' order_vehicle.slug %}" class="text-white readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
+                                            <div class="col-md-6">
+                                                {% if order_vehicle.title == 'Mark I' %}
+                                                    <img class="img-fluid" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
+                                                {% elif order_vehicle.title == 'Mark II' %}
+                                                    <img class="img-fluid" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
+                                                {% elif order_vehicle.title == 'Mark IV' %}
+                                                    <img class="img-fluid" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
+                                                {% endif %}
+                                            </div>
+                                        
+                                            <div class="col-md-6">
+                                                <div class="card-body content">
+                                                    <h5><a href="{% url 'car_details' order_vehicle.slug %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ order_vehicle.title }}</a></h5>
+                                                    <p class="text-muted mb-0">{{ order_vehicle.content }}</p>
+                                                    <div class="post-meta d-flex justify-content-between mt-3">
+                                                        <a href="{% url 'car_details' order_vehicle.slug %}" class="text-white readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    
+                                        </a>
                                     </div> 
-                                </a>
+                                
                                 </div>
                             {% endfor %}
 
