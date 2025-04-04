@@ -71,7 +71,7 @@
 
                                         <div class="col-md-6">
                                             <div class="card-body content">
-                                                <h5><a href="{% url 'my_vehicle_details' reserverd_vehicle.id %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ reserverd_vehicle.package_name }}</h5>
+                                                <h5><a href="{% url 'my_vehicle_details' reserverd_vehicle.id %}" class="card-title title text-success logo-font">GEN-Z 40</a> - {{ reserverd_vehicle.package_name }}</h5>
                                                 <p class="text-muted mb-0">{{ reserverd_vehicle.rn_number }}</p>
                                                 <div class="post-meta d-flex justify-content-between mt-3">
                                                 
@@ -106,18 +106,20 @@
                                             {% endif %}
                                             <div class="overlay"></div>
                                             <div class="author">
-                                                <small class="user d-block"><i class="uil uil-user"></i> {{ user_data.full_name }}</small>
-                                                <small class="date"><i class="uil uil-calendar-alt"></i> 31st Mar 2025</small>
+                                                <!-- <small class="user d-block"><i class="uil uil-user"></i> {{ user_data.full_name }}</small> -->
+                                                <!-- <small class="date"><i class="uil uil-calendar-alt"></i> 31st Mar 2025</small> -->
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="card-body content">
-                                                <h5><a href="{% url 'car_details' order_vehicle.slug %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ order_vehicle.title }}</a></h5>
-                                                <p class="text-muted mb-0">{{ order_vehicle.content }}</p>
-                                                <div class="post-meta d-flex justify-content-between mt-3">
-                                                    <a href="{% url 'car_details' order_vehicle.slug %}" class="text-white readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
+                                            <a href="{% url 'car_details' order_vehicle.slug %}">
+                                                <div class="card-body content">
+                                                    <h5><a href="{% url 'car_details' order_vehicle.slug %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ order_vehicle.title }}</a></h5>
+                                                    <p class="text-muted mb-0">{{ order_vehicle.content }}</p>
+                                                    <div class="post-meta d-flex justify-content-between mt-3">
+                                                        <a href="{% url 'car_details' order_vehicle.slug %}" class="text-white readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div> 
                                 </div>
