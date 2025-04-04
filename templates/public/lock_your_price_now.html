@@ -203,7 +203,6 @@
     })
 
 function call_checkout(session_data){
-    console.log('-----=--=-', session_data);
     $.ajax({
             type: 'POST',
             url: "{% url 'create_checkout_session' %}",
@@ -213,7 +212,6 @@ function call_checkout(session_data){
                 "Content-Type": "application/json"
             },
             success: function (response) {
-                console.log('-----=--=response-', response);
                 if (response.is_success) {
                     // toastr.success(response['message']);
                     window.location.href = response.checkout_url;

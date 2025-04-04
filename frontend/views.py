@@ -396,40 +396,27 @@ def create_account_before_checkout(request):
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
         email = request.POST['email']
-        user = CustomUser.objects.get(email=email)
-
+        user = CustomUser.objects.filter(email=email, phone_number=request.POST['phone_number']).first()
         if user:
             # Both email and phone exist in the same account → Proceed further
             login(request, user)
             fullName = user.first_name+ ' '+user.last_name
-            # session_data = create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
             session_data = {'product_name': product_name, 'amount': amount, 
                                     'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
             # Ensure session_data is returned as a JSON response
             return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
-            # return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
-            # return JsonResponse({"message": "User exists, continue further"}, status=200
                         
         # Check if a user already exists with the same email or phone number
         email_exists = CustomUser.objects.filter(email=email).exists()
-        # phone_exists = CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists()
+        phone_exists = CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists()
 
-        # if CustomUser.objects.filter(email=email).exists():
-        #     return JsonResponse({"message": "This email is already registered!", 'is_success': False})
-
-        # if CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists():
-        #     return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
-        
-        # if email_exists and phone_exists:
-        #     return JsonResponse({"message": "This email and phone number belong to different users.", 'is_success': False})
-        # el
-        if email_exists:
+        if email_exists and phone_exists:
+            return JsonResponse({"message": "This email and phone number belong to different users.", 'is_success': False})
+        elif email_exists:
             return JsonResponse({"message": "This email is already registered.", 'is_success': False})
-        # elif phone_exists:
-        #     return JsonResponse({"message": "This phone number is already registered.", 'is_success': False})
+        elif phone_exists:
+            return JsonResponse({"message": "This phone number is already registered.", 'is_success': False})
         else:
-
-        # if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
             print('-----not')
             form = RegisterForm(request.POST)
             if form.is_valid():
@@ -445,56 +432,6 @@ def create_account_before_checkout(request):
                     session_data = {'product_name': product_name, 'amount': amount, 
                                     'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
                     return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
-                    # return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)     
-        # else:
-        #     print('-----else')
-        #     user = CustomUser.objects.filter(email=email).first()
-        #     if user:
-        #         login(request, user)
-        #         fullName = user.first_name+ ' '+user.last_name
-        #         return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
-
-def create_account_before_checkout11221(request):
-    if request.method == 'POST':
-        new_ref = generate_reference_number()
-        amount = request.POST['amount']  # Use `[]` to prevent KeyError
-        product_name = request.POST['package']
-        email = request.POST['email']
-
-        if not email:
-            return JsonResponse({"message": "Email is required.", 'is_success': False})
-
-        user = CustomUser.objects.filter(email=email).first()
-
-        if user:
-            # Email exists, proceed to login
-            login(request, user)
-            fullName = f"{user.first_name} {user.last_name}"
-            return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
-
-        # Check if email already exists
-        if CustomUser.objects.filter(email=email).exists():
-            return JsonResponse({"message": "This email is already registered.", 'is_success': False})
-
-        # Process new user registration
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            random_password = generate_random_password()
-            user.set_password(random_password)
-            user.zip_code = request.POST.get('zip_code', '')  # Use `.get()` to prevent KeyError
-            user.save()
-
-            login(request, user)
-
-            fullName = f"{user.first_name} {user.last_name}"
-            return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)
-        
-        # If form is invalid, return an error response
-        return JsonResponse({"message": "Invalid form submission.", "errors": form.errors, 'is_success': False})
-
-    # Return a response for non-POST requests
-    return JsonResponse({"message": "Invalid request method.", 'is_success': False})
 
 def create_checkout_session(request):
     if request.method == "POST":
@@ -524,8 +461,6 @@ def create_checkout_session(request):
                 mode='payment',
                 success_url='https://genz40.com/success/',
                 cancel_url='https://genz40.com/cancel/',
-                # success_url=settings.PAYMENT_SUCCESS_URL,
-                # cancel_url=settings.PAYMENT_CANCEL_URL,
                 customer_email=email,
                 metadata={
                     'full_name': full_name,
@@ -534,55 +469,11 @@ def create_checkout_session(request):
                     'product_name': product_name
                 },
             )
-            print('---------session.url', session.url)
             return JsonResponse({"is_success": True, "checkout_url": session.url})
         except Exception as e:
             return JsonResponse({"is_success": False, "message": str(e)})
 
     return JsonResponse({"is_success": False, "message": "Invalid request"})
-
-def create_checkout_session111(product_name, amount, email, full_name, user_id, new_ref):
-    print('--------12122222')
-    currency = "usd"
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{
-            'price_data': {
-                'currency': currency,
-                'product_data': {
-                    'name': product_name,
-                    'description': 'This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.',
-                    'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
-                },
-                'unit_amount': int(amount)*100,
-            },
-            'quantity': 1,
-        }],
-        mode='payment',
-        success_url=settings.PAYMENT_SUCCESS_URL,
-        cancel_url=settings.PAYMENT_CANCEL_URL,
-        customer_email=email,  # Pass email to prefill the Stripe Checkout form
-        metadata={
-            'full_name': full_name,  # Pass full name as metadata
-            'email': email
-        },
-        payment_intent_data={
-        'description': str(user_id), #Passing Userid
-        "metadata": {
-            'new_ref':new_ref,
-            'product_name': product_name
-        },
-        },
-        # custom_fields=[{
-        #     "key": "custom_note",
-        #     "label": {"type": "custom", "custom": new_ref},
-        #     "type": "text"
-        # }],
-    )
-
-    return redirect(session.url, code=303)
-
-    # return render(request, 'public/payment/checkout.html')
 
 def payment_success(request):
     return render(request, 'public/payment/success.html', {'is_footer_required': False})
