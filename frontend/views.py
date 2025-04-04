@@ -454,6 +454,7 @@ def create_account_before_checkout(request):
         #         fullName = user.first_name+ ' '+user.last_name
         #         return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
 
+@csrf_exempt
 def create_checkout_session(request):
     if request.method == "POST":
         try:
