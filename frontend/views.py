@@ -466,7 +466,8 @@ def create_checkout_session(request):
                     'full_name': full_name,
                     'email': email,
                     'new_ref': new_ref,
-                    'product_name': product_name
+                    'product_name': product_name,
+                    'description': str(user_id), #Passing Userid
                 },
             )
             return JsonResponse({"is_success": True, "checkout_url": session.url})
