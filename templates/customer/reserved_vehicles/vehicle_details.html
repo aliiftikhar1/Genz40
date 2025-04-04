@@ -78,16 +78,16 @@
                                 <div class="timeline-item mt-4">
                                     <div class="row">
                                         <div class="col-lg-6 col-md-6 col-sm-6">
-                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5 {% if reserverd_vehicle.status == 'succeededs' %} active-step {% else %} inactive-step {% endif %}">
-                                                Order Confirmed - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                Reservation Confirmed - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                            </div>
+
+                                            <!-- <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5 {% if reserverd_vehicle.status == 'succeededs' %} active-step {% else %} inactive-step {% endif %}">
+                                                In Production 
                                             </div>
 
                                             <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
-                                                In Production - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
-                                            </div>
-
-                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
-                                                Built - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
+                                                Built 
                                             </div>
 
                                             <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
@@ -96,7 +96,7 @@
 
                                             <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
                                                 Final Preparation - {{ reserverd_vehicle.created_at|date:'M d, Y' }}
-                                            </div>
+                                            </div> -->
 
                                             <!-- <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mt-3">
                                                 Order Confirmed - Aug 16, 2024
