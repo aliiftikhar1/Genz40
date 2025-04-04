@@ -94,10 +94,9 @@
                         
                         {% if vehicles %}
                             {% for order_vehicle in vehicles %}
-                            
                                 <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
-                                    <a href="{% url 'car_details' order_vehicle.slug %}">
                                     <div class="row align-items-center g-0">
+                                        <a href="{% url 'car_details' order_vehicle.slug %}">
                                         <div class="col-md-6">
                                             {% if order_vehicle.title == 'Mark I' %}
                                                 <img class="img-fluid" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
@@ -121,8 +120,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </a>
                                     </div> 
-                                </a>
                                 </div>
                             {% endfor %}
 
