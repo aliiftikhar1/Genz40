@@ -173,6 +173,9 @@
         $.ajax({
             type: 'POST',
             url: "{% url 'create_account_before_checkout' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
             data: data,
             cache: false,
             processData: false,
@@ -180,7 +183,7 @@
             crossDomain: true,
             success: function (response) {
                 if (response.is_success) {
-                    console.log(response['session_data']);
+                    // console.log(response['session_data']);
                     call_checkout(response['session_data']);
                     // toastr.success(response['message']);
                    

@@ -454,7 +454,48 @@ def create_account_before_checkout(request):
         #         fullName = user.first_name+ ' '+user.last_name
         #         return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
 
-@csrf_exempt
+def create_account_before_checkout11221(request):
+    if request.method == 'POST':
+        new_ref = generate_reference_number()
+        amount = request.POST['amount']  # Use `[]` to prevent KeyError
+        product_name = request.POST['package']
+        email = request.POST['email']
+
+        if not email:
+            return JsonResponse({"message": "Email is required.", 'is_success': False})
+
+        user = CustomUser.objects.filter(email=email).first()
+
+        if user:
+            # Email exists, proceed to login
+            login(request, user)
+            fullName = f"{user.first_name} {user.last_name}"
+            return create_checkout_session(product_name, amount, email, fullName, user.id, new_ref)
+
+        # Check if email already exists
+        if CustomUser.objects.filter(email=email).exists():
+            return JsonResponse({"message": "This email is already registered.", 'is_success': False})
+
+        # Process new user registration
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            random_password = generate_random_password()
+            user.set_password(random_password)
+            user.zip_code = request.POST.get('zip_code', '')  # Use `.get()` to prevent KeyError
+            user.save()
+
+            login(request, user)
+
+            fullName = f"{user.first_name} {user.last_name}"
+            return create_checkout_session(product_name, amount, user.email, fullName, user.id, new_ref)
+        
+        # If form is invalid, return an error response
+        return JsonResponse({"message": "Invalid form submission.", "errors": form.errors, 'is_success': False})
+
+    # Return a response for non-POST requests
+    return JsonResponse({"message": "Invalid request method.", 'is_success': False})
+
 def create_checkout_session(request):
     if request.method == "POST":
         try:
@@ -481,10 +522,10 @@ def create_checkout_session(request):
                     'quantity': 1,
                 }],
                 mode='payment',
-                # success_url='https://genz40.com/success/',
-                # cancel_url='https://genz40.com/cancel/',
-                success_url=settings.PAYMENT_SUCCESS_URL,
-                cancel_url=settings.PAYMENT_CANCEL_URL,
+                success_url='https://genz40.com/success/',
+                cancel_url='https://genz40.com/cancel/',
+                # success_url=settings.PAYMENT_SUCCESS_URL,
+                # cancel_url=settings.PAYMENT_CANCEL_URL,
                 customer_email=email,
                 metadata={
                     'full_name': full_name,
@@ -493,23 +534,15 @@ def create_checkout_session(request):
                     'product_name': product_name
                 },
             )
-
+            print('---------session.url', session.url)
             return JsonResponse({"is_success": True, "checkout_url": session.url})
         except Exception as e:
-            return JsonResponse({"is_success": False, "message": str(e)}, status=400)
+            return JsonResponse({"is_success": False, "message": str(e)})
 
-    return JsonResponse({"is_success": False, "message": "Invalid request"}, status=405)
+    return JsonResponse({"is_success": False, "message": "Invalid request"})
 
-# def create_checkout_session(product_name, amount, email, full_name, user_id, new_ref):
-def create_checkout_session11(request):
-    if request.method == "POST":
-        data = json.loads(request.body)  # Parse JSON request body
-        email = data.get("email")
-        product_name = data.get("product_name")
-        amount = data.get("amount")
-        full_name = data.get("full_name")
-        user_id = data.get("id")
-        new_ref = data.get("new_ref")
+def create_checkout_session111(product_name, amount, email, full_name, user_id, new_ref):
+    print('--------12122222')
     currency = "usd"
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
@@ -526,10 +559,8 @@ def create_checkout_session11(request):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='https://genz40.com/success/',
-        cancel_url='https://genz40.com/cancel/',
-        # success_url='http://127.0.0.1:8000/success/',
-        # cancel_url='http://127.0.0.1:8000/cancel/',
+        success_url=settings.PAYMENT_SUCCESS_URL,
+        cancel_url=settings.PAYMENT_CANCEL_URL,
         customer_email=email,  # Pass email to prefill the Stripe Checkout form
         metadata={
             'full_name': full_name,  # Pass full name as metadata
