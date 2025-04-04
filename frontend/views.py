@@ -396,7 +396,7 @@ def create_account_before_checkout(request):
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
         email = request.POST['email']
-        user = CustomUser.objects.filter(email=email, phone_number=request.POST['phone_number']).first()
+        user = CustomUser.objects.get(email=email, phone_number=request.POST['phone_number'])
 
         if user:
             # Both email and phone exist in the same account → Proceed further
