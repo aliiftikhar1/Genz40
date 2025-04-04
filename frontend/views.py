@@ -471,6 +471,13 @@ def create_checkout_session(request):
                     'product_name': product_name,
                     'description': str(user_id), #Passing Userid
                 },
+                payment_intent_data={
+                'description': str(user_id), #Passing Userid
+                "metadata": {
+                    'new_ref':new_ref,
+                    'product_name': product_name
+                },
+                },
             )
             return JsonResponse({"is_success": True, "checkout_url": session.url})
         except Exception as e:
