@@ -94,8 +94,9 @@
                         
                         {% if vehicles %}
                             {% for order_vehicle in vehicles %}
-                            <a href="{% url 'car_details' order_vehicle.slug %}">
+                            
                                 <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
+                                    <a href="{% url 'car_details' order_vehicle.slug %}">
                                     <div class="row align-items-center g-0">
                                         <div class="col-md-6">
                                             {% if order_vehicle.title == 'Mark I' %}
@@ -121,8 +122,8 @@
                                             </div>
                                         </div>
                                     </div> 
+                                </a>
                                 </div>
-                            <a>
                             {% endfor %}
 
                         {% else %}
