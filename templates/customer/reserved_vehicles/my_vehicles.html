@@ -95,9 +95,9 @@
                         {% if vehicles %}
                             {% for order_vehicle in vehicles %}
                                 <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
-                                    <a href="{% url 'car_details' order_vehicle.slug %}">
+
                                     <div class="row align-items-center g-0">
-                                        
+                                        <a href="{% url 'car_details' order_vehicle.slug %}">
                                         <div class="col-md-6">
                                             {% if order_vehicle.title == 'Mark I' %}
                                                 <img class="img-fluid" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
@@ -106,12 +106,9 @@
                                             {% elif order_vehicle.title == 'Mark IV' %}
                                                 <img class="img-fluid" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
                                             {% endif %}
-                                            <div class="overlay"></div>
-                                            <div class="author">
-                                                <!-- <small class="user d-block"><i class="uil uil-user"></i> {{ user_data.full_name }}</small> -->
-                                                <!-- <small class="date"><i class="uil uil-calendar-alt"></i> 31st Mar 2025</small> -->
-                                            </div>
                                         </div>
+                                        </a>
+                                        <a href="{% url 'car_details' order_vehicle.slug %}">
                                         <div class="col-md-6">
                                             <div class="card-body content">
                                                 <h5><a href="{% url 'car_details' order_vehicle.slug %}" class="card-title title text-dark logo-font">GEN-Z 40 - </a>{{ order_vehicle.title }}</a></h5>
