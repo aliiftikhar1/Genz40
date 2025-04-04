@@ -4,7 +4,7 @@ import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from common.utils import get_client_ip
+from common.utils import EmailThread, get_client_ip
 from .forms import PostContactForm, RegisterForm
 from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
@@ -162,12 +162,11 @@ def get_register_community(request):
         user = CustomUser.objects.filter(email=request.POST['email']).exists()
         if not user:
             form = RegisterForm(request.POST)
-            form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                random_password = generate_random_password()
-                user.set_password(random_password)
-                user.is_active = False
+                # random_password = generate_random_password()
+                user.set_password(request.POST['password1'])
+                user.is_active = True
                 user.save()
                 PostCommunityJoiners.objects.create(user=user)
                 return JsonResponse({"message": "Thank You for Joining. This Feature is currently under progress and you will be automatically added in our community once it's developed.", 'is_success': True})       
@@ -195,22 +194,18 @@ def get_register(request):
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                random_password = generate_random_password()
-                user.set_password(random_password)
-                user.is_active = False
+                # random_password = generate_random_password()
+                user.set_password(request.POST['password1'])
+                user.is_active = True
                 user.save()
-                send_activation_email(request, user, random_password)
-
-                # subject = 'Thank you for Joining us - www.genz40.com'
-                # email_from = settings.EMAIL_HOST_USER
-                # recipient_list = ['arvind.blues@gmail.com']
-                # c = {
-                #     'user': user,
-                #     'password': random_password
-                # }
-                # html_content = render_to_string('email/welcome_email.html', c)
-                # send_mail(subject, html_content, email_from, recipient_list, fail_silently=False,
-                #             html_message=html_content)
+                subject = "Welcome to Our Platform - www.genz40.com"
+                recipient_list = [user.email]
+                sender = settings.EMAIL_FROM  # Ensure this is set in settings.py
+                # Render HTML email template
+                html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
+                # Send email in background
+                EmailThread(subject, html_content, recipient_list, sender).start()
+                send_activation_email(request, user, request.POST['password1'])
                 return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
         else:
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
@@ -421,12 +416,19 @@ def create_account_before_checkout(request):
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                random_password = generate_random_password()
-                user.set_password(random_password)
+                user.set_password(request.POST['password1'])
                 user.zip_code = request.POST['zip_code']
                 user.save()
                 # user = form.get_user()
                 login(request, user)
+                subject = "Welcome to Our Platform - www.genz40.com"
+                recipient_list = [user.email]
+                sender = settings.EMAIL_FROM  # Ensure this is set in settings.py
+                # Render HTML email template
+                html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
+                # Send email in background
+                EmailThread(subject, html_content, recipient_list, sender).start()
+
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
                     session_data = {'product_name': product_name, 'amount': amount, 
