@@ -396,7 +396,7 @@ def create_account_before_checkout(request):
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
         product_name = request.POST['package']
         email = request.POST['email']
-        user = CustomUser.objects.get(email=email, phone_number=request.POST['phone_number'])
+        user = CustomUser.objects.get(email=email)
 
         if user:
             # Both email and phone exist in the same account → Proceed further
@@ -412,7 +412,7 @@ def create_account_before_checkout(request):
                         
         # Check if a user already exists with the same email or phone number
         email_exists = CustomUser.objects.filter(email=email).exists()
-        phone_exists = CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists()
+        # phone_exists = CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists()
 
         # if CustomUser.objects.filter(email=email).exists():
         #     return JsonResponse({"message": "This email is already registered!", 'is_success': False})
@@ -420,12 +420,13 @@ def create_account_before_checkout(request):
         # if CustomUser.objects.filter(phone_number=request.POST['phone_number']).exists():
         #     return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
         
-        if email_exists and phone_exists:
-            return JsonResponse({"message": "This email and phone number belong to different users.", 'is_success': False})
-        elif email_exists:
+        # if email_exists and phone_exists:
+        #     return JsonResponse({"message": "This email and phone number belong to different users.", 'is_success': False})
+        # el
+        if email_exists:
             return JsonResponse({"message": "This email is already registered.", 'is_success': False})
-        elif phone_exists:
-            return JsonResponse({"message": "This phone number is already registered.", 'is_success': False})
+        # elif phone_exists:
+        #     return JsonResponse({"message": "This phone number is already registered.", 'is_success': False})
         else:
 
         # if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
