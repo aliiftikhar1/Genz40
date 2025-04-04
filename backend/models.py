@@ -37,10 +37,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{14,14}$',
                                  message="Phone number must be entered Up to 14 digits allowed")
-    phone_number = models.CharField(validators=[phone_regex], max_length=14,
-                                    blank=True, null=True, unique=True,
-                                    error_messages={
-                                        'unique': _("A user with this Phone Number already Registered"), }, )
+    phone_number = models.CharField(max_length=14,
+                                    blank=True, null=True, unique=True)
     role = models.CharField(max_length=20, blank=True, null=True)
     street_address_1 = models.CharField(max_length=250, null=True, blank=True)
     street_address_2 = models.CharField(max_length=250, null=True, blank=True)
