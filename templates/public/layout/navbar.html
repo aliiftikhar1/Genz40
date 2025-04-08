@@ -123,7 +123,20 @@
         <div id="navigation">
             <!-- Navigation Menu-->
             <ul class="navigation-menu nav-light">
-                <li><a href="{% url 'index' %}" class="sub-menu-item">{% if user_data.is_authenticated %}Dashboard{% else %}Home{% endif %}</a></li>
+                <li>
+                    <a href="{% if user.is_authenticated %}{% url 'index' %}{% else %}{% url 'home' %}{% endif %}" class="sub-menu-item">
+                      {% if user.is_authenticated %}Dashboard{% else %}Home{% endif %}
+                    </a>
+                  </li>
+                  {% if user.is_authenticated %}
+                  <li>
+                    <a href="{% url 'home' %}" class="sub-menu-item">
+                      Home
+                    </a>
+                  </li>
+                {% endif %}
+                
+                  
                 {% for item in nav_items %}
                 <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
                     <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"

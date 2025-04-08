@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import EmailThread, get_client_ip
 from .forms import PostContactForm, RegisterForm
-from backend.models import CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
+from backend.models import CarConfiguration, CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -69,6 +69,30 @@ def index(request):
 
     return render(request, 'public/index.html', context)
 
+def home(request):
+    section_1 = get_object_or_404(PostLandingPageImages, section=1)
+    section_2 = get_object_or_404(PostLandingPageImages, section=2)
+    section_3 = get_object_or_404(PostLandingPageImages, section=3)
+    items = PostNavItem.objects.filter(is_active=True).order_by('position')
+    random_password = generate_random_password()
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    context = {
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+        'section_1': section_1,
+        'section_2': section_2,
+        'section_3': section_3,
+        'random_password': random_password,
+        'items': items
+    }
+
+    return render(request, 'public/index.html', context)
+
 def tech_specs(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
@@ -77,6 +101,17 @@ def tech_specs(request, slug):
         'package_details': package_details
     }
     return render(request, 'public/technical_specs.html', context)
+
+
+def learn_more(request, slug):
+    items = get_object_or_404(PostNavItem, slug=slug)
+    
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    context = {
+        'items': items,
+        'package_details': package_details
+    }
+    return render(request, 'public/LearnMore.html', context)
 
 def about(request):
     return render(request, 'public/about.html', {
@@ -147,7 +182,7 @@ def register_page(request):
 def send_activation_email(request, user, random_password):
     current_site = get_current_site(request)
     mail_subject = "Activate Your Account"
-    message = render_to_string("email/activation_email.html", {
+    html_message = render_to_string("email/activation_email.html", {
         "email": user.email,
         "password": random_password,
         "user": user,
@@ -155,8 +190,18 @@ def send_activation_email(request, user, random_password):
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "token": account_activation_token.make_token(user),
     })
-    send_mail(mail_subject, message, settings.EMAIL_FROM, [user.email])
-
+    
+    # Create a plain text version for email clients that don't support HTML
+    plain_message = strip_tags(html_message)
+    
+    # Send mail with both HTML and plain text versions
+    send_mail(
+        subject=mail_subject,
+        message=plain_message,  # Plain text version
+        from_email=settings.EMAIL_FROM,
+        recipient_list=[user.email],
+        html_message=html_message  # HTML version
+    )
 def get_register_community(request):
     if request.method == 'POST':
         user = CustomUser.objects.filter(email=request.POST['email']).exists()
@@ -194,21 +239,46 @@ def get_register(request):
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                # random_password = generate_random_password()
-                user.set_password(request.POST['password1'])
+                # user.set_password(request.POST['password1'])
                 user.is_active = True
-                user.save()
-                subject = "Welcome to Our Platform - www.genz40.com"
-                recipient_list = [user.email]
-                sender = settings.EMAIL_FROM  # Ensure this is set in settings.py
-                # Render HTML email template
-                html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
-                # Send email in background
-                EmailThread(subject, html_content, recipient_list, sender).start()
-                send_activation_email(request, user, request.POST['password1'])
-                return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})       
+                
+                # Format phone number to match the expected format (removing non-digit characters)
+                if user.phone_number:
+                    # Extract only digits from the phone number
+                    digits_only = ''.join(filter(str.isdigit, user.phone_number))
+                    # Ensure it's no longer than 14 digits as per your model validation
+                    user.phone_number = digits_only[:14]
+                
+                # Check if zip_code is present and ensure it's within the 5-character limit
+                if hasattr(user, 'zip_code') and user.zip_code and len(user.zip_code) > 5:
+                    user.zip_code = user.zip_code[:5]
+                
+                try:
+                    print("User data before saving:", user.__dict__)
+                    user.save()
+                    
+                    # Email sending logic
+                    subject = "Welcome to Our Platform - www.genz40.com"
+                    recipient_list = [user.email]
+                    sender = settings.EMAIL_FROM
+                    html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
+                    EmailThread(subject, html_content, recipient_list, sender).start()
+                    send_activation_email(request, user, request.POST['password1'])
+                    return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
+                except Exception as e:
+                    # Log the error for debugging
+                    print(f"Error saving user: {str(e)}")
+                    return JsonResponse({"message": f'Registration failed: {str(e)}', 'is_success': False})
+            else:
+                # Form validation errors
+                errors = form.errors.as_json()
+                return JsonResponse({"message": f'Invalid form data: {errors}', 'is_success': False})
         else:
             return JsonResponse({"message": 'Already joined.', 'is_success': False})
+    
+    # If not POST method
+    else:
+        register_page(request)
 
 def activate(request, uidb64, token):
     try:
@@ -284,6 +354,29 @@ def navitem_detail(request, slug):
 #     country_code = data.get('country')
 #     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
 #     country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+def car_configurator(request,slug):
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    amount_due = package_details[0].amount_due
+    return render(request, 'public/CarConfigurator.html', {'items': items,
+                                                           'packages': package_details,
+                                                           'amount_due': amount_due,
+                                                           'slug': slug})
+
+def car_details(request, slug):
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    amount_due = package_details[0].amount_due
+    # package = items.details.filter(is_active=True).order_by('position')
+    print('---------package', package_details[0].amount_due)
+    random_password = generate_random_password()
+    ip = get_country_info(request)
+    # ip = "103.135.189.223"
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
 
 #     return render(request, 'public/car_details.html',
 #                   {'items': items,
@@ -718,3 +811,38 @@ def verify_otp_view(request):
 def car_selector(request):
     return render(request, "public/car_selector.html")  # Ensure this matches your template name
 
+
+@login_required
+def view_configuration(request, config_id):
+    """
+    View a specific saved configuration
+    """
+    configuration = get_object_or_404(CarConfiguration, id=config_id, user=request.user)
+    
+    # Get the slug from the car_model (assuming car_model is a PostNavItem object or has a relationship to it)
+    slug = configuration.car_model.slug if hasattr(configuration.car_model, 'slug') else None
+    
+    # If car_model isn't directly a PostNavItem, you might need to access it differently
+    # For example, if car_model is a string representing the model name:
+    # nav_item = get_object_or_404(PostNavItem, name=configuration.car_model)
+    # slug = nav_item.slug
+    
+    context = {
+        'configuration': configuration,
+        'car_model': configuration.car_model,
+        'config_id': config_id,
+        'amount_due': configuration.total_price,
+        'slug': slug  # Add the slug to the context
+    }
+    
+    return render(request, 'public/view_configuration.html', context)
+
+
+@login_required
+def checkout(request):
+    """
+    View a cheout out page
+    """
+   
+    
+    return render(request, 'public/payment/checkout.html')

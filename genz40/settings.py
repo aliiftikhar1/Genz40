@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'frontend',
+    
     'backend',
     'adminsortable2',
     'crispy_forms',
@@ -77,6 +78,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'backend.context_processors.nav_items',
+                 'backend.context_processors.add_user_to_context',
+                
             ],
         },
     },

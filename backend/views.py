@@ -15,7 +15,7 @@ from .models import CustomUser, PostCommunity, PostCommunityJoiners, PostPackage
 from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm, PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
-from .models import PostPackage, PostNavItem
+from .models import PostPackage, PostNavItem,CarConfiguration
 import string
 import random
 from common.utils import get_client_ip, send_custom_email
@@ -376,3 +376,198 @@ def subscriber_list(request):
     header = 'Subscribers'
     subscribers = PostSubscribers.objects.all().order_by('-created_at')
     return render(request, 'admin/subscribers.html', {'subscribers': subscribers,'header':header})
+
+
+
+
+
+
+
+# car configurator page
+@login_required
+def save_car_configuration(request):
+    """
+    Save the car configuration from the form submission
+    """
+    if request.method == 'POST':
+        try:
+            # Get the car model
+            slug = request.POST.get('car_slug')
+            car_model_id = request.POST.get('car_model')
+            # print("car model id is: ", car_model_id, "slug is: ", slug)
+            car_model = get_object_or_404(PostNavItem, id=car_model_id)
+
+            print("car model is: ", car_model.id)
+            totalPrice = request.POST.get('total_price')
+
+            print("TOtal price is: ", request.POST.get('total_price'))
+            
+            # Create a new configuration or update if exists
+            config, created = CarConfiguration.objects.get_or_create(
+                user=request.user,
+                car_model=car_model,
+                is_saved=True,
+                defaults={
+                    # Exterior options
+                    'exterior_color': request.POST.get('exterior_color'),
+                    'wheel_type': request.POST.get('wheel_type'),
+                    'wheel_color': request.POST.get('wheel_color'),
+                    'grille_style': request.POST.get('grille_style'),
+                    'roof_type': request.POST.get('roof_type'),
+                    'mirror_style': request.POST.get('mirror_style'),
+                    'lighting_package': request.POST.get('lighting_package'),
+                    'decals': request.POST.get('decals'),
+                    
+                    # Interior options
+                    'upholstery_material': request.POST.get('upholstery_material'),
+                    'interior_color': request.POST.get('interior_color'),
+                    'seat_type': request.POST.get('seat_type'),
+                    'dashboard_trim': request.POST.get('dashboard_trim'),
+                    'steering_wheel': request.POST.get('steering_wheel'),
+                    
+                    # Performance options
+                    'engine_type': request.POST.get('engine_type'),
+                    'transmission': request.POST.get('transmission'),
+                    'drivetrain': request.POST.get('drivetrain'),
+                    'suspension': request.POST.get('suspension'),
+                    'exhaust_system': request.POST.get('exhaust_system'),
+                    
+                    # Technology options
+                    'infotainment_system': request.POST.get('infotainment_system'),
+                    'sound_system': request.POST.get('sound_system'),
+                    'heads_up_display': request.POST.get('heads_up_display') == 'true',
+                    'connectivity_package': request.POST.get('connectivity_package'),
+                    
+                    # Safety options
+                    'autonomous_driving_level': request.POST.get('autonomous_driving_level'),
+                    'parking_assist': request.POST.get('parking_assist') == 'true',
+                    'blind_spot_monitoring': request.POST.get('blind_spot_monitoring') == 'true',
+                    'night_vision': request.POST.get('night_vision') == 'true',
+                    
+                    # Package options
+                    'luxury_package': request.POST.get('luxury_package') == 'true',
+                    'sport_package': request.POST.get('sport_package') == 'true',
+                    'winter_package': request.POST.get('winter_package') == 'true',
+                    'offroad_package': request.POST.get('offroad_package') == 'true',
+                    'towing_hitch': request.POST.get('towing_hitch') == 'true',
+                    'roof_rack': request.POST.get('roof_rack') == 'true',
+                    
+                    # Price information
+                    'exterior_price': request.POST.get('exterior_price'),
+                    'interior_price': request.POST.get('interior_price'),
+                    'performance_price': request.POST.get('performance_price'),
+                    'tech_price': request.POST.get('tech_price'),
+                    'package_price': request.POST.get('package_price'),
+                    'base_price': request.POST.get('base_price'),
+                    'total_price': request.POST.get('total_price'),
+                }
+            )
+            
+            # If configuration already existed, update its fields
+            if not created:
+                # Update exterior options
+                config.exterior_color = request.POST.get('exterior_color')
+                config.wheel_type = request.POST.get('wheel_type')
+                config.wheel_color = request.POST.get('wheel_color')
+                config.grille_style = request.POST.get('grille_style')
+                config.roof_type = request.POST.get('roof_type')
+                config.mirror_style = request.POST.get('mirror_style')
+                config.lighting_package = request.POST.get('lighting_package')
+                config.decals = request.POST.get('decals')
+                
+                # Update interior options
+                config.upholstery_material = request.POST.get('upholstery_material')
+                config.interior_color = request.POST.get('interior_color')
+                config.seat_type = request.POST.get('seat_type')
+                config.dashboard_trim = request.POST.get('dashboard_trim')
+                config.steering_wheel = request.POST.get('steering_wheel')
+                
+                # Update performance options
+                config.engine_type = request.POST.get('engine_type')
+                config.transmission = request.POST.get('transmission')
+                config.drivetrain = request.POST.get('drivetrain')
+                config.suspension = request.POST.get('suspension')
+                config.exhaust_system = request.POST.get('exhaust_system')
+                
+                # Update technology options
+                config.infotainment_system = request.POST.get('infotainment_system')
+                config.sound_system = request.POST.get('sound_system')
+                config.heads_up_display = request.POST.get('heads_up_display') == 'true'
+                config.connectivity_package = request.POST.get('connectivity_package')
+                
+                # Update safety options
+                config.autonomous_driving_level = request.POST.get('autonomous_driving_level')
+                config.parking_assist = request.POST.get('parking_assist') == 'true'
+                config.blind_spot_monitoring = request.POST.get('blind_spot_monitoring') == 'true'
+                config.night_vision = request.POST.get('night_vision') == 'true'
+                
+                # Update package options
+                config.luxury_package = request.POST.get('luxury_package') == 'true'
+                config.sport_package = request.POST.get('sport_package') == 'true'
+                config.winter_package = request.POST.get('winter_package') == 'true'
+                config.offroad_package = request.POST.get('offroad_package') == 'true'
+                config.towing_hitch = request.POST.get('towing_hitch') == 'true'
+                config.roof_rack = request.POST.get('roof_rack') == 'true'
+                
+                # Update price information
+                config.exterior_price = request.POST.get('exterior_price')
+                config.interior_price = request.POST.get('interior_price')
+                config.performance_price = request.POST.get('performance_price')
+                config.tech_price = request.POST.get('tech_price')
+                config.package_price = request.POST.get('package_price')
+                config.base_price = request.POST.get('base_price')
+                config.total_price = totalPrice
+                
+                config.save()
+            
+            messages.success(request, 'Your car configuration has been saved successfully!')
+            return redirect('car_configuration_detail', config_id=config.id)
+            # return redirect('view_configuration', config_id=config.id)
+            
+        except Exception as e:
+            messages.error(request, f'Error saving configuration: {str(e)}')
+            return redirect( 'car_configurator_slug',slug)
+    
+    # If not POST, redirect to car models
+    return redirect('car_models')
+
+def car_models(request):
+    """
+    Display available car models to configure
+    """
+    car_models = PostNavItem.objects.all()
+    
+    context = {
+        'car_models': car_models
+    }
+    
+    return render(request, 'public/car_models.html', context)
+
+@login_required
+def saved_configurations(request):
+    """
+    Display all saved configurations for the logged-in user
+    """
+    configurations = CarConfiguration.objects.filter(user=request.user, is_saved=True)
+    
+    context = {
+        'configurations': configurations
+    }
+    
+    return render(request, 'public/saved_configurations.html', context)
+
+# @login_required
+# def view_configuration(request, config_id):
+#     """
+#     View a specific saved configuration
+#     """
+#     configuration = get_object_or_404(CarConfiguration, id=config_id, user=request.user)
+    
+#     context = {
+#         'config': configuration,
+#         'items': configuration.car_model,
+#         'amount_due': configuration.total_price,
+        
+#     }
+    
+#     return render(request, 'public/view_configuration.html', context)

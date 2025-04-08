@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from . import views
 from .views import register, CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordChangeView, custom_logout, package_list, package_add, package_edit, package_activate, package_deactivate
 
+from frontend.views import car_configurator
 # app_name = 'auth'
 
 urlpatterns = [
@@ -67,5 +68,22 @@ urlpatterns = [
     path('package-details/<uuid:pk>/', views.all_package_details, name='package_details'),
 
     path('reserved-cars/', views.reserved_car_list, name='reserved_car_list'),
+
+
+    # path('car/configurator/<slug:slug>/', car_configurator, name="backend_car_configurator"),
+
+    # URL to handle saving the car configuration
+    path('save-car-configuration/', views.save_car_configuration, name='save_car_configuration'),
+    
+    # URL to list all available car models
+    path('car-models/', views.car_models, name='car_models'),
+    
+    # URL to view saved configurations
+    path('saved-configurations/', views.saved_configurations, name='saved_configurations'),
+    
+    # URL to view a specific saved configuration
+    # path('configuration/<int:config_id>/', views.view_configuration, name='view_configuration'),
+    
+
 
 ]

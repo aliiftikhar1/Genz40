@@ -525,3 +525,95 @@ class PostSubStatus(models.Model):
 
     def __str__(self):
         return f"{self.name} - {'Active' if self.is_active else 'Inactive'}"
+    
+
+
+
+class CarConfiguration(models.Model):
+    # Identifiers
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='car_configurations')
+    car_model = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='configurations')
+    
+    # --- Exterior Customization ---
+    exterior_color = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Metallic Blue"
+    wheel_type = models.CharField(max_length=50, blank=True, null=True)  # e.g., "19-inch Sport Alloy"
+    wheel_color = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Black"
+    grille_style = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Gloss Black"
+    roof_type = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Panoramic Sunroof"
+    mirror_style = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Auto-Folding"
+    lighting_package = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Matrix LED"
+    decals = models.CharField(max_length=100, blank=True, null=True)  # e.g., "Racing Stripes"
+
+    # --- Interior Customization ---
+    upholstery_material = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Nappa Leather"
+    interior_color = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Chestnut Brown"
+    seat_type = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Ventilated Massage Seats"
+    dashboard_trim = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Carbon Fiber"
+    steering_wheel = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Heated Sport Steering"
+
+    # --- Performance & Drivetrain ---
+    engine_type = models.CharField(max_length=50, blank=True, null=True)  # e.g., "V8 Hybrid"
+    transmission = models.CharField(max_length=50, blank=True, null=True)  # e.g., "8-Speed Automatic"
+    drivetrain = models.CharField(max_length=50, blank=True, null=True)  # e.g., "AWD"
+    suspension = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Adaptive Air Suspension"
+    exhaust_system = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Sport Exhaust"
+
+    # --- Technology & Infotainment ---
+    infotainment_system = models.CharField(max_length=50, blank=True, null=True)  # e.g., "12-inch Touchscreen"
+    sound_system = models.CharField(max_length=50, blank=True, null=True)  # e.g., "Bose Premium"
+    heads_up_display = models.BooleanField(default=False)
+    connectivity_package = models.CharField(max_length=50, blank=True, null=True)  # e.g., "5G Wi-Fi Hotspot"
+
+    # --- Safety & Assistance ---
+    autonomous_driving_level = models.CharField(max_length=20, blank=True, null=True)  # e.g., "Level 2"
+    parking_assist = models.BooleanField(default=False)
+    blind_spot_monitoring = models.BooleanField(default=False)
+    night_vision = models.BooleanField(default=False)
+
+    # --- Packages & Accessories ---
+    luxury_package = models.BooleanField(default=False)
+    sport_package = models.BooleanField(default=False)
+    winter_package = models.BooleanField(default=False)
+    offroad_package = models.BooleanField(default=False)
+    towing_hitch = models.BooleanField(default=False)
+    roof_rack = models.BooleanField(default=False)
+
+    # --- Pricing ---
+    base_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    exterior_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    interior_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    performance_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    tech_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    package_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_price = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    
+
+    # --- Metadata ---
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_saved = models.BooleanField(default=False)  # True when user saves config
+    is_ordered = models.BooleanField(default=False)  # True when converted to order
+
+    def calculate_total_price(self):
+        """Dynamically calculate total based on selections."""
+        self.total_price = (
+            self.base_price +
+            self.exterior_price +
+            self.interior_price +
+            self.performance_price +
+            self.tech_price +
+            self.package_price
+        )
+        return self.total_price
+
+    def save(self, *args, **kwargs):
+        # self.calculate_total_price()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user.email}'s {self.car_model.title} Config (${self.total_price})"
+
+    class Meta:
+        ordering = ['-created_at']
+        db_table = 'car_configurations'

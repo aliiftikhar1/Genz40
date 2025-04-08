@@ -8,6 +8,7 @@ class RegisterForm(UserCreationForm):
     last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     role = forms.CharField(required=True)
+    
 
     class Meta:
         model = CustomUser

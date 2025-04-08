@@ -23,15 +23,21 @@ def add_user_to_context(request):
     user_data = {}
 
     if request.user and isinstance(request.user, AnonymousUser):
+        print("User is anonymous")
         user_data['is_authenticated'] = False
         user_data['user_id'] = None
     else:
+        # print("------------------------------------User Looged In COntext Preprocessor------------------------------------")
         user_data['is_authenticated'] = True
         user_data['user_id'] = str(request.user.id)  # Ensure you convert the UUID to a string if necessary
         user_data['email'] = request.user.email
         user_data['first_name'] = request.user.first_name
         user_data['last_name'] = request.user.last_name
-        user_data['full_name'] = request.user.first_name + ' '+ request.user.last_name
+        first = request.user.first_name or ""
+        last = request.user.last_name or ""
+        full_name = f"{first} {last}".strip()
+        user_data['full_name'] = full_name if full_name else None
+        # user_data['full_name'] = request.user.first_name + ' '+ request.user.last_name
         user_data['is_delete'] = request.user.is_delete
         user_data['phone_number'] = request.user.phone_number
         user_data['is_email_verified'] = request.user.is_email_verified

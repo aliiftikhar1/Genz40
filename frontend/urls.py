@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Public urls
     path('', views.index, name='index'),
+    path('home/', views.home, name='home'),
     path('customer-register-community/', views.get_register_community, name='customer_register_community'),
     path('customer-onboarding/', views.register_page, name='register_page'),
     path('customer-register/', views.get_register, name='customer_register'),
@@ -20,6 +21,7 @@ urlpatterns = [
     path('save-contact/', views.save_contact, name='save_contact'),
 
     path('tech-specs/<slug:slug>/', views.tech_specs, name='tech_specs'),
+    path('learn-more/<slug:slug>/', views.learn_more, name='learn_more'),
     path('lock-your-price-now/<slug:slug>/', views.lock_your_price_now, name='lock_your_price_now'),
     path('create-account-before-checkout/', views.create_account_before_checkout, name='create_account_before_checkout'),
     path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
@@ -41,5 +43,12 @@ urlpatterns = [
     # path('<slug:slug>/', navitem_detail, name='navitem_detail'),
     path("car-selector/", views.car_selector, name="car_selector"),  # Fixed URL
     path('<slug:slug>/', views.reserve_now, name='car_details'),  # Slug should be last
+    path('discount/<slug:slug>/', views.reserve_now, name='car_details'),  # Slug should be last
+    path('car/configurator/', views.car_configurator, name='car_configurator'),
+    path('car/configurator/<slug:slug>/', views.car_configurator, name='car_configurator_slug'),
+
+    path('configuration/<slug:config_id>/', views.view_configuration, name='car_configuration_detail'),
+    path('car/checkout/', views.checkout, name='checkout')
+
     
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
