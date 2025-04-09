@@ -8,7 +8,15 @@
                     <h6 class="mb-0 ms-2">My Vehicles</h6>
                 </a>
             </li>
-            
+
+            {% if request.user.role == 'customer' %}
+            <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_configurations' %}active{% endif %}">
+                <a href="{% url 'my_configurations' %}" class="d-flex rounded shadow align-items-center py-2 px-4 navbar-link">
+                    <span class="h4 mb-0"><i class="uil uil-document-info"></i></span>
+                    <h6 class="mb-0 ms-2">Saved Configurations</h6>
+                </a>
+            </li>
+            {% endif %}
             <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'profile_settings' %}active{% endif %}">
                 <a href="{% url 'profile_settings' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
                     <span class="h4 mb-0"><i class="uil uil-user"></i></span>

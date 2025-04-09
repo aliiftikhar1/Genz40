@@ -5,6 +5,53 @@ frontend_custom_filters %} {% block header %}
 {% endblock header %} {% block content %}
 <form id="carConfigForm" method="POST" action="{% url 'save_car_configuration' %}">
     {% csrf_token %}
+    {% if existing_configurations %}
+    <input type="hidden" name="car_slug" value="{{ slug }}" />
+    <input type="hidden" name="car_model" value="{{ items.id }}" />
+
+    <input type="hidden" id="exterior_color" name="exterior_color" value="{{ existing_configurations.exterior }}" />
+    <input type="hidden" id="wheel_type" name="wheel_type" value="{{ existing_configurations.wheel_type }}" />
+    <input type="hidden" id="wheel_color" name="wheel_color" value="{{ existing_configurations.wheel_color }}" />
+    <input type="hidden" id="grille_style" name="grille_style" value="{{ existing_configurations.grille_style }}" />
+    <input type="hidden" id="roof_type" name="roof_type" value="{{ existing_configurations.roof_type }}" />
+    <input type="hidden" id="mirror_style" name="mirror_style" value="{{ existing_configurations.mirror_style }}" />
+    <input type="hidden" id="lighting_package" name="lighting_package" value="{{ existing_configurations.lighting_package }}" />
+    <input type="hidden" id="decals" name="decals" value="{{ existing_configurations.decals }}" />
+    <input type="hidden" id="upholstery_material" name="upholstery_material" value="{{ existing_configurations.upholstery_material }}" />
+    <input type="hidden" id="interior_color" name="interior_color" value="{{ existing_configurations.interior_color }}" />
+    <input type="hidden" id="seat_type" name="seat_type" value="{{ existing_configurations.seat_type }}" />
+    <input type="hidden" id="dashboard_trim" name="dashboard_trim" value="{{ existing_configurations.dashboard_trim }}" />
+    <input type="hidden" id="steering_wheel" name="steering_wheel" value="{{ existing_configurations.steering_wheel }}" />
+    <input type="hidden" id="engine_type" name="engine_type" value="{{ existing_configurations.engine_type }}" />
+    <input type="hidden" id="transmission" name="transmission" value="{{ existing_configurations.transmission }}" />
+    <input type="hidden" id="drivetrain" name="drivetrain" value="{{ existing_configurations.drivetrain }}" />
+    <input type="hidden" id="suspension" name="suspension" value="{{ existing_configurations.suspension }}" />
+    <input type="hidden" id="exhaust_system" name="exhaust_system" value="{{ existing_configurations.exhaust_system }}" />
+    <input type="hidden" id="infotainment_system" name="infotainment_system" value="{{ existing_configurations.infotainment_system }}" />
+    <input type="hidden" id="sound_system" name="sound_system" value="{{ existing_configurations.sound_system }}" />
+    <input type="hidden" id="heads_up_display" name="heads_up_display" value="{{ existing_configurations.heads_up_display }}" />
+    <input type="hidden" id="connectivity_package" name="connectivity_package" value="{{ existing_configurations.connectivity_package }}" />
+    <input type="hidden" id="autonomous_driving_level" name="autonomous_driving_level" value="{{ existing_configurations.autonomous_driving_level }}" />
+    <input type="hidden" id="parking_assist" name="parking_assist" value="{{ existing_configurations.parking_assist }}" />
+    <input type="hidden" id="blind_spot_monitoring" name="blind_spot_monitoring" value="{{ existing_configurations.blind_spot_monitoring }}" />
+    <input type="hidden" id="night_vision" name="night_vision" value="{{ existing_configurations.night_vision }}" />
+    <input type="hidden" id="luxury_package" name="luxury_package" value="{{ existing_configurations.luxury_package }}" />
+    <input type="hidden" id="sport_package" name="sport_package" value="{{ existing_configurations.sport_package }}" />
+    <input type="hidden" id="winter_package" name="winter_package" value="{{ existing_configurations.winter_package }}" />
+    <input type="hidden" id="offroad_package" name="offroad_package" value="{{ existing_configurations.offroad_package }}" />
+    <input type="hidden" id="towing_hitch" name="towing_hitch" value="{{ existing_configurations.towing_hitch }}" />
+    <input type="hidden" id="roof_rack" name="roof_rack" value="{{ existing_configurations.roof_rack }}" />
+
+    <input type="hidden" id="exterior_price" name="exterior_price" value="{{ existing_configurations.exterior_price }}" />
+    <input type="hidden" id="interior_price" name="interior_price" value="{{ existing_configurations.interior_price }}" />
+    <input type="hidden" id="performance_price" name="performance_price" value="{{ existing_configurations.performance_price }}" />
+    <input type="hidden" id="tech_price" name="tech_price" value="{{ existing_configurations.tech_price }}" />
+    <input type="hidden" id="package_price" name="package_price" value="{{ existing_configurations.package_price }}" />
+    <input type="hidden" id="total_price" name="total_price" value="{{ existing_configurations.total_price }}" />
+    <input type="hidden" id="base_price" name="base_price" value="{{ existing_configurations.base_price }}" />
+    <input type="hidden" id="is_saved" name="is_saved" value="{{ existing_configurations.is_saved }}" />
+
+    {% else %}
     <input type="hidden" name="car_slug" value="{{ slug }}" />
     <input type="hidden" name="car_model" value="{{ items.id }}" />
     <input type="hidden" id="exterior_color" name="exterior_color" value="Premium Red" />
@@ -48,10 +95,11 @@ frontend_custom_filters %} {% block header %}
     <input type="hidden" id="base_price" name="base_price" value="{{amount_due}}" />
     <input type="hidden" id="is_saved" name="is_saved" value="true" />
 
+    {% endif %}
     <div id="MainSection">
-        <button type="button" class="theme-toggle">
+        <!-- <button type="button" class="theme-toggle">
             <i class="fas fa-moon"></i>
-        </button>
+        </button> -->
 
         <div class="car-display">
             {% if items.title == 'Mark I' %}
@@ -678,7 +726,7 @@ frontend_custom_filters %} {% block header %}
 
             <div class="total-section">
                 <div class="total-price-label">Total Configuration Price</div>
-                <div class="total-price" id="configTotalPrice">${{amount_due}}</div>
+                <div class="total-price" id="configTotalPrice">$  {{amount_due}}</div>
                 <button type="submit" class="save-config-btn">
                     Save Configuration
                 </button>

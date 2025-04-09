@@ -244,6 +244,7 @@ def get_register(request):
                 user = form.save(commit=False)
                 # user.set_password(request.POST['password1'])
                 user.is_active = True
+                user.is_email_verified = True
                 
                 # Format phone number to match the expected format (removing non-digit characters)
                 if user.phone_number:
@@ -266,7 +267,7 @@ def get_register(request):
                     sender = settings.EMAIL_FROM
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
                     EmailThread(subject, html_content, recipient_list, sender).start()
-                    send_activation_email(request, user, request.POST['password1'])
+                    # send_activation_email(request, user, request.POST['password1'])
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
                     # Log the error for debugging
@@ -346,8 +347,11 @@ def navitem_detail(request, slug):
 def car_configurator(request,slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id),car_model_id=items.id)
     amount_due = package_details[0].amount_due
+    print("**********----*****Existing Configurations are : ",configure_vehicles)
     return render(request, 'public/CarConfigurator.html', {'items': items,
+                                                           'existing_configurations':configure_vehicles,
                                                            'packages': package_details,
                                                            'amount_due': amount_due,
                                                            'slug': slug})
@@ -670,14 +674,34 @@ def my_vehicles(request):
     reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
     order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
     vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
-    print('-----order_vehicles', order_vehicles)
+    configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id))
+    print('-----configure_vehicles', configure_vehicles)
     # amount_due = order_vehicles[0].amount_due
     context = {
+        'configure_vehicles':configure_vehicles,
         'reserverd_vehicles':reserverd_vehicles,
         'order_vehicles': order_vehicles,
         'vehicles': vehicles
     }
     return render(request, 'customer/reserved_vehicles/my_vehicles.html', context, {'is_footer_required': True})
+
+
+@login_required
+def my_configurations(request):
+    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
+    order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
+    vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
+    configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id))
+    print('-----configure_vehicles', configure_vehicles)
+    # amount_due = order_vehicles[0].amount_due
+    context = {
+        'configure_vehicles':configure_vehicles,
+        'reserverd_vehicles':reserverd_vehicles,
+        'order_vehicles': order_vehicles,
+        'vehicles': vehicles
+    }
+    return render(request, 'customer/reserved_vehicles/my_configurations.html', context, {'is_footer_required': True})
+
 
 @login_required
 def my_vehicle_details(request, id):
@@ -807,14 +831,7 @@ def view_configuration(request, config_id):
     View a specific saved configuration
     """
     configuration = get_object_or_404(CarConfiguration, id=config_id, user=request.user)
-    
-    # Get the slug from the car_model (assuming car_model is a PostNavItem object or has a relationship to it)
     slug = configuration.car_model.slug if hasattr(configuration.car_model, 'slug') else None
-    
-    # If car_model isn't directly a PostNavItem, you might need to access it differently
-    # For example, if car_model is a string representing the model name:
-    # nav_item = get_object_or_404(PostNavItem, name=configuration.car_model)
-    # slug = nav_item.slug
     
     context = {
         'configuration': configuration,

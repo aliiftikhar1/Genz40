@@ -31,6 +31,7 @@ urlpatterns = [
     
     path('payment-history/', views.payment_history, name='payment_history'),
     path('my-vehicles/', views.my_vehicles, name='my_vehicles'),
+    path('my-configurations/', views.my_configurations, name='my_configurations'),
     path('email-verify-from-dashboard', views.email_verify_from_dashboard, name='email_verify_from_dashboard'),
     path("send-otp/", views.send_otp_view, name="send_otp"),
     path("otp-verification/", views.otp_verify_page, name="otp_verify_page"),
