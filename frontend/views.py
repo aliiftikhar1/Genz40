@@ -105,9 +105,10 @@ def tech_specs(request, slug):
 
 def learn_more(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
-    
+    allitems = PostNavItem.objects.all()  
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
     context = {
+        'allitems':allitems,
         'items': items,
         'package_details': package_details
     }

@@ -272,11 +272,14 @@
                 <div class="mb-3 mt-2">
                     <label for="car-select" class="fw-bold text-black me-2">Select Car Model:</label>
                     <select id="car-select" class="form-select d-inline-block w-auto">
-                        <option value="Mark I"  {% if items.title == "Mark I"  %}selected{% endif %}>Mark I</option>
-                        <option value="Mark II" {% if items.title == "Mark II" %}selected{% endif %}>Mark II</option>
-                        <option value="Mark IV" {% if items.title == "Mark IV" %}selected{% endif %}>Mark IV</option>
+                        {% for item in allitems %}
+                            <option value="{{ item.slug }}" {% if item.title == items.title %} selected {% endif %}>
+                                {{ item.title }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
+                
                 
                 <div class="">
                     {% if items.title == 'Mark I' %}
@@ -563,28 +566,15 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const carSelect = document.getElementById("car-select");
-        
-        // Determine the current car model from the URL path and set the dropdown value
-        const path = window.location.pathname;
-        if (path.includes("/genz40-mark-I/")) {
-            carSelect.value = "Mark I";
-        } else if (path.includes("/genz40-mark-II/")) {
-            carSelect.value = "Mark II";
-        } else if (path.includes("/genz40-mark-IV/")) {
-            carSelect.value = "Mark IV";
-        }
-    
+
         // When the dropdown selection changes, redirect to the new URL
         carSelect.addEventListener("change", function () {
-            const selectedCar = this.value;
-            let newUrl = "/genz40-mark-I/"; // Default to Mark I
-            if (selectedCar === "Mark II") {
-                newUrl = "/genz40-mark-II/";
-            } else if (selectedCar === "Mark IV") {
-                newUrl = "/genz40-mark-IV/";
-            }
+            const selectedCarSlug = this.value;
+
+            // Dynamically generate the new URL based on selected car model slug
+            const newUrl = "{% url 'learn_more' 'placeholder_slug' %}".replace('placeholder_slug', selectedCarSlug);
             window.location.href = newUrl;
         });
     });
-    </script>
+</script>
     {% endblock script %}
