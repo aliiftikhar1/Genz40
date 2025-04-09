@@ -53,6 +53,13 @@
                         <a href="javascript:void(0)" class="text-success">{{ user_data.full_name }}</a><span class="menu-arrow"></span>
                         <ul class="submenu">
                             <!-- <li><a href="documentation.html" class="sub-menu-item">Dashboard</a></li> -->
+                            {% if request.user.role == 'customer' %}
+                            <li><a href="{% url 'home' %}" class="sub-menu-item">Home</a></li>
+                            {% endif %}
+                            {% if request.user.role == 'customer' %}
+                            <li><a href="{% url 'my_configurations' %}" class="sub-menu-item">Saved Configurations</a></li>
+                            {% endif %}
+                           
                             <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
                             <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
                             <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>

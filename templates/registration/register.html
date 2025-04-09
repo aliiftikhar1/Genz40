@@ -286,7 +286,7 @@
             if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
                 submitButton.disabled = false;
             } else {
-                submitButton.disabled = true;
+                submitButton.disabled = false;
             }
         }
         
@@ -328,10 +328,55 @@ $(document).ready(function() {
     });
 </script>
 <script>
+    // Password validation function
+    function validatePasswordPattern(password) {
+        // Check length
+        if(password.length < 8) {
+            return "Password must be at least 8 characters long";
+        }
+        
+        // Check uppercase
+        if(!/[A-Z]/.test(password)) {
+            return "Password must contain at least 1 uppercase letter";
+        }
+        
+        // Check number
+        if(!/[0-9]/.test(password)) {
+            return "Password must contain at least 1 number";
+        }
+        
+        // Check special character
+        if(!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            return "Password must contain at least 1 special character";
+        }
+        
+        return null; // No error
+    }
+
     $("#register-form").submit(function (e) {
-    event.preventDefault();
-    var data = new FormData($('#register-form').get(0));
-    $('#pro').show();
+        e.preventDefault();
+        
+        // Get password values
+        const password = $('#id_password1').val();
+        const confirmPassword = $('#id_password2').val();
+        
+        // Validate password pattern
+        const passwordError = validatePasswordPattern(password);
+        if (passwordError) {
+            toastr.error(passwordError);
+            return false;
+        }
+        
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            toastr.error("Passwords do not match");
+            return false;
+        }
+        
+        // If validation passes, proceed with form submission
+        var data = new FormData($('#register-form').get(0));
+        $('#pro').show();
+        
         $.ajax({
             type: 'POST',
             url: "{% url 'customer_register' %}",
@@ -357,10 +402,9 @@ $(document).ready(function() {
                 if (!response.is_success) {
                     toastr.error(response['message']);
                 }
-                // alert the error if any error occurred
                 $('#pro').hide();
             }
-        })
-    })
+        });
+    });
 </script>
 {% endblock script %}

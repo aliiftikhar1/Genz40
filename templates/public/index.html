@@ -362,6 +362,10 @@
             letter-spacing: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
+        #description{
+                font-size: 1.2rem;
+            }
         
         @media (max-width: 991.98px) {
             .car-image-container {
@@ -374,12 +378,22 @@
         }
         
         @media (max-width: 767.98px) {
+            #description{
+                font-size: 0.8rem;
+            }
             .show-text {
                 font-size: 3rem;
             }
         }
         
+        .hero-image-container{
+            display: flex;
+            flex-direction: row;
+        }
         @media (max-width: 575.98px) {
+            .hero-image-container{
+                flex-direction: column-reverse;
+            }
             .side-car-image-container {
             display: none;
         }
@@ -399,6 +413,11 @@
             
             .show-text {
                 font-size: 2.5rem;
+            }
+
+            .car-image-container {
+                margin-top: -3rem;
+                margin-bottom: 1.5rem;
             }
         }
 
@@ -426,13 +445,13 @@
 <div class="position-relative text-white overflow-hidden rounded hero-container" style="background: linear-gradient(0deg, rgba(39,47,49,1) 0%, rgba(119,145,151,1) 100%);">
     <!-- Hero Section -->
     <div class="container  herosection">
-        <div class="row align-items-center position-relative">
+        <div class=" hero-image-container align-items-center position-relative">
             <!-- Left content -->
             <div class="col-lg-6 mb-4 mb-lg-0 z-index-1">
                 <h1 class="display-4 fw-bold mb-3 ">
                     Stay true to your<br>essence.
                 </h1>
-                <p class="mb-4" style="font-size: 1.2rem;">
+                <p class="mb-4" id="description" >
                     since the 1500s, when an unknown printer took a galley of type
                     and scrambled it to make a type specimen book. It has survived
                     not only five centuries, but also
