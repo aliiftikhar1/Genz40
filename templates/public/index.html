@@ -610,8 +610,8 @@
                         {% for item in nav_items %}
                         {% if forloop.first %}
                         <div class="link-container" style="display: flex; justify-content: space-between;">
-                            <a href="{{ request.build_absolute_uri('/learn-more'|add:item.get_absolute_url) }}"   class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                            <a href="{{ request.build_absolute_uri('/car/configurator'|add:item.get_absolute_url) }}"  class="btn btn-primary" style="border-radius: 30px;">
+                            <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
+                            <a href="{% url 'car_configurator_slug' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
                                 Order Now
                               </a>
                               
@@ -643,11 +643,8 @@
                         {% for item in nav_items %}
                             {% if forloop.counter == 2 %}
                             <div class="link-container" style="display: flex; justify-content: space-between;">
-                                <a href="{{ request.build_absolute_uri('/learn-more'|add:item.get_absolute_url) }}"   class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                                <a href="{{ request.build_absolute_uri('/car/configurator'|add:item.get_absolute_url) }}"  class="btn btn-primary" style="border-radius: 30px;">
-                                    Order Now
-                                  </a>
-                                  
+                                <a href="/learn-more{{ item.get_absolute_url }}" class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e;">Learn More</a>
+                                <a  href="/car/configurator{{ item.get_absolute_url }}" class="btn btn-primary" style="border-radius: 30px;">Order Now</a>
                             </div>
                         <!-- <div class="input-group">
                             <input id="email-desktop-second" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
