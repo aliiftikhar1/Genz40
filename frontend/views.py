@@ -180,8 +180,10 @@ def register_page(request):
     return render(request, 'registration/register.html', context)
 
 def send_activation_email(request, user, random_password):
+   
     current_site = get_current_site(request)
     mail_subject = "Activate Your Account"
+    print("User Details before sending activation email",current_site,user,random_password)
     html_message = render_to_string("email/activation_email.html", {
         "email": user.email,
         "password": random_password,
