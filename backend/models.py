@@ -167,8 +167,8 @@ class PostNavItem(models.Model):
         return self.children.filter(is_active=True).order_by('position')
 
     def get_absolute_url(self):
-        # return reverse('navitem_detail', kwargs={'slug': self.slug})
-        return reverse('car_details', kwargs={'slug': self.slug})
+        return reverse('navitem_detail', kwargs={'slug': self.slug})
+        # return reverse('car_details', kwargs={'slug': self.slug})
     
     class Meta:
         ordering = ['position']

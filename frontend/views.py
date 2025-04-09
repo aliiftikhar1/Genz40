@@ -340,20 +340,6 @@ def navitem_detail(request, slug):
                   {'items': items,
                    'packages': package})
 
-# def car_details(request, slug):
-#     items = get_object_or_404(PostNavItem, slug=slug)
-#     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
-#     amount_due = package_details[0].amount_due
-#     # package = items.details.filter(is_active=True).order_by('position')
-#     print('---------package', package_details[0].amount_due)
-#     random_password = generate_random_password()
-#     ip = get_country_info(request)
-#     # ip = "103.135.189.223"
-#     response = requests.get(f'https://ipinfo.io/{ip}/json')
-#     data = response.json()
-#     country_code = data.get('country')
-#     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-#     country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
 def car_configurator(request,slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
@@ -378,13 +364,13 @@ def car_details(request, slug):
     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
     country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
 
-#     return render(request, 'public/car_details.html',
-#                   {'items': items,
-#                    'packages': package_details,
-#                    'amount_due': amount_due,
-#                    'country_code': country_code,
-#                     'country_flag_url': country_flag_url,
-#                     'random_password': random_password})
+    return render(request, 'public/car_details.html',
+                  {'items': items,
+                   'packages': package_details,
+                   'amount_due': amount_due,
+                   'country_code': country_code,
+                    'country_flag_url': country_flag_url,
+                    'random_password': random_password})
 
 def reserve_now(request, slug):
     email = request.GET.get('email', '')

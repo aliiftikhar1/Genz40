@@ -610,8 +610,8 @@
                         {% for item in nav_items %}
                         {% if forloop.first %}
                         <div class="link-container" style="display: flex; justify-content: space-between;">
-                            <a href="{% if item.get_absolute_url %}learn-more{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                            <a href="/car/configurator{{ item.get_absolute_url }}" class="btn btn-primary" style="border-radius: 30px;">
+                            <a href="{{ request.build_absolute_uri('/learn-more'|add:item.get_absolute_url) }}"   class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
+                            <a href="{{ request.build_absolute_uri('/car/configurator'|add:item.get_absolute_url) }}"  class="btn btn-primary" style="border-radius: 30px;">
                                 Order Now
                               </a>
                               
@@ -643,8 +643,11 @@
                         {% for item in nav_items %}
                             {% if forloop.counter == 2 %}
                             <div class="link-container" style="display: flex; justify-content: space-between;">
-                                <a href="{% if item.get_absolute_url %}learn-more{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}" class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e;">Learn More</a>
-                                <a  href="/car/configurator{{ item.get_absolute_url }}" class="btn btn-primary" style="border-radius: 30px;">Order Now</a>
+                                <a href="{{ request.build_absolute_uri('/learn-more'|add:item.get_absolute_url) }}"   class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
+                                <a href="{{ request.build_absolute_uri('/car/configurator'|add:item.get_absolute_url) }}"  class="btn btn-primary" style="border-radius: 30px;">
+                                    Order Now
+                                  </a>
+                                  
                             </div>
                         <!-- <div class="input-group">
                             <input id="email-desktop-second" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
@@ -1213,7 +1216,7 @@
         nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
         {% endif %}
         {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
     });
     document.getElementById("getStartedBtnSecond").addEventListener("click", function (event) {
         event.preventDefault();
@@ -1231,89 +1234,8 @@
         nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
         {% endif %}
         {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
     });
-<<<<<<< Updated upstream
-
-    // Section 2
-    document.getElementById("getStartedBtnSecond").addEventListener("click", function (event) {
-        event.preventDefault();
-        let emailInput = document.getElementById("email-desktop-second").value.trim();
-        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            return;
-        }
-        mailChimpSubscribe(emailInput);
-
-        let nextPageUrl;
-        {% for item in nav_items %}
-        {% if forloop.counter == 2 %}
-        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-        {% endif %}
-        {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
-
-    document.getElementById("getStartedBtnMsecond").addEventListener("click", function (event) {
-        event.preventDefault();
-        let emailInput = document.getElementById("email-mobile-msecond").value.trim();
-        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            return;
-        }
-        mailChimpSubscribe(emailInput);
-
-        let nextPageUrl;
-        {% for item in nav_items %}
-        {% if forloop.counter == 2 %}
-        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-        {% endif %}
-        {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
-
-    // Section 3
-    document.getElementById("getStartedBtnThird").addEventListener("click", function (event) {
-        event.preventDefault();
-        let emailInput = document.getElementById("email-desktop-third").value.trim();
-        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            return;
-        }
-        mailChimpSubscribe(emailInput);
-
-        let nextPageUrl;
-        {% for item in nav_items %}
-        {% if forloop.counter == 3 %}
-        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-        {% endif %}
-        {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
-
-    document.getElementById("getStartedBtnMthird").addEventListener("click", function (event) {
-        event.preventDefault();
-        let emailInput = document.getElementById("email-mobile-mthird").value.trim();
-        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(emailInput)) {
-            toastr.error("Please enter a valid email address.");
-            return;
-        }
-        mailChimpSubscribe(emailInput);
-
-        let nextPageUrl;
-        {% for item in nav_items %}
-        {% if forloop.counter == 3 %}
-        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
-        {% endif %}
-        {% endfor %}
-        window.location.href = nextPageUrl + "?email=" + encodeURIComponent(emailInput);
-    });
-=======
->>>>>>> Stashed changes
 </script>
 
 {% endblock script %}

@@ -203,8 +203,18 @@
                     <div class="col-lg-8 col-md-6 col-12 mt-sm-0 pt-2 pt-sm-0">
                         <div class="col-lg-12 mt-4 pt-2 mt-lg-0 pt-lg-0 sidebar sticky-bar">
 
-                        <div class="card border-0 shadow rounded ms-lg-4 overflow-hidden">
-                          <img src="{% static 'images/genz/mark1-builder4.png' %}" class="img-fluid" alt="">
+                        <div class="card border-0  rounded ms-lg-4 overflow-hidden" style="background-color: #0000;"">
+                          <!-- <img src="{% static 'images/genz/mark1-builder4.png' %}" class="img-fluid" alt=""> -->
+                          <div class=" ">
+                            {% if items.title == 'Mark I' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
+                            {% elif items.title == 'Mark II' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk2.gif' %}" alt="Mark II GIF">
+                            {% elif items.title == 'Mark IV' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk4.gif' %}" alt="Mark IV GIF">
+                            {% endif %}
+                            
+                        </div>
                           <!-- <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
                             <div>
                               <figure class="product-viewer">
