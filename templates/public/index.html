@@ -630,7 +630,7 @@
                         {% if forloop.first %}
                         <div class="link-container" style="display: flex; justify-content: space-between;">
                             <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                            <a href="{% url 'car_configurator_slug' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
+                            <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
                                 Order Now
                               </a>
                               
@@ -663,7 +663,7 @@
                             {% if forloop.counter == 2 %}
                             <div class="link-container" style="display: flex; justify-content: space-between;">
                                 <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                                <a href="{% url 'car_configurator_slug' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
+                                <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
                                     Order Now
                                   </a>
                                   

@@ -44,7 +44,7 @@ urlpatterns = [
     path('<slug:slug>/', views.navitem_detail, name='navitem_detail'),
     path("car-selector/", views.car_selector, name="car_selector"),  # Fixed URL
     path('discount/<slug:slug>/', views.reserve_now, name='car_details'),  # Slug should be last
-    path('car/configurator/', views.car_configurator, name='car_configurator'),
+    path('new/car/configurator/<slug:slug>/', views.new_car_configurator, name='car_configurator'),
     path('car/configurator/<slug:slug>/', views.car_configurator, name='car_configurator_slug'),
 
     path('configuration/<slug:config_id>/', views.view_configuration, name='car_configuration_detail'),

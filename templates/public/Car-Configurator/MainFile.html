@@ -1,0 +1,292 @@
+{% extends 'public/Car-Configurator/baseFile.html' %}
+{% load static %}
+
+{% block content %}
+<section class="relative md:h-screen bg-gray-900">
+    <div class="absolute top-2 z-10 left-2 px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
+        <a class=" flex justify-center items-center" href="{% url 'index' %}">
+                
+          <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
+              GEN-Z 40 
+          </span>
+          <span class="h-5 md:h-10" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span>
+          <span>
+              <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}"  class="h-4 md:h-8" alt="">
+          </span>
+      </a>
+      </div>
+    <div class="h-full w-full relative pt-12 md:pt-0">
+        <div class="grid md:grid-cols-3 grid-cols-1 sticky top-0 md:relative w-full h-full items-center gap-8">
+            <!-- Left Column - Image -->
+            <div class="relative md:col-span-2">
+                <div class="w-full h-full">
+                    {% if items.title == 'Mark I' %}
+                    <img id="carImage" src="{% static 'images/car/blue-car.png' %}" alt="Car Configuration" />
+                    {% elif items.title == 'Mark II' %}
+                    <img id="carImage" src="{% static 'images/car/red-car.png' %}" alt="Car Configuration" />
+                    {% elif items.title == 'Mark IV' %}
+                    <img id="carImage" src="{% static 'images/car/red-car.png' %}" alt="Car Configuration" />
+                    {% else %}
+                    <img id="carImage" src="{% static 'images/car/blue-car.png' %}" alt="Car Configuration" />
+                    {% endif %}
+                </div>
+               
+              
+            </div>
+
+            <!-- Right Column - Tabs -->
+            <div class="bg-gray-800 shadow-lg p-2 md:p-6 h-full overflow-y-auto">
+                
+                <div class="sticky -top-[25px] bg-gray-800">
+                <h2 class="text-3xl font-bold text-white mb-6">Configure Your GEN-Z Car</h2>
+                
+                <!-- Tabs Navigation -->
+                <div class="flex border-b border-gray-700 mb-6 ">
+                    <button class="tab-button active-tab px-4 py-2 text-white font-medium" data-tab="roller">Roller</button>
+                    <button class="tab-button px-4 py-2 text-gray-400 font-medium" data-tab="roller-plus">Roller Plus</button>
+                    <button class="tab-button px-4 py-2 text-gray-400 font-medium" data-tab="turnkey-minus">Turnkey Minus</button>
+                </div>
+            </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content" id="roller-content">
+                    <!-- This will be loaded from Roller.html -->
+                </div>
+                
+                <div class="tab-content" id="roller-plus-content">
+                    <!-- This will be loaded from Roller.html -->
+                </div>
+                 <div class="tab-content" id="turnkey-minus-content">
+                    <!-- This will be loaded from Roller.html -->
+                </div>
+                
+                <div class="tab-content hidden" id="turnkey-minus-content">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-semibold text-white">Turnkey Minus Package</h3>
+                        <p class="text-gray-300">Almost ready to drive! The Turnkey Minus package includes nearly everything you need except for the engine and transmission.</p>
+                        <ul class="list-disc pl-5 text-gray-300">
+                            <li>All Roller Plus package components</li>
+                            <li>Complete interior with premium seats</li>
+                            <li>Advanced electronics and dashboard</li>
+                            <li>Cooling system</li>
+                            <li>Wheels and tires</li>
+                            <li>Full lighting system</li>
+                        </ul>
+                        <div class="pt-4">
+                            <span class="text-2xl font-bold text-white">$49,999</span>
+                            <button class="ml-4 px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300">Configure</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        loadRollerContent();
+        
+        
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active-tab');
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-gray-400');
+                });
+                
+                // Add active class to clicked button
+                button.classList.add('active-tab');
+                button.classList.remove('text-gray-400');
+                button.classList.add('text-white');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Show the selected tab content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                
+                // Update the car image based on the selected tab
+                const carImage = document.getElementById('carImage');
+                if (carImage) {
+                    if (tabId === 'roller') {
+                        loadRollerContent();
+                    } else if (tabId === 'roller-plus') {
+                        loadRollerPlusContent();
+                    } else if (tabId === 'turnkey-minus') {
+                        loadTurnkeyMinusContent();
+                    }
+                }
+            });
+        });
+        
+       
+function loadRollerContent() {
+    const rollerContentDiv = document.getElementById('roller-content');
+    if (rollerContentDiv) {
+        fetch("{% static 'component/roller.html' %}")
+            .then(response => response.text())
+            .then(html => {
+                rollerContentDiv.innerHTML = html;
+                // Initialize price calculator after content loads
+                initRollerPriceCalculator();
+            })
+            .catch(error => {
+                console.error('Error loading Roller content:', error);
+                rollerContentDiv.innerHTML = '<p class="text-red-500">Error loading Roller configuration. Please try again later.</p>';
+            });
+    }
+}
+
+function loadRollerPlusContent() {
+    const rollerContentDiv = document.getElementById('roller-plus-content');
+    if (rollerContentDiv) {
+        fetch("{% static 'component/roller-plus.html' %}")
+            .then(response => response.text())
+            .then(html => {
+                rollerContentDiv.innerHTML = html;
+                
+                // Check all checkboxes in the roller-plus tab by default
+                const rollerPlusCheckboxes = rollerContentDiv.querySelectorAll('.feature-checkbox');
+                rollerPlusCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                
+                // Initialize price calculator after content loads
+                initPriceCalculator();
+            })
+            .catch(error => {
+                console.error('Error loading Roller Plus content:', error);
+                rollerContentDiv.innerHTML = '<p class="text-red-500">Error loading Roller Plus configuration. Please try again later.</p>';
+            });
+    }
+}
+
+function loadTurnkeyMinusContent() {
+    const turnkeyMinusContentDiv = document.getElementById('turnkey-minus-content');
+    if (turnkeyMinusContentDiv) {
+        fetch("{% static 'component/turnkey-minus.html' %}")
+            .then(response => response.text())
+            .then(html => {
+                turnkeyMinusContentDiv.innerHTML = html;
+                
+            })
+            .catch(error => {
+                console.error('Error loading Turnkey Minus content:', error);
+                turnkeyMinusContentDiv.innerHTML = '<p class="text-red-500">Error loading Turnkey Minus configuration. Please try again later.</p>';
+            });
+    }
+}
+function initRollerPriceCalculator() {
+    const basePrice = 24999.00;
+    const checkboxes = document.querySelectorAll('.roller-feature-checkbox');
+    const totalPriceElement = document.getElementById('rollertotalPrice');
+    const mobiletotalPriceElement = document.getElementById('rollermobiletotalPrice');
+    
+    function updateTotalPrice() {
+        let totalPrice = basePrice;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const additionalPrice = parseFloat(checkbox.dataset.price) || 0;
+                totalPrice += additionalPrice;
+            }
+        });
+        
+        if (totalPriceElement) {
+            totalPriceElement.textContent = '$' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        if (mobiletotalPriceElement) {
+            mobiletotalPriceElement.textContent = '$' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    }
+
+    // Use event delegation for dynamically loaded content
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.classList.contains('roller-feature-checkbox')) {
+            updateTotalPrice();
+        }
+    });
+
+    // Initial calculation
+    updateTotalPrice();
+}
+function initPriceCalculator() {
+    const basePrice = 34999.00;
+    const checkboxes = document.querySelectorAll('.feature-checkbox');
+    const totalPriceElement = document.getElementById('rollerPlustotalPrice');
+    const mobiletotalPriceElement = document.getElementById('rollerPlusmobiletotalPrice');
+    
+    function updateTotalPrice() {
+        let totalPrice = basePrice;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const additionalPrice = parseFloat(checkbox.dataset.price) || 0;
+                totalPrice += additionalPrice;
+            }
+        });
+        
+        if (totalPriceElement) {
+            totalPriceElement.textContent = '$' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        if (mobiletotalPriceElement) {
+            mobiletotalPriceElement.textContent = '$' + totalPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    }
+
+    // Use event delegation for dynamically loaded content
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.classList.contains('feature-checkbox')) {
+            updateTotalPrice();
+        }
+    });
+
+    // Initial calculation
+    updateTotalPrice();
+}
+    });
+</script>
+
+<style>
+    .active-tab {
+        border-bottom: 2px solid #4f46e5;
+    }
+    
+    .tab-content {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+
+
+
+{% endblock script %}

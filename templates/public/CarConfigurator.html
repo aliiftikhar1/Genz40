@@ -1636,6 +1636,9 @@ body.dialog-open {
 
 <!-- <div class="notification" id="configNotification">Configuration updated!</div> -->
 
+
+{% endblock content %}
+{% block script%}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize pricing variables
@@ -1647,7 +1650,8 @@ body.dialog-open {
     let packagePrice = 0;
     let totalPrice = basePrice;
 
-    
+    document.getElementById('base_price').value = basePrice.toString();
+
 
     // Tab switching
     const tabs = document.querySelectorAll('.config-tab');
@@ -1766,36 +1770,36 @@ function updateCategoryPrice(category, option, price) {
     
     // Update category price
     switch(category) {
-        case 'exterior':
-            exteriorPrice = categoryTotal;
-            document.getElementById('exterior_price').value = exteriorPrice;
-            break;
-        case 'interior':
-            interiorPrice = categoryTotal;
-            document.getElementById('interior_price').value = interiorPrice;
-            break;
-        case 'performance':
-            performancePrice = categoryTotal;
-            document.getElementById('performance_price').value = performancePrice;
-            break;
-        case 'tech':
-            techPrice = categoryTotal;
-            document.getElementById('tech_price').value = techPrice;
-            break;
-        case 'safety':
-            // Update just the safety part in the tech price
-            let techTotal = 0;
-            for (const opt in priceTracking['tech']) {
-                techTotal += parseInt(priceTracking['tech'][opt]) || 0;
-            }
-            techPrice = techTotal + categoryTotal;
-            document.getElementById('tech_price').value = techPrice;
-            break;
-        case 'package':
-            packagePrice = categoryTotal;
-            document.getElementById('package_price').value = packagePrice;
-            break;
-    }
+            case 'exterior':
+                exteriorPrice = categoryTotal;
+                document.getElementById('exterior_price').value = exteriorPrice.toString();
+                break;
+            case 'interior':
+                interiorPrice = categoryTotal;
+                document.getElementById('interior_price').value = interiorPrice.toString();
+                break;
+            case 'performance':
+                performancePrice = categoryTotal;
+                document.getElementById('performance_price').value = performancePrice.toString();
+                break;
+            case 'tech':
+                techPrice = categoryTotal;
+                document.getElementById('tech_price').value = techPrice.toString();
+                break;
+            case 'safety':
+                // Update just the safety part in the tech price
+                let techTotal = 0;
+                for (const opt in priceTracking['tech']) {
+                    techTotal += parseInt(priceTracking['tech'][opt]) || 0;
+                }
+                techPrice = techTotal + categoryTotal;
+                document.getElementById('tech_price').value = techPrice.toString();
+                break;
+            case 'package':
+                packagePrice = categoryTotal;
+                document.getElementById('package_price').value = packagePrice.toString();
+                break;
+        }
 }
 
 
@@ -1925,11 +1929,12 @@ function calculateTotalPrice() {
         parseInt(packagePrice);
     
     document.getElementById('configTotalPrice').textContent = `$${totalPrice.toLocaleString()}`;
-    document.getElementById('total_price').value = totalPrice;
+    document.getElementById('total_price').value = totalPrice.toString();
     
     // Update mobile price displays
     updateMobilePriceDisplays();
 }
     });
 </script>
-{% endblock content %}
+{% endblock script %}
+

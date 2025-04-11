@@ -20,7 +20,17 @@ import string
 import random
 from common.utils import get_client_ip, send_custom_email
 import requests
+from decimal import Decimal
 
+def clean_price_value(value):
+    if value is None or value == '':
+        return None
+    try:
+        # Ensure we're working with a string without any currency symbols or commas
+        clean_value = str(value).replace('$', '').replace(',', '')
+        return Decimal(clean_value)
+    except:
+        raise ValueError(f"'{value}' is not a valid decimal number")
 
 # Create your views here.
 @method_decorator(csrf_exempt, name='dispatch')
@@ -510,13 +520,13 @@ def save_car_configuration(request):
                 config.roof_rack = request.POST.get('roof_rack') == 'true'
                 
                 # Update price information
-                config.exterior_price = request.POST.get('exterior_price')
-                config.interior_price = request.POST.get('interior_price')
-                config.performance_price = request.POST.get('performance_price')
-                config.tech_price = request.POST.get('tech_price')
-                config.package_price = request.POST.get('package_price')
-                config.base_price = request.POST.get('base_price')
-                config.total_price = totalPrice
+                config.exterior_price = clean_price_value(request.POST.get('exterior_price'))
+                config.interior_price = clean_price_value(request.POST.get('interior_price'))
+                config.performance_price = clean_price_value(request.POST.get('performance_price'))
+                config.tech_price =clean_price_value( request.POST.get('tech_price'))
+                config.package_price = clean_price_value(request.POST.get('package_price'))
+                config.base_price = clean_price_value(request.POST.get('base_price'))
+                config.total_price = clean_price_value(totalPrice)
                 
                 config.save()
             
