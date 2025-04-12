@@ -2795,7 +2795,7 @@
       return cookieValue;
     };
 
-    fetch("http://127.0.0.1:8000/auth/booked-packages/create/", {
+    fetch("{% url 'save-booked-package' %}", {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -2850,7 +2850,7 @@
       return cookieValue;
     };
 
-    fetch("http://127.0.0.1:8000/auth/booked-packages/create/", {
+    fetch("{% url  'save-booked-package' %}", {
       method: "POST",
       body: formData,
       credentials: "include",
