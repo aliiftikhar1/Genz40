@@ -5,8 +5,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from common.utils import EmailThread, get_client_ip
+from django.templatetags.static import static
 from .forms import PostContactForm, RegisterForm
-from backend.models import CarConfiguration, CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
+from backend.models import CarConfiguration, BookedPackage , CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -107,11 +108,45 @@ def learn_more(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     allitems = PostNavItem.objects.all()  
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    
+    # Use the static() function to generate URLs for static files
+    markI_images = [
+        {"id": 1, "url": static('images/car/Mark-I/car-1.png')},
+        {"id": 2, "url": static('images/car/Mark-I/car-1.png')},
+        {"id": 3, "url": static('images/car/Mark-I/car-1.png')},
+        {"id": 4, "url": static('images/car/Mark-I/car-1.png')},
+        {"id": 5, "url": static('images/car/Mark-I/car-1.png')},
+    ]
+    markII_images = [
+        {"id": 1, "url": static('images/car/Mark-II/car-2.png')},
+        {"id": 2, "url": static('images/car/Mark-II/car-2.png')},
+        {"id": 3, "url": static('images/car/Mark-II/car-2.png')},
+        {"id": 4, "url": static('images/car/Mark-II/car-2.png')},
+        {"id": 5, "url": static('images/car/Mark-II/car-2.png')},
+    ]
+    markIV_images = [
+        {"id": 1, "url": static('images/car/Mark-IV/car-3.png')},
+        {"id": 2, "url": static('images/car/Mark-IV/car-3.png')},
+        {"id": 3, "url": static('images/car/Mark-IV/car-3.png')},
+        {"id": 4, "url": static('images/car/Mark-IV/car-3.png')},
+        {"id": 5, "url": static('images/car/Mark-IV/car-3.png')},
+    ]
+    
+    Images = []
+    if slug == 'Mark-I':
+        Images = markI_images
+    elif slug == 'Mark-II':
+        Images = markII_images
+    elif slug == 'Mark-IV':
+        Images = markIV_images
+    
     context = {
-        'allitems':allitems,
+        'allitems': allitems,
         'items': items,
-        'package_details': package_details
+        'package_details': package_details,
+        'Images': Images,
     }
+    
     return render(request, 'public/LearnMore.html', context)
 
 def about(request):
@@ -687,13 +722,15 @@ def my_vehicles(request):
     order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
     vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
     configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id))
+    booked_packages = BookedPackage.objects.filter(user=str(request.user.id))
     print('-----configure_vehicles', configure_vehicles)
     # amount_due = order_vehicles[0].amount_due
     context = {
         'configure_vehicles':configure_vehicles,
         'reserverd_vehicles':reserverd_vehicles,
         'order_vehicles': order_vehicles,
-        'vehicles': vehicles
+        'vehicles': vehicles,
+        'booked_packages': booked_packages
     }
     return render(request, 'customer/reserved_vehicles/my_vehicles.html', context, {'is_footer_required': True})
 
@@ -713,6 +750,22 @@ def my_configurations(request):
         'vehicles': vehicles
     }
     return render(request, 'customer/reserved_vehicles/my_configurations.html', context, {'is_footer_required': True})
+@login_required
+def my_package_bookings(request):
+    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
+    order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
+    vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
+    configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id))
+    booked_packages = BookedPackage.objects.filter(user=str(request.user.id))
+    
+    context = {
+        'configure_vehicles':configure_vehicles,
+        'reserverd_vehicles':reserverd_vehicles,
+        'order_vehicles': order_vehicles,
+        'vehicles': vehicles,
+        'booked_packages': booked_packages
+    }
+    return render(request, 'customer/reserved_vehicles/my_package_bookings.html', context, {'is_footer_required': True})
 
 
 @login_required

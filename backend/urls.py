@@ -38,6 +38,7 @@ urlpatterns = [
     path('customer-list', views.customer_list, name='customer_list'),
     path('community-member-list', views.community_member_list, name='community_member_list'),
     path('subscriber-list', views.subscriber_list, name='subscriber_list'),
+
     
     path('packages/', package_list, name='package_list'),
     path('packages/add/', package_add, name='package_add'),
@@ -85,5 +86,14 @@ urlpatterns = [
     # path('configuration/<int:config_id>/', views.view_configuration, name='view_configuration'),
     
 
+path('booked-packages/', views.booked_package_list, name='booked_package_list'),
+
+# new configurations system
+ path('booked-packages/', views.get_all_booked_packages, name='get-all-booked-packages'),
+    path('booked-packages/<uuid:pk>/', views.get_booked_package_by_id, name='get-booked-package-by-id'),
+    path('booked-packages/user/<uuid:user_id>/', views.get_booked_packages_by_user_id, name='get-booked-packages-by-user-id'),
+    path('booked-packages/create/', views.save_booked_package, name='save-booked-package'),
+    path('booked-packages/update/<uuid:pk>/', views.update_booked_package, name='update-booked-package'),
+    path('booked-packages/delete/<uuid:pk>/', views.delete_booked_package, name='delete-booked-package'),
 
 ]

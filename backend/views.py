@@ -21,6 +21,14 @@ import random
 from common.utils import get_client_ip, send_custom_email
 import requests
 from decimal import Decimal
+from rest_framework import status, viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .models import BookedPackage
+from .serializers import BookedPackageSerializer
+
 
 def clean_price_value(value):
     if value is None or value == '':
@@ -234,6 +242,11 @@ def customer_list(request):
 def package_list(request):
     all_package_list = PostPackage.objects.all()
     return render(request, 'admin/package/list.html', {'packages': all_package_list})
+
+@login_required
+def booked_package_list(request):
+    all_booked_package_list = BookedPackage.objects.all()
+    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list})
 
 
 @login_required
@@ -581,3 +594,100 @@ def saved_configurations(request):
 #     }
     
 #     return render(request, 'public/view_configuration.html', context)
+
+
+
+
+# new configurations system
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_booked_packages(request):
+    """
+    Get all booked packages
+    """
+    packages = BookedPackage.objects.all()
+    serializer = BookedPackageSerializer(packages, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_booked_package_by_id(request, pk):
+    """
+    Get a booked package by ID
+    """
+    print("****~~~~~****~~~~~GOOT ID",pk)
+    try:
+        package = BookedPackage.objects.get(pk=pk)
+        serializer = BookedPackageSerializer(package)
+        return Response(serializer.data)
+    except BookedPackage.DoesNotExist:
+        return Response(
+            {"error": "Booked package not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_booked_packages_by_user_id(request, user_id):
+    """
+    Get all booked packages for a specific user
+    """
+    packages = BookedPackage.objects.filter(user_id=user_id)
+    serializer = BookedPackageSerializer(packages, many=True)
+    return Response(serializer.data)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_booked_package(request):
+    """
+    Create a new booked package
+    """
+    data = request.data.copy() 
+    data['user'] = request.user.id
+    serializer = BookedPackageSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_booked_package(request, pk):
+    """
+    Update an existing booked package
+    """
+    try:
+        package = BookedPackage.objects.get(pk=pk)
+    except BookedPackage.DoesNotExist:
+        return Response(
+            {"error": "Booked package not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    serializer = BookedPackageSerializer(package, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_booked_package(request, pk):
+    """
+    Delete a booked package
+    """
+    try:
+        package = BookedPackage.objects.get(pk=pk)
+        package.delete()
+        return Response({"message": "Booked package deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except BookedPackage.DoesNotExist:
+        return Response(
+            {"error": "Booked package not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )

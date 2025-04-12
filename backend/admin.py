@@ -1,7 +1,7 @@
 from django.contrib import admin
 from backend.models import CustomUser, PostCommunity, PostReview, PostBlog, PostMeta, PostNavItem, PostPackage, PostPackageDetail, \
     PostPackageFeature, PostPart, PostCharging, PostAccessories, PostPaint, PostImage, PostSubscribers, PostWheels, PostLandingPageImages, PostPayment, PostOrderStatus, PostSubStatus,\
-    CarConfiguration
+    CarConfiguration,BookedPackage
 # Register your models here.
 admin.site.register(CustomUser)
 admin.site.register(PostReview)
@@ -16,7 +16,12 @@ admin.site.register(PostPayment)
 admin.site.register(PostOrderStatus)
 admin.site.register(PostSubStatus)
 admin.site.register(CarConfiguration)
-
+@admin.register(BookedPackage)
+class BookedPackageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'car_model', 'title', 'price', 'status']
+    search_fields = ['title', 'user__username', 'car_model__title']
+    list_filter = ['status']
+    ordering = ['-id']
 from adminsortable2.admin import SortableAdminMixin
 
 

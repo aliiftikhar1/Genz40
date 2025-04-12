@@ -1,0 +1,124 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load frontend_custom_filters %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Booked Packages</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Booked Packages</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row mb-2">
+                <div class="col-6">
+                  {% comment %} <a class="btn btn-sm btn-primary" href="{% url 'save-booked-package' %}">Add Booked Package</a> {% endcomment %}
+                </div>
+                <div class="col-6">
+                  <div class="input-group input-group-sm float-right" style="width: 300px;">
+                    <input type="text" id="myInputTextField" class="form-control" placeholder="Search...">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default" disabled><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table id="package_tbl" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Car Model</th>
+                    <th>Title</th>
+                    <th>Extra Features</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    {% comment %} <th>Actions</th> {% endcomment %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for package in booked_packages %}
+                  <tr>
+                    <td>{{ package.user.first_name }} {{package.user.last_name}}</td>
+                    <td>{{ package.car_model.title }}</td>
+                    <td>{{ package.title }}</td>
+                    <td style="max-width:500px">{{ package.extra_features|title_case }}</td>
+                    <td>{{ package.price }}</td>
+                    <td>
+                      <span class="badge 
+                        {% if package.status == 'confirmed' %}badge-success
+                        {% elif package.status == 'pending' %}badge-warning
+                        {% elif package.status == 'cancelled' %}badge-danger
+                        {% endif %}">
+                        {{ package.status|title }}
+                      </span>
+                    </td>
+                    {% comment %} <td>
+                      <a href="{% url 'update-booked-package' package.id %}" class="btn btn-sm btn-warning">Edit</a>
+                      <a href="{% url 'delete-booked-package' package.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booked package?');">Delete</a>
+                    </td> {% endcomment %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    let oTable = $('#package_tbl').DataTable({
+      bPaginate: true,
+      bLengthChange: false,
+      bFilter: true,
+      bInfo: true,
+      ordering: false,
+      searching: true,
+      bAutoWidth: false,
+      dom: 'lrtip',
+      responsive: true,
+      oLanguage: {
+        sSearch: "",
+        searchPlaceholder: "Search..."
+      }
+    });
+
+    $('#myInputTextField').keyup(function () {
+      oTable.search($(this).val()).draw();
+    });
+  });
+</script>
+{% endblock %}

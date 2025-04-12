@@ -126,6 +126,201 @@
     .offcanvas.offcanvas-end, .offcanvas.offcanvas-start {
         width: 420px !important;
     }
+/* Gallery Item Styling */
+.gallery-item {
+    margin-bottom: 24px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.,44, 1);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.gallery-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.15);
+}
+
+/* Image Styling */
+/* Update your existing gallery-img class */
+.gallery-img {
+    width: 100%;
+    height: 250px; /* Fixed height for all images */
+    object-fit: cover; /* This will crop images to fit while maintaining aspect ratio */
+    transition: all 0.5s ease;
+    display: block;
+    border-radius: 12px;
+}
+.gallery-item-container {
+    position: relative;
+    width: 100%;
+    height: 250px; /* Same as gallery-img height */
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.gallery-item:hover .gallery-img {
+    transform: scale(1.01);
+}
+
+/* Hide Card Elements */
+.card-body {
+    display: none;
+}
+
+.card {
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+    background-color: #212529;
+    color: white;
+    border-bottom: none;
+    padding: 16px 24px;
+}
+
+.modal-img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    background-color: white;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Loading Animation */
+.loading {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s ease, transform 0.5s ease;
+}
+
+.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Tab Styling */
+.nav-tabs {
+    border-bottom: 2px solid #f1f3f5;
+    margin-bottom: 36px;
+}
+
+.nav-tabs .nav-link {
+    margin-bottom: -2px;
+    border: none;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: transparent;
+    border-bottom: 3px solid #0d6efd;
+}
+
+.tab-content {
+    padding-top: 10px;
+}
+
+.tab-pane {
+    transition: all 0.3s ease;
+}
+
+.badge-tab {
+    margin-left: 8px;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 5px 8px;
+}
+
+.nav-link.active .badge-tab {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.tab-icon {
+    margin-right: 8px;
+}
+@media (max-width: 768px) {
+    .gallery-img,
+    .gallery-item-container {
+        height: 200px;
+    }
+    .nav-tabs .nav-link {
+        margin-bottom: -2px;
+        border: none;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 16px 4px;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-img,
+    .gallery-item-container {
+        height: 150px;
+    }
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for desktop */
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* Mobile layout - 2 columns */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Gallery item styling */
+.gallery-grid-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    aspect-ratio: 1 / 1; /* Square aspect ratio */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.gallery-grid-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 </style>
 {% endblock header %}
 
@@ -147,7 +342,7 @@
         <div class="container">
             <h1 class="hero-title text-center mb-5 mt-5">A 1960s sports prototype reborn.</h1>
             <div class="car-image-container">
-                <img src="{% static 'images/car/blue-car.png' %}" alt="Red Shoreline LM Coupe" class="img-fluid">
+                <img src="{{ Images.0.url }}" alt="Red Shoreline LM Coupe" class="img-fluid">
             </div>
             <div class="logo-container text-center mt-4">
                 <h2 class="shoreline-text">SHORELINE <span class="lm-text">LM<span class="coupe-text">COUPE</span></span></h2>
@@ -170,7 +365,7 @@
     <section class="car-section">
         <div class="container">
             <div class="car-image-container">
-                <img src="{% static 'images/car/red-car.png' %}" alt="Silver Shoreline LM Coupe" class="img-fluid">
+                <img src="{{ Images.1.url }}" alt="Silver Shoreline LM Coupe" class="img-fluid">
             </div>
         </div>
     </section>
@@ -190,7 +385,7 @@
     <section class="car-section">
         <div class="container">
             <div class="car-image-container">
-                <img src="{% static 'images/car/blue-car.png' %}" alt="Green Shoreline LM Coupe" class="img-fluid">
+                <img src="{{ Images.2.url }}" alt="Green Shoreline LM Coupe" class="img-fluid">
             </div>
         </div>
     </section>
@@ -211,7 +406,7 @@
         <div class="container">
             <div class="car-image-container">
                 <!-- Using a placeholder for the interior image -->
-                <img src="{% static 'images/car/red-car.png' %}" alt="Interior of Shoreline LM Coupe" class="img-fluid">
+                <img src="{{ Images.3.url }}" alt="Interior of Shoreline LM Coupe" class="img-fluid">
                 <!-- Note: Replace with actual interior image when available -->
             </div>
         </div>
@@ -222,7 +417,7 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                    A classic car for the modern driver <span class="divider">|</span> A modern car for the classic driver
+                 CHASIS <span class="divider">|</span> A modern car for the classic driver
                 </h2>
             </div>
         </div>
@@ -232,7 +427,7 @@
     <section class="car-section">
         <div class="container">
             <div class="car-image-container">
-                <img src="{% static 'images/car/blue-car.png' %}" alt="Comparison of chassis and completed car" class="img-fluid">
+                <img src="{{ Images.4.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
             </div>
         </div>
     </section>
@@ -247,7 +442,67 @@
             </div>
         </div>
     </section>
+
+    {% comment %} Gallery Section {% endcomment %}
+
+{% comment %} Gallery Section {% endcomment %}
+<div class="container">
+    <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="interior-tab" data-bs-toggle="tab" data-bs-target="#interior-pane" type="button" role="tab" aria-controls="interior-pane" aria-selected="true">
+                <i class="fas fa-couch tab-icon"></i>Interior
+                <span class="badge rounded-pill badge-tab" id="interior-count">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="exterior-tab" data-bs-toggle="tab" data-bs-target="#exterior-pane" type="button" role="tab" aria-controls="exterior-pane" aria-selected="false">
+                <i class="fas fa-car tab-icon"></i>Exterior
+                <span class="badge rounded-pill badge-tab" id="exterior-count">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="chasis-tab" data-bs-toggle="tab" data-bs-target="#chasis-pane" type="button" role="tab" aria-controls="chasis-pane" aria-selected="false">
+                <i class="fas fa-cogs tab-icon"></i>Chassis
+                <span class="badge rounded-pill badge-tab" id="chasis-count">0</span>
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="galleryTabContent">
+        <div class="tab-pane fade show active" id="interior-pane" role="tabpanel" aria-labelledby="interior-tab">
+            <div class="gallery-grid" id="interior-container"></div>
+        </div>
+        <div class="tab-pane fade" id="exterior-pane" role="tabpanel" aria-labelledby="exterior-tab">
+            <div class="gallery-grid" id="exterior-container"></div>
+        </div>
+        <div class="tab-pane fade" id="chasis-pane" role="tabpanel" aria-labelledby="chasis-tab">
+            <div class="gallery-grid" id="chasis-container"></div>
+        </div>
+    </div>
 </div>
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:white">
+                <h5 class="modal-title" id="imageModalLabel" >Image Title</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <img src="/placeholder.svg" alt="Gallery Image" class="modal-img" id="modalImage">
+            </div>
+            <div class="modal-footer" style="background-color:white">
+                <span class="badge bg-danger me-auto" id="modalCategory">Category</span>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% comment %} Gallery Section Ends {% endcomment %}
 
 <section id="exclusive-discount" class="bg-half-100 d-table w-100">
     <div class="container-fluid">
@@ -577,4 +832,280 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gallery data with only interior, exterior and chassis images
+        const galleryData = {
+            "galleryImages": [
+                {
+                    "id": 1,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (1).jpg' %}",
+                    "description": "Luxury sedan interior with leather seats"
+                },
+                {
+                    "id": 2,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (2).jpg' %}",
+                    "description": "Modern dashboard with digital display"
+                },
+                {
+                    "id": 3,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (3).jpg' %}",
+                    "description": "Sports car cockpit with racing seats"
+                },
+                {
+                    "id": 4,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (4).jpg' %}",
+                    "description": "Red sports car front view"
+                },
+                {
+                    "id": 5,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (5).jpg' %}",
+                    "description": "Luxury SUV side profile"
+                },
+                {
+                    "id": 6,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (6).jpg' %}",
+                    "description": "Classic vintage car rear view"
+                },
+                {
+                    "id": 7,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (7).jpg' %}",
+                    "description": "Performance car chassis with suspension"
+                },
+                {
+                    "id": 8,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (8).jpg' %}",
+                    "description": "Race car chassis with roll cage"
+                },
+                {
+                    "id": 9,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (9).jpg' %}",
+                    "description": "Exposed chassis with engine components"
+                },
+                {
+                    "id": 10,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (10).jpg' %}",
+                    "description": "Ambient lighting in car interior"
+                },
+                {
+                    "id": 11,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (11).jpg' %}",
+                    "description": "Steering wheel with mounted controls"
+                },
+                {
+                    "id": 12,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (12).jpg' %}",
+                    "description": "Infotainment touchscreen system"
+                },
+                {
+                    "id": 13,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (13).jpg' %}",
+                    "description": "Car in sunset lighting"
+                },
+                {
+                    "id": 14,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (14).jpg' %}",
+                    "description": "SUV parked on mountain road"
+                },
+                {
+                    "id": 15,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (15).jpg' %}",
+                    "description": "Convertible car front view"
+                },
+                {
+                    "id": 16,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (16).jpg' %}",
+                    "description": "Detailed suspension system"
+                },
+                {
+                    "id": 17,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (17).jpg' %}",
+                    "description": "Undercarriage with performance exhaust"
+                },
+                {
+                    "id": 18,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (18).jpg' %}",
+                    "description": "Chassis with enhanced brake system"
+                },
+                {
+                    "id": 19,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (19).jpg' %}",
+                    "description": "Digital instrument cluster display"
+                },
+                {
+                    "id": 20,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (20).jpg' %}",
+                    "description": "Electric vehicle exterior design"
+                },
+                {
+                    "id": 21,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (21).jpg' %}",
+                    "description": "Luxury car ambient roof lights"
+                },
+                {
+                    "id": 22,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (22).jpg' %}",
+                    "description": "Passenger view of premium cabin"
+                },
+                {
+                    "id": 23,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (23).jpg' %}",
+                    "description": "Off-road vehicle in action"
+                },
+                {
+                    "id": 24,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (24).jpg' %}",
+                    "description": "High-end sedan with night lights"
+                },
+                {
+                    "id": 25,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (25).jpg' %}",
+                    "description": "Sports coupe with carbon body"
+                },
+                {
+                    "id": 26,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (26).jpg' %}",
+                    "description": "Tubular frame for race cars"
+                },
+                {
+                    "id": 27,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (27).jpg' %}",
+                    "description": "Reinforced engine mounting"
+                },
+                {
+                    "id": 28,
+                    "label": "exterior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (28).jpg' %}",
+                    "description": "Engine bay of performance vehicle"
+                },
+                {
+                    "id": 29,
+                    "label": "interior",
+                    "url": "{% static 'images/car/learn-more/Mark-I (29).jpg' %}",
+                    "description": "Back seat with entertainment system"
+                },
+                {
+                    "id": 30,
+                    "label": "chasis",
+                    "url": "{% static 'images/car/learn-more/Chasis (1).jpg' %}",
+                    "description": "Premium leather finish dashboard"
+                }, {
+                    "id": 31,
+                    "label": "chasis",
+                    "url": "{% static 'images/car/learn-more/Chasis (2).jpg' %}",
+                    "description": "Reinforced engine mounting"
+                },
+                {
+                    "id": 32,
+                    "label": "chasis",
+                    "url": "{% static 'images/car/learn-more/Chasis (3).jpg' %}",
+                    "description": "Engine bay of performance vehicle"
+                },
+                {
+                    "id": 33,
+                    "label": "chasis",
+                    "url": "{% static 'images/car/learn-more/Chasis (4).jpg' %}",
+                    "description": "Back seat with entertainment system"
+                },
+                
+            ]
+        }
+        
+        // Initialize gallery
+        initGallery(galleryData.galleryImages);
+        
+        // Update tab counts
+        updateTabCounts(galleryData.galleryImages);
+        
+        // Add click events to gallery items for modal
+        function addModalEvents() {
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const img = this.querySelector('img');
+                    const category = this.dataset.category;
+                    
+                    document.getElementById('imageModalLabel').textContent = 
+                        `${capitalizeFirstLetter(category)} View`;
+                    document.getElementById('modalImage').src = img.src;
+                    document.getElementById('modalCategory').textContent = 
+                        capitalizeFirstLetter(category);
+                    
+                    new bootstrap.Modal(document.getElementById('imageModal')).show();
+                });
+            });
+        }
+        
+        function initGallery(images) {
+            // Clear containers
+            document.getElementById('interior-container').innerHTML = '';
+            document.getElementById('exterior-container').innerHTML = '';
+            document.getElementById('chasis-container').innerHTML = '';
+            
+            // Create gallery items for each category
+            images.forEach(image => {
+                const galleryItem = createGalleryItem(image);
+                document.getElementById(`${image.label}-container`).appendChild(galleryItem);
+            });
+            
+            addModalEvents();
+        }
+        
+        function createGalleryItem(image) {
+            const item = document.createElement('div');
+            item.className = 'gallery-grid-item';
+            item.dataset.id = image.id;
+            item.dataset.category = image.label;
+            
+            item.innerHTML = `
+                <img src="${image.url}" class="gallery-grid-img" alt="${image.description}" loading="lazy">
+            `;
+            
+            return item;
+        }
+
+        
+        function updateTabCounts(images) {
+            const counts = {
+                interior: images.filter(img => img.label === 'interior').length,
+                exterior: images.filter(img => img.label === 'exterior').length,
+                chasis: images.filter(img => img.label === 'chasis').length
+            };
+            
+            document.getElementById('interior-count').textContent = counts.interior;
+            document.getElementById('exterior-count').textContent = counts.exterior;
+            document.getElementById('chasis-count').textContent = counts.chasis;
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+    });
+    </script>
     {% endblock script %}

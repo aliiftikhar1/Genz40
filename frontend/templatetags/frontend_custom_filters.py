@@ -1,6 +1,7 @@
 # frontend/templatetags/frontend_custom_filters.py
 
 from django import template
+import re
 
 register = template.Library()
 
@@ -20,3 +21,33 @@ def add_class(field, css):
 @register.filter(name='without_label')
 def without_label(field):
     return field.as_widget(attrs={'class': 'form-control', 'placeholder': field.label})
+
+
+@register.filter
+def split(value, arg):
+    return value.split(arg)
+
+@register.filter
+def title_case(value):
+    """
+    Converts comma-separated values into title case
+    E.g., 'engineMounts,gurneyBubble' to 'EngineMounts, GurneyBubble'
+    """
+    if not value:
+        return ''
+    
+    # Split the string by commas
+    parts = value.split(',')
+    
+    # Title case each part (convert first letter of each word to uppercase)
+    # This handles camelCase by finding capital letters and adding spaces before them
+    formatted_parts = []
+    for part in parts:
+        # Convert first letter to uppercase
+        if part:
+            # Handle camelCase by keeping existing capital letters
+            formatted = part[0].upper() + part[1:]
+            formatted_parts.append(formatted)
+    
+    # Join parts with comma and space
+    return ', '.join(formatted_parts)

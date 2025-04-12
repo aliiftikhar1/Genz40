@@ -617,3 +617,23 @@ class CarConfiguration(models.Model):
     class Meta:
         ordering = ['-created_at']
         db_table = 'car_configurations'
+
+
+
+class BookedPackage(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='booked_Package_configuration')
+    car_model = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='package_car')
+    title = models.CharField(max_length=255)
+    extra_features = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return self.title
