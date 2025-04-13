@@ -14,12 +14,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Booked Packages</h1>
+          <h1>Reservations</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Booked Packages</li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item active">Reservations</li>
           </ol>
         </div>
       </div>
@@ -54,6 +54,7 @@
                     <th>Title</th>
                     <th>Extra Features</th>
                     <th>Price</th>
+                    {% comment %} <th>Hold Amount</th> {% endcomment %}
                     <th>Status</th>
                     {% comment %} <th>Actions</th> {% endcomment %}
                   </tr>
@@ -66,6 +67,7 @@
                     <td>{{ package.title }}</td>
                     <td style="max-width:500px">{{ package.extra_features|title_case }}</td>
                     <td>{{ package.price }}</td>
+                    {% comment %} <td>100</td> {% endcomment %}
                     <td>
                       <span class="badge 
                         {% if package.status == 'confirmed' %}badge-success

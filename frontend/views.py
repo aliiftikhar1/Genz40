@@ -475,6 +475,30 @@ def lock_your_price_now(request, slug):
                     'random_password': random_password,
                     'email': email})
 
+def reserve_configuration_now(request, slug):
+    email = request.GET.get('email', '')
+    items = get_object_or_404(PostNavItem, slug=slug)
+    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    amount_due = package_details[0].amount_due
+    # package = items.details.filter(is_active=True).order_by('position')
+    random_password = generate_random_password()
+    ip = get_country_info(request)
+    # ip = "103.135.189.223"
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    return render(request, 'public/lock_your_price_now.html',
+                  {'items': items,
+                   'packages': package_details,
+                   'amount_due': amount_due,
+                   'country_code': country_code,
+                    'country_flag_url': country_flag_url,
+                    'random_password': random_password,
+                    'email': email})
+
+
 def save_contact(request):
     if request.method == 'POST':
         mail_subject = "Thank you for contacting us"
@@ -914,6 +938,162 @@ def checkout(request):
     """
     View a cheout out page
     """
-   
-    
     return render(request, 'public/payment/checkout.html')
+
+
+@login_required
+def reservation_checkout(request, id):
+    """
+    View the reservation checkout page.
+    """
+    booked_package = get_object_or_404(BookedPackage, id=id)
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+
+    context = {
+        'user_details': request.user,
+        'booked_package': booked_package,  # singular for clarity
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+    }
+
+    return render(request, 'public/payment/reservation_checkout.html', context)
+
+
+
+@csrf_exempt
+def process_reservation_payment(request):
+    if request.method == 'POST':
+        try:
+            # Get form data
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            email = request.POST.get('email')
+            phone_number = request.POST.get('phone_number')
+            zip_code = request.POST.get('zip_code')
+            amount = request.POST.get('amount')
+            package_id = request.POST.get('package_id')
+
+            # Get the booked package
+            booked_package = BookedPackage.objects.get(id=package_id)
+            
+            # Create a Stripe customer
+            customer = stripe.Customer.create(
+                email=email,
+                name=f"{first_name} {last_name}",
+                phone=phone_number,
+                metadata={
+                    'package_id': str(package_id),
+                    'user_email': email,
+                    'zip_code': zip_code
+                }
+            )
+
+            # Create line items for Stripe checkout
+            line_items = [{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': booked_package.car_model.title,
+                        'description': f"Payment for {booked_package.title} Package of {booked_package.car_model.title}",
+                        'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
+                    },
+                    'unit_amount': int(float(100) * 100),  # amount in cents
+                },
+                'quantity': 1,
+            }]
+
+            # Prepare session data to be used in create_checkout_session
+            session_data = {
+                'customer_id': customer.id,
+                'line_items': line_items,
+                'package_id': str(package_id),
+                'success_url': request.build_absolute_uri(f'/car/reservation_success/{package_id}/'),
+                'cancel_url': request.build_absolute_uri(f'/car/reservation-checkout/{package_id}/'),
+                'metadata': {
+                    'product_name':booked_package.car_model.title,
+                    'package_id': str(package_id),
+                    'user_email': email,
+                    'descripton':f" Payment for {booked_package.title} Package of {booked_package.car_model.title}"
+                },
+                'payment_intent_data':{
+                'description': f" Payment for {booked_package.title} Package of {booked_package.car_model.title}",
+                "metadata": {
+                    'product_name':booked_package.car_model.title, 
+                },
+                },
+            }
+
+            return JsonResponse({
+                'is_success': True,
+                'session_data': session_data,
+                'message': 'Payment session prepared successfully'
+            })
+
+        except BookedPackage.DoesNotExist:
+            return JsonResponse({
+                'is_success': False,
+                'message': 'Package not found'
+            }, status=404)
+        
+        except Exception as e:
+            return JsonResponse({
+                'is_success': False,
+                'message': str(e)
+            }, status=400)
+    
+    return JsonResponse({
+        'is_success': False,
+        'message': 'Invalid request method'
+    }, status=405)
+
+
+@csrf_exempt
+def create_package_checkout_session(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # Create Stripe checkout session
+            session = stripe.checkout.Session.create(
+                customer=data['customer_id'],
+                payment_method_types=['card'],
+                line_items=data['line_items'],
+                mode='payment',
+                success_url=data['success_url'],
+                cancel_url=data['cancel_url'],
+                metadata=data['metadata'],
+                payment_intent_data=data['payment_intent_data']
+            )
+            print("Session Data is",session)
+
+           
+            return JsonResponse({
+                'is_success': True,
+                'checkout_url': session.url,
+                'message': 'Checkout session created successfully'
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'is_success': False,
+                'message': str(e)
+            }, status=400)
+    
+    return JsonResponse({
+        'is_success': False,
+        'message': 'Invalid request method'
+    }, status=405)
+
+
+
+def reservation_success(request,id):
+     # Update the booked package status to 'confirmed' (you might want to do this after successful payment)
+        booked_package = BookedPackage.objects.get(id=id)
+        booked_package.status = 'confirmed'
+        booked_package.save()
+
+        return render(request, 'public/payment/success.html', {'is_footer_required': False})
