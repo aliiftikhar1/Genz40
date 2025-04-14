@@ -656,7 +656,7 @@ def save_booked_package(request):
 
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_booked_package(request, pk):
     """

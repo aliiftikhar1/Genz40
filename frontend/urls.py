@@ -53,6 +53,12 @@ urlpatterns = [
 path('car/reservation-checkout/<str:id>/', views.reservation_checkout, name='reservation_checkout'),  
  path('car/process-reservation/', views.process_reservation_payment, name='process_reservation_payment'),
     path('car/create-package-checkout-session/', views.create_package_checkout_session, name='create_package_checkout_session'),
-    path('car/reservation_success/<str:id>/', views.reservation_success, name='reservation_success'),
+    path('car/reservation_success/<str:id>/<str:sessionId>/', views.reservation_success, name='reservation_success'),
+    path('car/reservation/<str:id>/', views.reservation_details, name='reservation_details'),
+
+
+    path('reservation/initiate-build-payment/', views.initiate_build_payment, name='initiate_build_payment'),
+    path('reservation/create-build-checkout-session/', views.create_build_checkout_session, name='create_build_checkout_session'),
+    path('reservation/build-payment-success/<str:id>/<str:sessionId>/', views.build_payment_success, name='build_payment_success'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

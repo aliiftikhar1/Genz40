@@ -19,6 +19,7 @@ import string
 import random
 from django.contrib.auth import login
 from django.http import JsonResponse
+import time  
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import stripe
@@ -1051,6 +1052,8 @@ def process_reservation_payment(request):
     }, status=405)
 
 
+
+
 @csrf_exempt
 def create_package_checkout_session(request):
     if request.method == 'POST':
@@ -1063,14 +1066,12 @@ def create_package_checkout_session(request):
                 payment_method_types=['card'],
                 line_items=data['line_items'],
                 mode='payment',
-                success_url=data['success_url'],
+                success_url=f"{data['success_url']}{{CHECKOUT_SESSION_ID}}",
                 cancel_url=data['cancel_url'],
                 metadata=data['metadata'],
                 payment_intent_data=data['payment_intent_data']
             )
-            print("Session Data is",session)
-
-           
+            
             return JsonResponse({
                 'is_success': True,
                 'checkout_url': session.url,
@@ -1090,10 +1091,232 @@ def create_package_checkout_session(request):
 
 
 
-def reservation_success(request,id):
-     # Update the booked package status to 'confirmed' (you might want to do this after successful payment)
+def reservation_success(request, id, sessionId):
+    try:
+        # Get the booked package
+        
         booked_package = BookedPackage.objects.get(id=id)
         booked_package.status = 'confirmed'
         booked_package.save()
+        
+        
+        # Get the session ID from the query parameters (Stripe redirects with session_id)
+        # session_id = request.GET.get('session_id')
+        if sessionId:
+            # Retrieve the Stripe session to get payment details
+            session = stripe.checkout.Session.retrieve(sessionId)
+
+            print("Session Response is : ",session);
+            
+            # Create payment record
+            PostPayment.objects.create(
+                user=booked_package.user,  # Assuming BookedPackage has a user field
+                rn_number=booked_package.reservation_number,
+                stripe_payment_id=session.payment_intent,
+                amount=100,  # Assuming price is stored in booked_package
+                regarding="reserve",
+                currency="usd",
+                status="succeeded",  # Or you can check session.payment_status
+                package_name=booked_package.title,
+            )
+            
+        
+            # time.sleep(5)
+
 
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
+    
+    except Exception as e:
+        # Handle errors appropriately - maybe log them and still show success page
+        print(f"Error in reservation_success: {str(e)}")
+        return render(request, 'public/payment/success.html', {'is_footer_required': False})
+
+
+def reservation_details(request, id):
+    """
+    View the reservation checkout page.
+    """
+    booked_package = get_object_or_404(BookedPackage, reservation_number=id)
+    payments = PostPayment.objects.filter(rn_number=id) 
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Payment```````"+str(payments))
+    # get_object_or_404(PostPayment, rn_number=id)
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+
+    car_image = None
+    if booked_package.car_model.images.exists():
+        car_image = booked_package.car_model.images.first()
+
+    context = {
+        'user_details': request.user,
+        'booked_package': booked_package,  # singular for clarity
+        'payments':payments,
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+         'car_image': car_image,
+    }
+
+    return render(request, 'public/reservation_details.html', context)
+
+
+
+
+@csrf_exempt
+def initiate_build_payment(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            reservation_number = data.get('reservation_number')
+            
+            # Get the booked package
+            booked_package = get_object_or_404(BookedPackage, reservation_number=reservation_number)
+            
+            # Create a Stripe customer
+            customer = stripe.Customer.create(
+                email=booked_package.user.email,
+                name=f"{booked_package.user.first_name} {booked_package.user.last_name}",
+                metadata={
+                    'reservation_number': reservation_number,
+                    'package_id': str(booked_package.id),
+                    'user_id': str(booked_package.user.id),
+                    'build_type': booked_package.build_type,
+                    'build_status': booked_package.build_status
+                }
+            )
+
+            # Create line item for Stripe checkout
+            line_items = [{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': f"Build Payment - {booked_package.car_model.title}",
+                        'description': f"Payment for {booked_package.build_type} stage of {booked_package.title} package",
+                    },
+                    'unit_amount': int(float(booked_package.build_payment_amount) * 100),  # amount in cents
+                },
+                'quantity': 1,
+            }]
+
+            # Prepare session data
+            session_data = {
+                'customer_id': customer.id,
+                'line_items': line_items,
+                'package_id': str(booked_package.id),
+                'reservation_number': reservation_number,
+                'success_url': request.build_absolute_uri(
+                            f'/reservation/build-payment-success/{booked_package.id}/'
+                            ) + '{CHECKOUT_SESSION_ID}'+'/',
+                
+                'cancel_url': request.build_absolute_uri(
+                    f'/car/reservation-details/{booked_package.id}/'
+                ),
+                'metadata': {
+                    'reservation_number': reservation_number,
+                    'build_type': booked_package.build_type,
+                    'build_status': booked_package.build_status,
+                    'payment_type': 'build_payment'
+                },
+                'payment_intent_data': {
+                    'description': f"Build payment for {booked_package.title} (Reservation: {reservation_number})",
+                    'metadata': {
+                        'reservation_number': reservation_number,
+                        'build_type': booked_package.build_type,
+                        'package_id': str(booked_package.id)
+                    }
+                }
+            }
+
+            return JsonResponse({
+                'success': True,
+                'session_data': session_data,
+                'message': 'Payment session prepared successfully'
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            }, status=400)
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method'
+    }, status=405)
+
+
+@csrf_exempt
+def create_build_checkout_session(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # Create Stripe checkout session
+            session = stripe.checkout.Session.create(
+                customer=data['customer_id'],
+                payment_method_types=['card'],
+                line_items=data['line_items'],
+                mode='payment',
+                success_url=data['success_url'],
+                cancel_url=data['cancel_url'],
+                metadata=data['metadata'],
+                payment_intent_data=data['payment_intent_data']
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'checkout_url': session.url,
+                'session_id': session.id
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            }, status=400)
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method'
+    }, status=405)
+
+
+def build_payment_success(request, id,sessionId):
+    print("Seesion id is : ",sessionId)
+    try:
+        booked_package = get_object_or_404(BookedPackage, id=id)
+        # Update build status
+        booked_package.build_status = 'in_progress'
+        booked_package.save()
+       
+        if sessionId:
+            # Retrieve the Stripe session
+            session = stripe.checkout.Session.retrieve(sessionId)
+            print("Sesstion Data is : ",session)
+            
+            # Create payment record
+            PostPayment.objects.create(
+                user=booked_package.user,
+                rn_number=booked_package.reservation_number,
+                stripe_payment_id=session.payment_intent,
+                amount=float(booked_package.build_payment_amount),
+                regarding=booked_package.build_type,
+                currency="usd",
+                status="succeeded",
+                package_name=booked_package.title,
+                )
+        
+            return render(request, 'public/payment/success.html', {
+                'is_footer_required': False,
+                'message': 'Build payment completed successfully!'
+            })
+    
+    except Exception as e:
+        # Log the error and still show success page
+        print(f"Error in build_payment_success: {str(e)}")
+        return render(request, 'public/payment/success.html', {
+            'is_footer_required': False,
+            'message': 'Payment completed but there was an issue updating our records. Please contact support.'
+        })

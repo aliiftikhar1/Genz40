@@ -86,7 +86,7 @@ urlpatterns = [
     # path('configuration/<int:config_id>/', views.view_configuration, name='view_configuration'),
     
 
-path('resrvations/', views.booked_package_list, name='booked_package_list'),
+path('reservations/', views.booked_package_list, name='booked_package_list'),
 
 # new configurations system
  path('booked-packages/', views.get_all_booked_packages, name='get-all-booked-packages'),

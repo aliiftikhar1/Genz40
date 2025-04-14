@@ -10,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from common.utils import validate_file_extension
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.crypto import get_random_string
+
 
 
 # Create your models here.
@@ -467,6 +469,7 @@ class PostPayment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
     rn_number = models.CharField(max_length=64, blank=True, null=True)
     stripe_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    regarding = models.CharField(max_length=255, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="usd", blank=True, null=True)
     status = models.CharField(max_length=50, blank=True, null=True)
@@ -624,16 +627,68 @@ class BookedPackage(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
+        ('in_progress', 'In Progress'),
         ('cancelled', 'Cancelled'),
+    ]
+    
+    BUILD_TYPE_CHOICES = [
+        ('order_confirmed', 'Order Confirmed'),
+        ('car_production', 'Car Production'),
+        ('chassis_complete', 'Chassis Complete'),
+        ('body_complete', 'Body Complete'),
+        ('assembly', 'Assembly'),
+        ('built', 'Built'),
+        ('quality_check', 'Quality Check'),
+        ('available_for_delivery', 'Available For Delivery'),
+    ]
+    
+    BUILD_STATUS_CHOICES = [
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('awaiting_payment', 'Awaiting Payment'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reservation_number = models.CharField(max_length=20, unique=True, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='booked_Package_configuration')
     car_model = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='package_car')
     title = models.CharField(max_length=255)
     extra_features = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # New fields
+    build_type = models.CharField(max_length=30, choices=BUILD_TYPE_CHOICES, default='order_confirmed')
+    build_status = models.CharField(max_length=20, choices=BUILD_STATUS_CHOICES, default='in_progress')
+    build_payment_amount = models.IntegerField(default=0)
+    build_message = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.reservation_number:
+            # Generate a unique reservation number starting with RN
+            random_str = get_random_string(length=8, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+            self.reservation_number = f"RN{random_str}"
+            
+            # Check if the generated number exists and regenerate if needed
+            while BookedPackage.objects.filter(reservation_number=self.reservation_number).exists():
+                random_str = get_random_string(length=8, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+                self.reservation_number = f"RN{random_str}"
+                
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.reservation_number}"
+    
+    def get_build_status_display(self):
+        """
+        Returns the human-readable status label.
+        You can customize this if you need special logic.
+        """
+        return dict(self.BUILD_STATUS_CHOICES).get(self.build_status, self.build_status)
+    
+    @property
+    def BUILD_TYPE_CHOICES_index(self):
+        for index, (value, label) in enumerate(self.BUILD_TYPE_CHOICES):
+            if value == self.build_type:
+                return index
+        return 0

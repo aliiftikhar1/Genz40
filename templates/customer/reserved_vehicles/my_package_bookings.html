@@ -67,6 +67,7 @@
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <p class="text-muted mb-1"><strong>Package:</strong> {{ package.title }}</p>
+                                                            <p class="text-muted mb-1"><strong>Code:</strong> {{ package.reservation_number }}</p>
                                                             <p class="text-muted mb-1"><strong>Price:</strong> ${{ package.price|floatformat:2|default:"0.00" }}</p>
                                                             <p class="text-muted mb-1"><strong>Status:</strong> 
                                                                 {% if package.status == 'pending' %}
@@ -86,8 +87,8 @@
                                                     </div>
                                                 </div>
                                                
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <a href="{% url 'car_configurator' package.car_model.slug %}" class="btn btn-sm btn-primary">View Details</a>
+                                                <div class="d-flex justify-content-end align-items-center gap-4 pb-1">
+                                                    <a  href="{% url 'reservation_details' package.reservation_number %}"  class="text-muted readmore">Manage <i class="uil uil-angle-right-b align-middle"></i></a>
                                                     {% if package.status == 'pending' %}
                                                     <a href="{% url 'reservation_checkout' package.id %}" class="btn btn-sm btn-success">Pay Now</a>
                                                 {% endif %}
