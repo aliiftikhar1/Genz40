@@ -2588,6 +2588,7 @@
       // Get the feature name from the parent label
       const featureName = this.closest('div').querySelector('label').getAttribute('for');
 
+      console.log("Feature name is : ",featureName)
       // Switch to Roller Plus tab
       const rollerPlusTab = document.querySelector('.tab-button[data-tab="roller-plus"]');
       if (rollerPlusTab) {
@@ -2604,6 +2605,20 @@
             setTimeout(() => {
               featureCheckbox.closest('.flex').style.backgroundColor = '';
             }, 2000);
+          }
+          else{
+
+            const featureRadioBox = document.querySelector(`#roller-plus-content input[id="${featureName}"]`);
+          if (featureRadioBox) {
+            featureRadioBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Highlight the feature briefly
+            featureRadioBox.closest('.flex').style.backgroundColor = 'rgba(79, 70, 229, 0.2)';
+            setTimeout(() => {
+              featureRadioBox.closest('.flex').style.backgroundColor = '';
+            }, 2000);
+          }
+            
           }
         }, 300);
       }
