@@ -51,3 +51,20 @@ def title_case(value):
     
     # Join parts with comma and space
     return ', '.join(formatted_parts)
+
+
+@register.filter
+def truncate_lines(value, max_lines):
+    """
+    Truncates text to a specified number of lines.
+    If text has more lines than max_lines, adds '...' at the end.
+    Preserves existing line breaks in the output.
+    """
+    if not value:
+        return value
+    
+    lines = value.splitlines()
+    
+    if len(lines) > max_lines:
+        return '\n'.join(lines[:max_lines]) + '...'
+    return value
