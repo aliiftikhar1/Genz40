@@ -50,8 +50,8 @@ urlpatterns = [
 
     path('configuration/<slug:config_id>/', views.view_configuration, name='car_configuration_detail'),
     path('car/checkout/', views.checkout, name='checkout'),
-path('car/reservation-checkout/<str:id>/', views.reservation_checkout, name='reservation_checkout'),  
- path('car/process-reservation/', views.process_reservation_payment, name='process_reservation_payment'),
+    path('car/reservation-checkout/<str:id>/', views.reservation_checkout, name='reservation_checkout'),  
+    path('car/process-reservation/', views.process_reservation_payment, name='process_reservation_payment'),
     path('car/create-package-checkout-session/', views.create_package_checkout_session, name='create_package_checkout_session'),
     path('car/reservation_success/<str:id>/<str:sessionId>/', views.reservation_success, name='reservation_success'),
     path('car/reservation/<str:id>/', views.reservation_details, name='reservation_details'),

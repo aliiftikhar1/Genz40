@@ -217,24 +217,31 @@
         <form id="editReservationForm" method="post">
           {% csrf_token %}
           <div class="modal-body">
-            <input type="hidden" id="reservation_number" name="reservation_number" />
+            <!-- <input type="hidden" id="reservation_number" name="reservation_number" /> -->
             <input type="hidden" id="car_model_id" name="car_model" />
             {% comment %} <input type="hidden" id="price" name="price" />
             <input type="hidden" id="title" name="title" /> {% endcomment %}
             <input type="hidden" id="user_id" name="user" />
   
-            <div class="form-group">
+            <div class="form-group" style="display: flex;justify-content: space-between;">
+            <div class="form-group" style="width: 49%;">
               <label>User</label>
               <input type="text" class="form-control" id="user_name" readonly />
             </div>
-  
-            <div class="form-group">
+            <div class="form-group" style="width: 49%;">
+              <label>Reservation Number</label>
+              <input type="text" class="form-control" id="reservation_number" name="reservation_number" readonly />
+            </div>
+          </div>
+
+           <div class="form-group" style="display: flex;justify-content: space-between;">
+            <div class="form-group " style="width: 49%;">
               <label>Car Model</label>
               <input type="text" class="form-control" id="car_model" readonly />
             </div>
   
-            <div class="form-group">
-              <label>Title</label>
+            <div class="form-group " style="width: 49%;">
+              <label>Package Title</label>
               <input
                 type="text"
                 name='title'
@@ -243,6 +250,7 @@
                 readonly
               />
             </div>
+           </div>
   
             <div class="form-group">
               <label>Extra Features</label>
@@ -275,6 +283,7 @@
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="in_progress">In Progress</option>
+                <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
               </select>
             </div>
@@ -287,7 +296,7 @@
                 name="build_type"
               >
                 <option value="order_confirmed">Order Confirmed</option>
-                <option value="car_production">Car Production</option>
+                {% comment %} <option value="car_production">Car Production</option> {% endcomment %}
                 <option value="chassis_complete">Chassis Complete</option>
                 <option value="body_complete">Body Complete</option>
                 <option value="assembly">Assembly</option>
@@ -305,12 +314,13 @@
                 name="build_status"
               >
                 <option value="in_progress">In Progress</option>
+                {% comment %} <option value="payment_done">Payment Done</option> {% endcomment %}
                 <option value="completed">Completed</option>
-                <option value="awaiting_payment">Awaiting Payment</option>
+                {% comment %} <option value="awaiting_payment">Awaiting Payment</option> {% endcomment %}
               </select>
             </div>
   
-            <div class="form-group">
+            <div class="form-group" style="display:none">
               <label>Build Payment Amount</label>
               <input
                 type="number"
@@ -320,8 +330,8 @@
               />
             </div>
   
-            <div class="form-group">
-              <label>Build Message</label>
+            <div class="form-group" >
+              <label>Message</label>
               <textarea
                 class="form-control"
                 id="build_message"
@@ -479,4 +489,5 @@
       });
     });
   </script>
+  
   {% endblock %}

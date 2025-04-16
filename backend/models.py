@@ -628,12 +628,13 @@ class BookedPackage(models.Model):
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('in_progress', 'In Progress'),
+        ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     ]
     
     BUILD_TYPE_CHOICES = [
         ('order_confirmed', 'Order Confirmed'),
-        ('car_production', 'Car Production'),
+        # ('car_production', 'Car Production'),
         ('chassis_complete', 'Chassis Complete'),
         ('body_complete', 'Body Complete'),
         ('assembly', 'Assembly'),
@@ -644,6 +645,7 @@ class BookedPackage(models.Model):
     
     BUILD_STATUS_CHOICES = [
         ('in_progress', 'In Progress'),
+        ('payment_done', 'Payment Done'),
         ('completed', 'Completed'),
         ('awaiting_payment', 'Awaiting Payment'),
     ]

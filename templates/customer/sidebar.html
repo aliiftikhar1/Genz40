@@ -16,12 +16,12 @@
                     <h6 class="mb-0 ms-2">Saved Configurations</h6>
                 </a>
             </li>
-            <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_package_bookings' %}active{% endif %}">
+            {% comment %} <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_package_bookings' %}active{% endif %}">
                 <a href="{% url 'my_package_bookings' %}" class="d-flex rounded shadow align-items-center py-2 px-4 navbar-link">
                     <span class="h4 mb-0"><i class="uil uil-document-info"></i></span>
                     <h6 class="mb-0 ms-2">Reservations</h6>
                 </a>
-            </li>
+            </li> {% endcomment %}
             {% endif %}
             <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'profile_settings' %}active{% endif %}">
                 <a href="{% url 'profile_settings' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">

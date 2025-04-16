@@ -32,6 +32,8 @@ from django.utils.encoding import force_bytes, force_str
 from .tokens import account_activation_token
 from common.utils import send_otp, verify_otp
 from django.core.cache import cache
+from decimal import Decimal
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
@@ -241,6 +243,7 @@ def send_activation_email(request, user, random_password):
         recipient_list=[user.email],
         html_message=html_message  # HTML version
     )
+
 def get_register_community(request):
     if request.method == 'POST':
         user = CustomUser.objects.filter(email=request.POST['email']).exists()
@@ -278,7 +281,7 @@ def get_register(request):
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                # user.set_password(request.POST['password1'])
+                user.set_password(request.POST['password'])
                 user.is_active = True
                 user.is_email_verified = True
                 
@@ -386,7 +389,7 @@ def car_configurator(request,slug):
     # configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id),car_model_id=items.id)
     amount_due = package_details[0].amount_due
     # print("**********----*****Existing Configurations are : ",configure_vehicles)
-    return render(request, 'public/CarConfigurator.html', {'items': items,
+    return render(request, 'public/CarConfigurator2.html', {'items': items,
                                                         #    'existing_configurations':configure_vehicles,
                                                            'packages': package_details,
                                                            'amount_due': amount_due,
@@ -397,10 +400,12 @@ def new_car_configurator(request,slug):
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
     # configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id),car_model_id=items.id)
     amount_due = package_details[0].amount_due
+    random_password = generate_random_password()
     # print("**********----*****Existing Configurations are : ",configure_vehicles)
     return render(request, 'public/Car-Configurator/MainFile.html', {'items': items,
                                                         #    'existing_configurations':configure_vehicles,
                                                            'packages': package_details,
+                                                           'random_password':random_password,
                                                            'amount_due': amount_due,
                                                            'slug': slug})
     
@@ -1132,14 +1137,22 @@ def reservation_success(request, id, sessionId):
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
 
 
+
 def reservation_details(request, id):
     """
     View the reservation checkout page.
     """
     booked_package = get_object_or_404(BookedPackage, reservation_number=id)
-    payments = PostPayment.objects.filter(rn_number=id) 
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Payment```````"+str(payments))
-    # get_object_or_404(PostPayment, rn_number=id)
+    
+    # Ensure you're using Decimal for all calculations
+    remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
+    initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+    midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+    balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+    
+    payments = PostPayment.objects.filter(rn_number=id)
+
+    # Get user location data
     ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
@@ -1152,11 +1165,15 @@ def reservation_details(request, id):
 
     context = {
         'user_details': request.user,
-        'booked_package': booked_package,  # singular for clarity
-        'payments':payments,
+        'booked_package': booked_package,
+        'payments': payments,
         'country_code': country_code,
         'country_flag_url': country_flag_url,
-         'car_image': car_image,
+        'car_image': car_image,
+        'remaining_payment_after_reserve': remaing_payment_after_reserve,
+        'initial_payment': initial_payment,
+        'midway_payment': midway_payment,
+        'balance_payment': balance_payment,
     }
 
     return render(request, 'public/reservation_details.html', context)
@@ -1170,11 +1187,27 @@ def initiate_build_payment(request):
         try:
             data = json.loads(request.body)
             reservation_number = data.get('reservation_number')
-            
-            # Get the booked package
             booked_package = get_object_or_404(BookedPackage, reservation_number=reservation_number)
+            remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
+            initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+            midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+            balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+            amount = Decimal('0')
+            previous_type = ''
+            if booked_package.build_type == 'order_confirmed':
+                amount = initial_payment
+                previous_type = 'order_confirmed'
+            elif booked_package.build_type == 'body_complete':
+                amount = midway_payment
+                previous_type = 'body_complete'
+            elif booked_package.build_type == 'built':
+                amount = balance_payment
+                previous_type = 'built'
+
+            print("Amount is ",amount)
             
-            # Create a Stripe customer
+            
+
             customer = stripe.Customer.create(
                 email=booked_package.user.email,
                 name=f"{booked_package.user.first_name} {booked_package.user.last_name}",
@@ -1195,7 +1228,7 @@ def initiate_build_payment(request):
                         'name': f"Build Payment - {booked_package.car_model.title}",
                         'description': f"Payment for {booked_package.build_type} stage of {booked_package.title} package",
                     },
-                    'unit_amount': int(float(booked_package.build_payment_amount) * 100),  # amount in cents
+                    'unit_amount': int(float(amount) * 100),  # amount in cents
                 },
                 'quantity': 1,
             }]
@@ -1287,9 +1320,33 @@ def build_payment_success(request, id,sessionId):
     print("Seesion id is : ",sessionId)
     try:
         booked_package = get_object_or_404(BookedPackage, id=id)
-        # Update build status
-        booked_package.build_status = 'in_progress'
-        booked_package.save()
+        remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
+        initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+        midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
+        balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+        amount = Decimal('0')
+        previous_type = ''
+        if booked_package.build_type == 'order_confirmed':
+            previous_type = booked_package.build_type
+            amount = initial_payment
+            booked_package.status = 'in_progress'
+            booked_package.build_status = 'completed'
+            booked_package.save()
+
+        elif booked_package.build_type == 'body_complete':
+            previous_type = booked_package.build_type
+            amount = midway_payment
+            booked_package.build_type = 'assembly'
+            booked_package.build_status = 'in_progress'
+            booked_package.save()
+        elif booked_package.build_type == 'built':
+            previous_type = booked_package.build_type
+            amount = balance_payment
+            booked_package.build_type = 'quality_check'
+            booked_package.build_status = 'in_progress'
+            booked_package.save()
+
+        
        
         if sessionId:
             # Retrieve the Stripe session
@@ -1301,8 +1358,8 @@ def build_payment_success(request, id,sessionId):
                 user=booked_package.user,
                 rn_number=booked_package.reservation_number,
                 stripe_payment_id=session.payment_intent,
-                amount=float(booked_package.build_payment_amount),
-                regarding=booked_package.build_type,
+                amount=float(amount),
+                regarding=previous_type,
                 currency="usd",
                 status="succeeded",
                 package_name=booked_package.title,
