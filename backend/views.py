@@ -669,8 +669,27 @@ def update_booked_package(request, pk):
             {"error": "Booked package not found"},
             status=status.HTTP_404_NOT_FOUND
         )
-    
-    serializer = BookedPackageSerializer(package, data=request.data)
+    data = request.data
+    print("Fetched Data : ",data)
+    orderConfirmedPayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='order_confirmed')
+    midWayPayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='body_complete')
+    finalBalancePayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='built')
+    if data['status'] == 'pending' or  data['status'] == 'confirmed' and orderConfirmedPayment:
+        return Response(
+            {"error": "You can revert the reservation, because initial payment has been done."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    if data['build_type'] == 'order_confirmed' or data['build_type'] == 'chassis_complete' or data['build_type'] == 'body_complete' and midWayPayment:
+        return Response(
+            {"error": "You can revert the reservation, because mid way payment has been done."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    if data['build_type'] == 'order_confirmed' or data['build_type'] == 'chassis_complete' or data['build_type'] == 'body_complete' or data['build_type'] == 'assembly' or data['build_type'] == 'built'  and finalBalancePayment:
+        return Response(
+            {"error": "You can revert the reservation, because final balance payment has been done."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    serializer = BookedPackageSerializer(package, data=data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)

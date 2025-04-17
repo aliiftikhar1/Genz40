@@ -148,7 +148,7 @@
             /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
             height: 100%;
             transition: transform 0.2s ease-in-out;
-            border: 1px solid #e9ecef;
+            border: 1px solid #666666;
             padding: 1.2rem;
         }
 
@@ -173,6 +173,13 @@
         }
         
         .card-car-image {
+            /* border: 2px solid #00ff26; */
+            object-fit: cover;
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+        }
+        .card-car-image-1 {
             /* border: 2px solid #00ff26; */
             object-fit: contain;
             width: 100%;
@@ -580,7 +587,7 @@
             <div class="col-12 col-md-6">
                 <div class="car-card">
                     <div class="card-car-image-container">
-                        <img src="{% static 'images/car/red-car.png' %}" alt="Red Racing Car #1" class="card-car-image">
+                        <img src="{% static 'images/car/red-car.png' %}" alt="Red Racing Car #1" class="card-car-image-1">
                     </div>
                     <div class="card-content">
                         <p class="card-text">Lock your exclusive discount by signing up today.</p>
@@ -600,7 +607,7 @@
             <div class="col-12 col-md-6">
                 <div class="car-card">
                     <div class="card-car-image-container">
-                        <img  src="{% static 'images/car/blue-car.png' %}"  alt="Blue Racing Car #6" class="card-car-image">
+                        <img  src="{% static 'images/car/blue-car.png' %}"  alt="Blue Racing Car #6" class="card-car-image-1">
                     </div>
                     <div class="card-content">
                         <p class="card-text">Lock your exclusive discount by signing up today.</p>
@@ -680,7 +687,47 @@
                         </div> -->
                     </div>
                 </div>
+                
             </div>
+
+           
+
+        </div>
+
+          <!-- Mark 4 card -->
+          <div class="col-12 col-md-6" style="margin: auto; margin-top: 20px;">
+            <div class="car-card">
+                <div class="card-car-image-container">
+                    <img src="{{ section_3.image.url }}"  alt="Red Racing Car #1" class="card-car-image">
+                </div>
+                <div class="card-content">
+                    <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
+                    <h4 class="heading heading-lg mb-1 fw-bold text-black text-uppercase">{{ section_3.title }}</h4>
+                    
+                    {% for item in nav_items %}
+                        {% if forloop.counter == 3 %}
+                        <div class="link-container" style="display: flex; justify-content: space-between;">
+                            <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
+                            <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
+                                Order Now
+                              </a>
+                              
+                        </div>
+                    <!-- <div class="input-group">
+                        <input id="email-desktop-second" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
+                        <button id="getStartedBtnSecond" class="btn btn-primary" type="button">GET STARTED</button>
+                    </div> -->
+                    {% endif %}
+                    {% endfor %}
+                    <!-- <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email" aria-label="Email">
+                        <button class="btn btn-primary" type="button">GET STARTED</button>
+                    </div> -->
+                </div>
+            </div>
+            
+        </div>
+        <!-- mark 4 card end -->
         </div>
     </div>
 </section>
