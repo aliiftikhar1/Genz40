@@ -281,9 +281,9 @@ def get_register(request):
             form = RegisterForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
-                user.set_password(request.POST['password'])
+                user.set_password(request.POST['password1'])
                 user.is_active = True
-                user.is_email_verified = True
+                # user.is_email_verified = True
                 
                 # Format phone number to match the expected format (removing non-digit characters)
                 if user.phone_number:
@@ -306,7 +306,7 @@ def get_register(request):
                     sender = settings.EMAIL_FROM
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
                     EmailThread(subject, html_content, recipient_list, sender).start()
-                    # send_activation_email(request, user, request.POST['password1'])
+                    send_activation_email(request, user, request.POST['password1'])
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
                     # Log the error for debugging
@@ -389,7 +389,7 @@ def car_configurator(request,slug):
     # configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id),car_model_id=items.id)
     amount_due = package_details[0].amount_due
     # print("**********----*****Existing Configurations are : ",configure_vehicles)
-    return render(request, 'public/CarConfigurator2.html', {'items': items,
+    return render(request, 'public/CarConfigurator.html', {'items': items,
                                                         #    'existing_configurations':configure_vehicles,
                                                            'packages': package_details,
                                                            'amount_due': amount_due,

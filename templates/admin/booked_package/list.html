@@ -151,6 +151,7 @@
                       <th>Status</th>
                       <th>Build Type</th>
                       <th>Build Status</th>
+                      <th>Created At</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -171,6 +172,7 @@
                           {{ package.status|title }}
                         </span>
                       </td>
+                     
                       <td>
                         <span class="badge badge-build">
                           {{ package.build_type|title_case }}
@@ -181,6 +183,7 @@
                           {{ package.build_status|title_case }}
                         </span>
                       </td>
+                      <td>{{ package.created_at }}</td>
                       <td>
                         <button
   type="button"

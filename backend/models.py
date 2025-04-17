@@ -664,6 +664,8 @@ class BookedPackage(models.Model):
     build_status = models.CharField(max_length=20, choices=BUILD_STATUS_CHOICES, default='in_progress')
     build_payment_amount = models.IntegerField(default=0)
     build_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         if not self.reservation_number:

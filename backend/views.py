@@ -690,6 +690,25 @@ def update_booked_package(request, pk):
         rn_number=data['reservation_number'], 
         regarding='built'
     ).exists()
+
+    if not order_confirmed_exists and data['build_type'] in [ 'chassis_complete', 'body_complete', 'assembly', 'built','quality_check', 'available_for_delivery']:
+        return Response(
+            {"error": "Reservation can not be proceeded next without initital payment"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if not mid_way_exists and data['build_type'] in ['assembly', 'built','quality_check', 'available_for_delivery']:
+        return Response(
+            {"error": "Reservation can not be proceeded next without midway payment"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if not final_balance_exists and data['build_type'] in ['quality_check', 'available_for_delivery']:
+        return Response(
+            {"error": "Reservation can not be proceeded next without final balance payment"},
+            status=status.HTTP_400_BAD_REQUEST
+        ) 
+
     
     # Check if cancellation is allowed based on payment status
     if (data['status'] == 'pending' or data['status'] == 'confirmed') and order_confirmed_exists:
@@ -709,6 +728,8 @@ def update_booked_package(request, pk):
             {"error": "You cannot cancel the reservation because final balance payment has been done."},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    
     
     serializer = BookedPackageSerializer(package, data=data)
     if serializer.is_valid():
