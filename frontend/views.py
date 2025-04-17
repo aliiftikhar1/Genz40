@@ -748,16 +748,14 @@ def dashboard(request):
   
 @login_required
 def my_vehicles(request):
-    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
     order_vehicles = PostPackage.objects.filter(is_active=True).order_by('position')
     vehicles = PostNavItem.objects.filter(is_active=True).order_by('position')
     configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id))
-    booked_packages = BookedPackage.objects.filter(user=str(request.user.id))
+    booked_packages = BookedPackage.objects.filter(user=str(request.user.id)).exclude(status='cancelled')
     print('-----configure_vehicles', configure_vehicles)
     # amount_due = order_vehicles[0].amount_due
     context = {
         'configure_vehicles':configure_vehicles,
-        'reserverd_vehicles':reserverd_vehicles,
         'order_vehicles': order_vehicles,
         'vehicles': vehicles,
         'booked_packages': booked_packages

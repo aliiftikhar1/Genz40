@@ -246,7 +246,8 @@ def package_list(request):
 @login_required
 def booked_package_list(request):
     all_booked_package_list = BookedPackage.objects.all()
-    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list})
+    all_payment_list = PostPayment.objects.all()
+    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list,'all_payment_list':all_payment_list})
 
 
 @login_required
@@ -385,8 +386,9 @@ def all_package_details(request, pk):
 
 @login_required
 def reserved_car_list(request):
-    reserved_cars = PostPayment.objects.filter(status='succeeded').order_by('-created_at')
-    return render(request, 'admin/reserved_cars/list.html', {'reserved_cars': reserved_cars})
+    all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
+    payments = PostPayment.objects.filter(status='succeeded').order_by('-created_at')
+    return render(request, 'admin/reserved_cars/list.html', {'payments': payments, 'all_rn_numbers': all_rn_numbers})
 
 @login_required
 def community_member_list(request):
@@ -669,33 +671,53 @@ def update_booked_package(request, pk):
             {"error": "Booked package not found"},
             status=status.HTTP_404_NOT_FOUND
         )
+    
     data = request.data
-    print("Fetched Data : ",data)
-    orderConfirmedPayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='order_confirmed')
-    midWayPayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='body_complete')
-    finalBalancePayment = PostPayment.objects.get(rn_number=data['reservation_number'],regarding='built')
-    if data['status'] == 'pending' or  data['status'] == 'confirmed' and orderConfirmedPayment:
+    print("Fetched Data : ", data)
+    
+    # Check for existing payments
+    order_confirmed_exists = PostPayment.objects.filter(
+        rn_number=data['reservation_number'], 
+        regarding='order_confirmed'
+    ).exists()
+    
+    mid_way_exists = PostPayment.objects.filter(
+        rn_number=data['reservation_number'], 
+        regarding='body_complete'
+    ).exists()
+    
+    final_balance_exists = PostPayment.objects.filter(
+        rn_number=data['reservation_number'], 
+        regarding='built'
+    ).exists()
+    
+    # Check if cancellation is allowed based on payment status
+    if (data['status'] == 'pending' or data['status'] == 'confirmed') and order_confirmed_exists:
         return Response(
-            {"error": "You can revert the reservation, because initial payment has been done."},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "You cannot cancel the reservation because initial payment has been done."},
+            status=status.HTTP_400_BAD_REQUEST
         )
-    if data['build_type'] == 'order_confirmed' or data['build_type'] == 'chassis_complete' or data['build_type'] == 'body_complete' and midWayPayment:
+    
+    if data['build_type'] in ['order_confirmed', 'chassis_complete', 'body_complete'] and mid_way_exists:
         return Response(
-            {"error": "You can revert the reservation, because mid way payment has been done."},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "You cannot cancel the reservation because mid way payment has been done."},
+            status=status.HTTP_400_BAD_REQUEST
         )
-    if data['build_type'] == 'order_confirmed' or data['build_type'] == 'chassis_complete' or data['build_type'] == 'body_complete' or data['build_type'] == 'assembly' or data['build_type'] == 'built'  and finalBalancePayment:
+    
+    if data['build_type'] in ['order_confirmed', 'chassis_complete', 'body_complete', 'assembly', 'built'] and final_balance_exists:
         return Response(
-            {"error": "You can revert the reservation, because final balance payment has been done."},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "You cannot cancel the reservation because final balance payment has been done."},
+            status=status.HTTP_400_BAD_REQUEST
         )
+    
     serializer = BookedPackageSerializer(package, data=data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['DELETE'])
+@api_view(['POSt'])
 @permission_classes([IsAuthenticated])
 def delete_booked_package(request, pk):
     """

@@ -1,6 +1,7 @@
 {% extends 'admin/layout/base.html' %}
 {% load static %}
 {% load custom_filters %}
+{% load frontend_custom_filters %}
 {% block header %}
 <link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
 <link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
@@ -15,12 +16,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Reserved Cars</h1>
+          <h1>Payment Details</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Reserved Cars</li>
+            <li class="breadcrumb-item active">Payment Details</li>
           </ol>
         </div>
       </div>
@@ -35,41 +36,64 @@
 
           <div class="card">
             <div class="card-body">
-              <div class="row">
-                <div class="col-12">
-                  <div class="input-group input-group-sm mb-2 float-right" style="width: 300px;">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>RN Number</label>
+                    <select class="form-control" id="rn_filter">
+                      <option value="">All RN Numbers</option>
+                      {% for rn in all_rn_numbers %}
+                        <option value="{{ rn }}">{{ rn }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Regarding</label>
+                    <select class="form-control" id="regarding_filter">
+                      <option value="">All</option>
+                      <option value="reserve">Reserve</option>
+                      <option value="body_complete">Body Complete</option>
+                      <option value="built">Built</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="input-group input-group-sm mb-2 mt-4 float-right" style="width: 300px;">
                     <input type="text" name="table_search" id="myInputTextField" class="form-control float-right" placeholder="Search...">
                     <div class="input-group-append">
                       <button type="submit" class="btn btn-default" disabled><i class="fas fa-search"></i></button>
                     </div>
                   </div>
-
                 </div>
               </div>
-              <table id="package_tbl" class="table table-bordered table-striped">
+              <table id="payment_tbl" class="table table-bordered table-striped">
                 <thead>
-                <th>Vehicles</th>
-                <th>RN</th>
-                <th>Payment Status</th>
-                <th>Customer</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Reserved @</th>
-                <th>Actions</th>
+                <th>ID</th>
+                <th>Stripe Payment Id</th>
+                <th>RN Number</th>
+                <th>Package Name</th>
+                <th>Amount</th>
+                <th>Currency</th>
+                <th>Status</th>
+                <th>Regarding</th>
+                <th>Created At</th>
+                
                 </thead>
                 <tbody>
-                {% for reserved_car in reserved_cars %}
+                {% for payment in payments %}
                     <tr>
-                    <td>{{ reserved_car.package_name }}</td>
-                    <td>{{ reserved_car.rn_number }}</td>
-                    <td>{{ reserved_car.status }}</td>
-                    <td>{{ reserved_car.user.first_name }} {{ reserved_car.user.last_name }}</td>
-                    <td>{{ reserved_car.user.email }}</td>
-                    <td>{{ reserved_car.user.phone_number }}</td>
-                    <td>{{ reserved_car.created_at }}</td>
-                    <td>
-                        <a href="" class="btn btn-sm btn-primary">Update Status</a>
-                    </td>
+                    <td>{{ payment.id }}</td>
+                    <td>{{ payment.stripe_payment_id }}</td>
+                    <td>{{ payment.rn_number }}</td>
+                    <td>{{ payment.package_name }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>{{ payment.currency }}</td>
+                    <td>{{ payment.status|title_case }}</td>
+                    <td>{{ payment.regarding|title_case }}</td>
+                    <td>{{ payment.created_at }}</td>
+                    
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -104,7 +128,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    oTable = $('#package_tbl').DataTable({
+    var paymentTable = $('#payment_tbl').DataTable({
         "bPaginate": true,
         "bLengthChange": false,
         "bFilter": true,
@@ -115,13 +139,24 @@ $(document).ready(function() {
         "dom": 'lrtip',
         "responsive": true,
         "oLanguage": { "sSearch": "", "searchPlaceholder": "Search..." },
-
     });
 
     $('#myInputTextField').keyup(function(){
-      oTable.search($(this).val()).draw() ;
-})
+        paymentTable.search($(this).val()).draw();
+    });
 
-} );
+    // Custom filtering function for RN Number
+    $('#rn_filter').on('change', function() {
+      var selectedRN = $(this).val();
+      console.log("Selected value is : ", selectedRN);
+      paymentTable.column(2).search(selectedRN).draw();  // Change from column(1) to column(2)
+  });
+  
+  // Custom filtering function for Regarding
+  $('#regarding_filter').on('change', function() {
+      var selectedRegarding = $(this).val();
+      paymentTable.column(7).search(selectedRegarding).draw();  // Change from column(6) to column(7)
+  });
+});
 </script>
 {% endblock %}

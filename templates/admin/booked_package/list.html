@@ -42,6 +42,15 @@
       background-color: #17a2b8;
       color: white;
     }
+    .filter-select {
+    margin-bottom: 10px;
+}
+
+.filter-select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
   </style>
   {% endblock %} {% block content %}
   <div class="content-wrapper">
@@ -70,16 +79,45 @@
             <div class="card">
               <div class="card-body">
                 <div class="row mb-2">
-                  <div class="col-6">
-                    {% comment %}
-                    <a
-                      class="btn btn-sm btn-primary"
-                      href="{% url 'save-booked-package' %}"
-                      >Add Booked Package</a
-                    >
-                    {% endcomment %}
-                  </div>
-                  <div class="col-6">
+                 <!-- Add this right after the search input group div -->
+<div class="col-8 ">
+  <div class="row">
+      <div class="col-md-4">
+          <label>Status</label>
+          <select class="form-control filter-select" id="statusFilter">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+          </select>
+      </div>
+      <div class="col-md-4">
+          <label>Build Type</label>
+          <select class="form-control filter-select" id="buildTypeFilter">
+              <option value="">All Build Types</option>
+              <option value="order_confirmed">Order Confirmed</option>
+              <option value="chassis_complete">Chassis Complete</option>
+              <option value="body_complete">Body Complete</option>
+              <option value="assembly">Assembly</option>
+              <option value="built">Built</option>
+              <option value="quality_check">Quality Check</option>
+              <option value="available_for_delivery">Available For Delivery</option>
+          </select>
+      </div>
+      <div class="col-md-4">
+          <label>Build Status</label>
+          <select class="form-control filter-select" id="buildStatusFilter">
+              <option value="">All Build Statuses</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+          </select>
+      </div>
+  </div>
+</div>
+                  <div class="col-4 d-flex flex-column " >
+                    <label>Search</label>
                     <div
                       class="input-group input-group-sm float-right"
                       style="width: 300px"
@@ -145,6 +183,26 @@
                       </td>
                       <td>
                         <button
+  type="button"
+  class="btn btn-sm btn-secondary action-btn view-btn"
+  data-id="{{ package.id }}"
+  data-reservation_number="{{ package.reservation_number }}"
+  data-car_model_id="{{ package.car_model.id }}"
+  data-user_id="{{ package.user.id }}"
+  data-user="{{ package.user.first_name }} {{ package.user.last_name }}"
+  data-car="{{ package.car_model.title }}"
+  data-title="{{ package.title }}"
+  data-features="{{ package.extra_features }}"
+  data-price="{{ package.price }}"
+  data-status="{{ package.status }}"
+  data-build-type="{{ package.build_type }}"
+  data-build-status="{{ package.build_status }}"
+  data-build-payment="{{ package.build_payment_amount }}"
+  data-build-message="{{ package.build_message }}"
+>
+  <i class="fas fa-eye"></i>
+</button>
+                        <button
                           type="button"
                           class="btn btn-sm btn-info action-btn edit-btn"
                           data-id="{{ package.id }}"
@@ -168,6 +226,7 @@
                           type="button"
                           class="btn btn-sm btn-danger action-btn delete-btn"
                           data-id="{{ package.id }}"
+                          data-status="{{ package.status }}"
                         >
                           <i class="fas fa-trash"></i>
                         </button>
@@ -354,6 +413,123 @@
       </div>
     </div>
   </div>
+  <div
+  class="modal fade"
+  id="viewDetailsModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="viewDetailsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewDetailsModalLabel">
+          Reservation Details
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Row 1: User and Reservation Number -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>User</label>
+              <input type="text" class="form-control" id="view_user_name" readonly />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Reservation Number</label>
+              <input type="text" class="form-control" id="view_reservation_number" readonly />
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Car Model and Package Title -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Car Model</label>
+              <input type="text" class="form-control" id="view_car_model" readonly />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Package Title</label>
+              <input type="text" class="form-control" id="view_package_title" readonly />
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Price and Status -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Price</label>
+              <input type="text" class="form-control" id="view_package_price" readonly />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Status</label>
+              <input type="text" class="form-control" id="view_reservation_status" readonly />
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4: Build Type and Build Status -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Build Type</label>
+              <input type="text" class="form-control" id="view_build_type" readonly />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Build Status</label>
+              <input type="text" class="form-control" id="view_build_status" readonly />
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 5: Extra Features (full width) -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Extra Features</label>
+              <textarea class="form-control" id="view_extra_features" rows="3" readonly></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 6: Message (full width) -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Message</label>
+              <textarea class="form-control" id="view_build_message" rows="3" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
   {% endblock %} {% block javascript %}
   <script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
@@ -469,9 +645,27 @@
       });
   
       // Delete button click handler
+     
       $('.delete-btn').click(function() {
         const id = $(this).data('id');
-  
+        const status = $(this).data('status');
+        console.log("Selected status is : ",status)
+        const url = "{% url 'delete-booked-package' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+        
+        if(status !== "pending" && status !== "cancelled"){
+          Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Error deleting reservation',
+            text: 'Only pending and cancelled reservations can be deleted',
+            showConfirmButton: false,
+            timer: 3000,
+            toast: true
+          });
+
+          return;
+        }
+
         Swal.fire({
           title: 'Are you sure?',
           text: "You won't be able to revert this!",
@@ -482,12 +676,162 @@
           confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
           if (result.isConfirmed) {
-            // Send delete request
-            window.location.href = "{% url 'delete-booked-package' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+            $.ajax({
+              type: "POST",
+              url: url,
+              headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+              },
+              success: function(response) {
+                
+                Swal.fire({
+                  position: 'top-end',
+                  icon: 'success',
+                  title: 'Reservation deleted successfully!',
+                  showConfirmButton: false,
+                  timer: 1500,
+                  toast: true
+                });
+                
+                // Reload the page to see all changes
+                setTimeout(function() {
+                  location.reload();
+                }, 1500);
+              },
+              error: function(xhr) {
+                // Show error toast
+                Swal.fire({
+                  position: 'top-end',
+                  icon: 'error',
+                  title: 'Error deleting reservation',
+                  text: xhr.responseJSON?.error || 'An unknown error occurred',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  toast: true
+                });
+              }
+            });
           }
         });
+    });
+    
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+      
+    function initFilters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('status')) {
+        $('#statusFilter').val(urlParams.get('status'));
+        oTable.column(5).search(urlParams.get('status')).draw();
+    }
+    if (urlParams.has('build_type')) {
+        $('#buildTypeFilter').val(urlParams.get('build_type'));
+        oTable.column(6).search(urlParams.get('build_type')).draw();
+    }
+    if (urlParams.has('build_status')) {
+        $('#buildStatusFilter').val(urlParams.get('build_status'));
+        oTable.column(7).search(urlParams.get('build_status')).draw();
+    }
+}
+initFilters();
+
+// Filter event handlers
+$('#statusFilter').change(function() {
+    const value = $(this).val();
+    oTable.column(5).search(value).draw();
+    updateUrlParams();
+});
+
+$('#buildTypeFilter').change(function() {
+    const value = $(this).val();
+    oTable.column(6).search(value).draw();
+    updateUrlParams();
+});
+
+$('#buildStatusFilter').change(function() {
+    const value = $(this).val();
+    oTable.column(7).search(value).draw();
+    updateUrlParams();
+});
+
+// Function to update URL parameters without reloading
+function updateUrlParams() {
+    const url = new URL(window.location);
+    const status = $('#statusFilter').val();
+    const buildType = $('#buildTypeFilter').val();
+    const buildStatus = $('#buildStatusFilter').val();
+    
+    if (status) {
+        url.searchParams.set('status', status);
+    } else {
+        url.searchParams.delete('status');
+    }
+    
+    if (buildType) {
+        url.searchParams.set('build_type', buildType);
+    } else {
+        url.searchParams.delete('build_type');
+    }
+    
+    if (buildStatus) {
+        url.searchParams.set('build_status', buildStatus);
+    } else {
+        url.searchParams.delete('build_status');
+    }
+    
+    window.history.pushState({}, '', url);
+}
+    
+    });
+  </script>
+  <script>
+    $(document).ready(function() {
+      // View details button click handler
+      $('.view-btn').click(function() {
+        const reservationNo = $(this).data('reservation_number');
+        const user = $(this).data('user');
+        const car = $(this).data('car');
+        const title = $(this).data('title');
+        const features = $(this).data('features');
+        const price = $(this).data('price');
+        const status = $(this).data('status');
+        const buildType = $(this).data('build-type');
+        const buildStatus = $(this).data('build-status');
+        const buildMessage = $(this).data('build-message');
+        
+        // Format the status, build type and build status to be more readable
+        const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ');
+        const formattedBuildType = buildType.charAt(0).toUpperCase() + buildType.slice(1).replace(/_/g, ' ');
+        const formattedBuildStatus = buildStatus.charAt(0).toUpperCase() + buildStatus.slice(1).replace(/_/g, ' ');
+        
+        // Populate the view modal with data
+        $('#view_reservation_number').val(reservationNo);
+        $('#view_user_name').val(user);
+        $('#view_car_model').val(car);
+        $('#view_package_title').val(title);
+        $('#view_extra_features').val(features);
+        $('#view_package_price').val(price);
+        $('#view_reservation_status').val(formattedStatus);
+        $('#view_build_type').val(formattedBuildType);
+        $('#view_build_status').val(formattedBuildStatus);
+        $('#view_build_message').val(buildMessage);
+        
+        // Show the modal
+        $('#viewDetailsModal').modal('show');
       });
     });
   </script>
-  
   {% endblock %}
