@@ -289,7 +289,7 @@ def get_register(request):
                 user = form.save(commit=False)
                 user.set_password(request.POST['password1'])
                 user.is_active = True
-                # user.is_email_verified = True
+                user.is_email_verified = True
                 
                 # Format phone number to match the expected format (removing non-digit characters)
                 if user.phone_number:
@@ -312,7 +312,7 @@ def get_register(request):
                     sender = settings.EMAIL_FROM
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
                     EmailThread(subject, html_content, recipient_list, sender).start()
-                    send_activation_email(request, user, request.POST['password1'])
+                    # send_activation_email(request, user, request.POST['password1'])
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
                     # Log the error for debugging
