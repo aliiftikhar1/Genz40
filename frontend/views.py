@@ -234,6 +234,7 @@ def send_activation_email(request, user, random_password):
     
     # Create a plain text version for email clients that don't support HTML
     plain_message = strip_tags(html_message)
+    print("Plain Message",plain_message)
     
     # Send mail with both HTML and plain text versions
     send_mail(
