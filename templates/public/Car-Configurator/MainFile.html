@@ -2330,6 +2330,7 @@
       });
     });
 
+
     function loadRollerContent() {
       const container = document.getElementById('roller-content');
       initRollerPriceCalculator();
@@ -2411,7 +2412,6 @@
     }
   });
 
-
   function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
@@ -2466,6 +2466,19 @@ function setupPasswordToggle() {
   });
 }
 
+function handlePasswordChange() {
+  const passwordInput = document.getElementById('signup-password');
+  const passwordInput1 = document.getElementById('password1');
+  const passwordInput2 = document.getElementById('password2');
+
+  // Listen for changes on the main password input
+  passwordInput.addEventListener('input', () => {
+    const passwordValue = passwordInput.value;
+    passwordInput1.value = passwordValue; // Update the first hidden password field
+    passwordInput2.value = passwordValue; // Update the second hidden password field
+  });
+}
+
 async function handleSignUpSubmit(e) {
   e.preventDefault();
   
@@ -2475,6 +2488,7 @@ async function handleSignUpSubmit(e) {
     email: document.getElementById('signup-email').value,
     phone_number: document.getElementById('phone_number').value,
     password: document.getElementById('signup-password').value
+    
   };
 
   var data = new FormData($('#signup-form').get(0));
@@ -2606,11 +2620,13 @@ function showLoginForm() {
     });
     
     document.getElementById('show-signup-form').addEventListener('click', (e) => {
+      document.body.removeChild(document.getElementById('signup-modal'));
       e.preventDefault();
       showSignUpForm();
     });
     
     setupLoginPasswordToggle();
+    handlePasswordChange(); 
     document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
   }
 }
@@ -2677,8 +2693,8 @@ function showSignUpForm() {
     <form id="signup-form" class="space-y-4">
        {% csrf_token %}
        <input type="text" name="role" value="customer" hidden/>
-       <input type="text" name="password1" value="{{ random_password }}" hidden/>
-       <input type="text" name="password2" value="{{ random_password }}" hidden/>
+       <input type="text" id="password1" name="password1" value="" hidden/>
+       <input type="text" id="password2" name="password2" value="" hidden/>
       <div>
         <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
         <input type="text" id="first_name" name="first_name" required 
@@ -2746,10 +2762,13 @@ function showSignUpForm() {
   document.getElementById('signup-form').addEventListener('submit', handleSignUpSubmit);
 
 
+  handlePasswordChange(); 
+  
   document.getElementById('show-login-form').addEventListener('click', (e) => {
     e.preventDefault();
     showLoginForm();
   });
+
 }
 
 function checkUserLoggedIn() {
@@ -2817,8 +2836,18 @@ function submitRollerForm(event) {
 }
 
 
+
   function submitRollerPlusForm(event) {
     event.preventDefault();
+  
+    if(userLoggedIn){
+      console.log("User logged In")
+    }else{
+    if (!checkUserLoggedIn()) {
+      showSignUpForm();
+      return;
+    }
+  }
 
     const checked = document.querySelectorAll('#rollerPlusForm input[type="checkbox"]:checked:not([disabled])');
     const features = Array.from(checked).map(cb => cb.name).filter(Boolean);
@@ -3102,7 +3131,7 @@ updateSelectedFeatures();
    checkedCheckboxes.forEach(cb => selectedFeatures.push(cb.name));
  
    // Add checked radios to the array
-   checkedRadios.forEach(rb => selectedFeatures.push(rb.name));
+   checkedRadios.forEach(rb => selectedFeatures.push(rb.id));
  
    // Format the selected features for display
    const formattedFeatures = selectedFeatures.map(feature => feature.charAt(0).toUpperCase() + feature.slice(1)).join(', ');
@@ -3117,11 +3146,54 @@ updateSelectedFeatures();
      }
    }
  }
- 
- // Attach the event listener to checkboxes and radios
- document.querySelectorAll('#rollerPlusForm input[type="checkbox"], #rollerPlusForm input[type="radio"]').forEach(input => {
-   input.addEventListener('change', updateRollerPlusSelectedFeatures);
- });
+ function syncBrakeSelections() {
+  console.log('Syncing brake selections...');
+  const frontBrakesRadios = document.querySelectorAll('#rollerPlusForm input[name="frontBrakes"]');
+  const rearBrakesRadios = document.querySelectorAll('#rollerPlusForm input[name="rearBrakes"]');
+
+  console.log('Front brakes:', frontBrakesRadios);
+  console.log('Rear brakes:', rearBrakesRadios);
+
+  frontBrakesRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+          console.log(`Front brake changed to: ${this.value}`);
+          if (this.checked) {
+              const matchingRearBrake = document.querySelector(`#rollerPlusForm input[name="rearBrakes"][value="${this.value}"]`);
+              if (matchingRearBrake && !matchingRearBrake.checked) {
+                  matchingRearBrake.checked = true;
+                  console.log(`Matching rear brake checked: ${matchingRearBrake.value}`);
+                  // Manually trigger the update function for the rear brake
+                  updateRollerPlusSelectedFeatures.call(matchingRearBrake);
+              }
+          }
+      });
+  });
+
+  rearBrakesRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+          console.log(`Rear brake changed to: ${this.value}`);
+          if (this.checked) {
+              const matchingFrontBrake = document.querySelector(`#rollerPlusForm input[name="frontBrakes"][value="${this.value}"]`);
+              if (matchingFrontBrake && !matchingFrontBrake.checked) {
+                  matchingFrontBrake.checked = true;
+                  console.log(`Matching front brake checked: ${matchingFrontBrake.value}`);
+                  // Manually trigger the update function for the front brake
+                  updateRollerPlusSelectedFeatures.call(matchingFrontBrake);
+              }
+          }
+      });
+  });
+}
+
+// Attach the event listener to checkboxes and radios - using a single selector for both
+document.querySelectorAll('#rollerPlusForm input[type="checkbox"], #rollerPlusForm input[type="radio"]').forEach(input => {
+  input.addEventListener('change', updateRollerPlusSelectedFeatures);
+});
+
+// The syncBrakeSelections function only needs to be called once to set up the event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  syncBrakeSelections();
+});
  
  // Initial update
  updateRollerPlusSelectedFeatures();
