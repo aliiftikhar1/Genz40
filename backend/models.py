@@ -440,7 +440,7 @@ class PostCommunityJoiners(models.Model):
 
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         db_table = 'community_joiners'
