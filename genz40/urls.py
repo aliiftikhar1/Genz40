@@ -20,9 +20,11 @@ from django.contrib import admin
 from django.urls import path, include
 from genz40 import custom_sortable_urls
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('admin/backend/postnavitem/', include(custom_sortable_urls)),
     path('', include('frontend.urls')),
     path('auth/', include('backend.urls')),
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

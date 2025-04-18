@@ -61,4 +61,6 @@ urlpatterns = [
     path('reservation/create-build-checkout-session/', views.create_build_checkout_session, name='create_build_checkout_session'),
     path('reservation/build-payment-success/<str:id>/<str:sessionId>/', views.build_payment_success, name='build_payment_success'),
 
+    path('mail/send-test-mail/<str:id>/', views.send_test_email, name='send-text-email')
+
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

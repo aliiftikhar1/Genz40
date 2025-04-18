@@ -1,6 +1,7 @@
 import json
 import re
 import uuid
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -13,8 +14,13 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from frontend.forms import PostSubscribeForm
+from django.urls import path
+from django.views import View
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import EmailMessage
+from django.utils.decorators import method_decorator
 import string
 import random
 from django.contrib.auth import login
@@ -234,7 +240,6 @@ def send_activation_email(request, user, random_password):
     
     # Create a plain text version for email clients that don't support HTML
     plain_message = strip_tags(html_message)
-    print("Plain Message",plain_message)
     
     # Send mail with both HTML and plain text versions
     send_mail(
@@ -1314,65 +1319,122 @@ def create_build_checkout_session(request):
         'message': 'Invalid request method'
     }, status=405)
 
-
-def build_payment_success(request, id,sessionId):
-    print("Seesion id is : ",sessionId)
+def build_payment_success(request, id, sessionId):
+    print("Session id is: ", sessionId)
     try:
         booked_package = get_object_or_404(BookedPackage, id=id)
-        remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
-        initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-        midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-        balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
-        amount = Decimal('0')
+        remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
+        initial_payment = (remaining_payment_after_reserve * Decimal('0.40')).quantize(Decimal('0.01'))
+        midway_payment = (remaining_payment_after_reserve * Decimal('0.40')).quantize(Decimal('0.01'))
+        balance_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('0.01'))
+        amount = Decimal('0.00')
         previous_type = ''
+        
+        # Update build type and status based on current state
         if booked_package.build_type == 'order_confirmed':
             previous_type = booked_package.build_type
             amount = initial_payment
             booked_package.status = 'in_progress'
             booked_package.build_status = 'completed'
-            booked_package.save()
-
+            booked_package.build_type = 'body_complete'  # Added transition to next stage
         elif booked_package.build_type == 'body_complete':
             previous_type = booked_package.build_type
             amount = midway_payment
             booked_package.build_type = 'assembly'
             booked_package.build_status = 'in_progress'
-            booked_package.save()
         elif booked_package.build_type == 'built':
             previous_type = booked_package.build_type
             amount = balance_payment
             booked_package.build_type = 'quality_check'
             booked_package.build_status = 'in_progress'
-            booked_package.save()
+        
+        booked_package.save()  # Moved save outside if block to ensure it's always called
 
+        if not sessionId:
+            raise ValueError("No session ID provided")
+
+        # Retrieve the Stripe session
+        session = stripe.checkout.Session.retrieve(sessionId)
+        print("Session Data is: ", session)
         
-       
-        if sessionId:
-            # Retrieve the Stripe session
-            session = stripe.checkout.Session.retrieve(sessionId)
-            print("Sesstion Data is : ",session)
-            
-            # Create payment record
-            PostPayment.objects.create(
-                user=booked_package.user,
-                rn_number=booked_package.reservation_number,
-                stripe_payment_id=session.payment_intent,
-                amount=float(amount),
-                regarding=previous_type,
-                currency="usd",
-                status="succeeded",
-                package_name=booked_package.title,
-                )
+        # Create payment record
+        payment = PostPayment.objects.create(
+            user=booked_package.user,
+            rn_number=booked_package.reservation_number,
+            stripe_payment_id=session.payment_intent,
+            amount=float(amount),
+            regarding=previous_type,
+            currency="usd",
+            status="succeeded",
+            package_name=booked_package.title,
+        )
+
+        # Prepare email context
+        current_site = get_current_site(request)
+        payment_date = timezone.now().strftime('%B %d, %Y')
+        context = {
+            'user': request.user,
+            'booked_package': booked_package,
+            'amount': str(amount),
+            'payment_date': payment_date,
+            'domain': "https://genz40.com",
+            'reservation_number': booked_package.reservation_number,
+        }
+
+        # Render email template
+        subject = 'Payment Confirmation - GEN-Z 40'
+        html_content = render_to_string('email/payment_successful.html', context)
+        plain_text = strip_tags(html_content)
         
-            return render(request, 'public/payment/success.html', {
-                'is_footer_required': False,
-                'message': 'Build payment completed successfully!'
-            })
+        print("Subject:", subject, "HTML Content length:", len(html_content), "Plain Text length:", len(plain_text))
+        
+        send_mail(
+            subject=subject,  # Fixed subject inconsistency
+            message=plain_text,
+            from_email=settings.EMAIL_FROM,
+            recipient_list=[booked_package.user.email],  # Send to user's email instead of hardcoded
+            fail_silently=False,
+            html_message=html_content
+        )        
+
+        return render(request, 'public/payment/success.html', {
+            'is_footer_required': False,
+            'message': 'Build payment completed successfully! A confirmation email has been sent.'
+        })
     
     except Exception as e:
-        # Log the error and still show success page
+        # Log the error and show error page
         print(f"Error in build_payment_success: {str(e)}")
         return render(request, 'public/payment/success.html', {
             'is_footer_required': False,
-            'message': 'Payment completed but there was an issue updating our records. Please contact support.'
+            'message': 'Payment completed but there was an issue updating our records or sending the confirmation email. Please contact support.'
         })
+    
+def send_test_email(request,id):
+    booked_package = get_object_or_404(BookedPackage, id=id)
+    amount = 100
+    try:
+        context = {
+                'user': request.user,
+                'booked_package': booked_package,
+                'amount': str(amount),  # Convert to string for template
+                'payment_date': booked_package.updated_at,
+                'domain': "https://genz40.com",
+                'reservation_number': booked_package.reservation_number,
+            }
+        
+        # Render the HTML template
+        html_content = render_to_string('email/payment_successful.html', context)
+        plain_text = strip_tags(html_content)  # Create a plain text version
+        
+        send_mail(
+            subject="Test Email from Django",
+            message=plain_text,  # Plain text version
+            from_email=settings.EMAIL_FROM,
+            recipient_list=["alijanali0091@gmail.com"],
+            fail_silently=False,
+            html_message=html_content  # HTML version
+        )
+        return HttpResponse("HTML Email sent successfully!")
+    except Exception as e:
+        return HttpResponse(f"Error sending email: {str(e)}")
