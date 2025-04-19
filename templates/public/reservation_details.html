@@ -3,124 +3,107 @@
 {% load humanize %}
 {% load frontend_custom_filters %}
 
-
 {% block content %}
-<div class="" style='margin-top:80px'>
-    <div class="row">
-        <div class="col-md-12 mx-auto">
-            <div class="card">
-                <div class="card-header text-white" style="background-color: rgba(255, 255, 255, 0.344); display: flex; justify-content: space-between ;align-items: center;">
-                    <h3 class="mb-0">Reservation Details</h3>
-                    <!-- Add Payment History Button in the header -->
-                    <button type="button" class="btn btn-light btn-md float-end" data-bs-toggle="modal" data-bs-target="#paymentHistoryModal">
+<div class="container-fluid" style="margin-top: 90px; background-color: #000000; min-height: calc(100vh - 80px); ">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <div class="card shadow-lg" style="background-color: #1e1e1e; border: none; border-radius: 12px;">
+                <div class="card-header" style="background-color: #2a2a2a; border-radius: 12px 12px 0 0; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="mb-0 text-white" style="font-weight: 600;">Reservation Details</h3>
+                    <button type="button" class="btn btn-outline-light btn-md" data-bs-toggle="modal" data-bs-target="#paymentHistoryModal" style="border-radius: 8px;">
                         Payment History
                     </button>
                 </div>
-                <div class="card-body">
-                    <!-- Two Column Grid Layout -->
+                <div class="card-body" style="padding: 2rem;">
                     <div class="row">
-                        <!-- Left Column - Image -->
-                        <div class="col-md-4">
+                        <div class="col-md-6 mb-4 mb-md-0">
                             {% if car_image %}
-                                <img src="{{ car_image.image.url }}" alt="Car Image" class="img-fluid rounded mb-3">
+                                <div class="card" style="background-color: #1e1e1e; border: none; border-radius: 12px; overflow: hidden;">
+                                    <img src="{{ car_image.image.url }}" alt="Car Image" class="card-img">
+                                </div>
                             {% else %}
-                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 250px;">
-                                    <p class="text-muted">No image available</p>
+                                <div class="card" style="background-color: #1e1e1e; border: none; border-radius: 12px;">
+                                    <div class="card-body d-flex align-items-center justify-content-center" style="height: 250px;">
+                                        <p class="text-muted mb-0">No image available</p>
+                                    </div>
                                 </div>
                             {% endif %}
+
+                            {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
+                                    <div class="mb-4 mt-4" style="background-color: #3d3d3d; padding: 1rem; border-radius: 8px;">
+                                        <h5 class="text-white">Note</h5>
+                                        <p class="text-white">{{ booked_package.build_message }}</p>
+                                    </div>
+                                    {% endif %}
                         </div>
-                        
-                        <!-- Right Column - Details -->
-                        <div class="col-md-8 ">
-                            <div class="d-flex flex-column flex-md-row" style="display: flex; gap: 2rem;">
-                                <div class="" style="width: 50%;">
-                                    <!-- Basic Reservation Info -->
+                        <div class="col-md-6 col-12">
+                            <div class="d-flex flex-column flex-md-row" style="gap: 2rem;">
+                                <div id="left-container" >
                                     <div class="mb-4">
-                                        <h4>Reservation #{{ booked_package.reservation_number }}</h4>
-                                        <p class="mb-1"><strong>Status:</strong> 
+                                        <h4 class="text-white">Reservation #{{ booked_package.reservation_number }}</h4>
+                                        <p class="mb-1 text-white"><strong>Status:</strong> 
                                             <span class="badge 
                                                 {% if booked_package.status == 'confirmed' %}bg-success
                                                 {% elif booked_package.status == 'cancelled' %}bg-danger
-                                                {% else %}bg-warning text-dark{% endif %}">
+                                                {% else %}bg-warning text-dark{% endif %}" style="border-radius: 6px; padding: 0.5em 1em;">
                                                 {{ booked_package.get_status_display }}
                                             </span>
                                         </p>
-                                        <p class="mb-1"><strong>Package:</strong> {{ booked_package.title }}</p>
-                                        <p class="mb-1"><strong>Car:</strong> {{ booked_package.car_model.title }}</p>
-                                        <p class="mb-1"><strong>Price:</strong> ${{ booked_package.price }}</p>
+                                        <p class="mb-1 text-white"><strong>Package:</strong> {{ booked_package.title }}</p>
+                                        <p class="mb-1 text-white"><strong>Car:</strong> {{ booked_package.car_model.title }}</p>
+                                        <p class="mb-1 text-white"><strong>Price:</strong> ${{ booked_package.price }}</p>
                                     </div>
-
-                                    <!-- User Information -->
                                     <div class="mb-4">
-                                        <h5>User Information</h5>
-                                        <p class="mb-1"><strong>Name:</strong> {{ booked_package.user.first_name }} {{ booked_package.user.last_name }}</p>
-                                        <p class="mb-1"><strong>Email:</strong> {{ booked_package.user.email }}</p>
+                                        <h5 class="text-white">User Information</h5>
+                                        <p class="mb-1 text-white"><strong>Name:</strong> {{ booked_package.user.first_name }} {{ booked_package.user.last_name }}</p>
+                                        <p class="mb-1 text-white"><strong>Email:</strong> {{ booked_package.user.email }}</p>
                                     </div>
-
-                                    <!-- Extra Features -->
                                     {% if booked_package.extra_features %}
                                     <div class="mb-4">
-                                        <h5>Features</h5>
-                                        <p>{{ booked_package.extra_features|title_case }}</p>
+                                        <h5 class="text-white">Features</h5>
+                                        <p class="text-white">{{ booked_package.extra_features|title_case }}</p>
                                     </div>
                                     {% endif %}
-
-                                    {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
-                                    <div class="mb-4" style="background-color: #fffb0065; padding-left: 20px; padding-top: 7px;border-radius: 10px; padding-bottom: 1px;">
-                                        <h5>Note</h5>
-                                        <p>{{ booked_package.build_message }}</p>
+                                    {% comment %} {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
+                                    <div class="mb-4" style="background-color: #3d3d3d; padding: 1rem; border-radius: 8px;">
+                                        <h5 class="text-white">Note</h5>
+                                        <p class="text-white">{{ booked_package.build_message }}</p>
                                     </div>
-                                    {% endif %}
-
+                                    {% endif %} {% endcomment %}
                                     {% if booked_package.status == 'pending' and booked_package.build_type == 'order_confirmed' %}
-                                   
-                                    <div class="mb-4" style="border: 1px solid white; background-color: rgba(255, 255, 255, 0.165); padding: 10px;padding-right: 30px; width:fit-content;border-radius: 20px;">
-                                        <h5 style="margin-bottom: 0px;font-weight: 900;">Pay Now</h5>
-                                        <p style="margin-bottom: 0px;">
-                                           Your reserve payment is pending, do payment to confirm the order!
-                                            </p>
-                                        <p style="font-weight: 800; margin-bottom: 5px; padding: 4px; background-color: rgb(224, 146, 0); border-radius: 10px;">
-                                            Amount : 100 USD
+                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
+                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
+                                        <p class="text-white mb-2">Your reserve payment is pending, do payment to confirm the order!</p>
+                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
+                                            Amount: 100 USD
                                         </p>
-                                        
-                                        <a href="{% url 'reservation_checkout' booked_package.id %}" class="btn btn-sm btn-success">Pay Now</a>
+                                        <a href="{% url 'reservation_checkout' booked_package.id %}" class="btn btn-success" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</a>
                                     </div>
-                                    
-                                    {% elif booked_package.status == 'confirmed' and booked_package.build_type == 'order_confirmed' %}
-                                    <div class="mb-4" style="border: 1px solid white; background-color: rgba(255, 255, 255, 0.165); padding: 10px;padding-right: 30px; width:fit-content;border-radius: 20px;">
-                                        <h5 style="margin-bottom: 0px;font-weight: 900;">Pay Now</h5>
-                                        <p style="margin-bottom: 0px;">
-                                            {% if booked_package.build_type == 'order_confirmed' %}
-                                             Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production.                                         
-                                            {% endif %}
-                                            </p>
-                                        <p style="font-weight: 800; margin-bottom: 5px; padding: 4px; background-color: rgb(224, 146, 0); border-radius: 10px;">
-                                            Amount (40%):
-                                            {% if booked_package.build_type == 'order_confirmed' %}
-                                                {{ initial_payment }}
-                                            {% endif %}
-                                            USD
+                                    {% elif booked_package.status == 'confirmed' and booked_package.build_type == 'order_confirmed' and booked_package.build_status == 'completed' %}
+                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
+                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
+                                        <p class="text-white mb-2">
+                                            Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production.
                                         </p>
-                                        
-                                        <button class="btn btn-primary" style="margin-top: 0px;">Pay Now</button>
+                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
+                                            Amount (40%): {{ initial_payment }} USD
+                                        </p>
+                                        <button class="btn btn-primary" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</button>
                                     </div>
-                                    
                                     {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' or booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
-                                
-                                    <div class="mb-4" style="border: 1px solid white; background-color: rgba(255, 255, 255, 0.165); padding: 10px;padding-right: 30px; width:fit-content;border-radius: 20px;">
-                                        <h5 style="margin-bottom: 0px;font-weight: 900;">Pay Now</h5>
-                                        <p style="margin-bottom: 0px;">
+                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
+                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
+                                        <p class="text-white mb-2">
                                             {% if booked_package.build_type == 'order_confirmed' %}
-                                             Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production. 
-                                        {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' %}
-                                        Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, Body of car has been completed. Now do the midway 40% payment so that we can proceed.
-                                        {% elif booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
-                                        Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}},Car built has been completed. Now do the final balance payment so that we can start quality check.
-                                        {% endif %}
-                                            
-                                            </p>
-                                        <p style="font-weight: 800; margin-bottom: 5px; padding: 4px; background-color: rgb(224, 146, 0); border-radius: 10px;">
-                                            Amount :
+                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production.
+                                            {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' %}
+                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, Body of car has been completed. Now do the midway 40% payment so that we can proceed.
+                                            {% elif booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
+                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, Car built has been completed. Now do the final balance payment so that we can start quality check.
+                                            {% endif %}
+                                        </p>
+                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
+                                            Amount: 
                                             {% if booked_package.build_type == 'order_confirmed' %}
                                                 {{ initial_payment }}
                                             {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' %}
@@ -132,27 +115,13 @@
                                             {% endif %}
                                             USD
                                         </p>
-                                        
-                                        <button class="btn btn-primary" style="margin-top: 0px;">Pay Now</button>
+                                        <button class="btn btn-primary" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</button>
                                     </div>
                                     {% endif %}
-
-                                    <!-- {% if booked_package.build_status == 'awaiting_payment' %}
-                                    <div class="mb-4" style="border: 1px solid white; background-color: rgba(255, 255, 255, 0.165); padding: 10px;padding-right: 30px; width:fit-content;border-radius: 20px;">
-                                        <h5 style="margin-bottom: 0px;font-weight: 900;">Pay Now</h5>
-                                        <p style="margin-bottom: 0px;">{{ booked_package.build_message }}</p>
-                                        <p style="font-weight: 800;margin-bottom: 5px;padding: 4px;background-color: rgb(224, 146, 0);border-radius: 10px;">Amount : {{booked_package.build_payment_amount}} USD</p>
-                                        <button class="btn btn-primary" style="margin-top: 0px;">Pay Now</button>
-                                    </div>
-                                    {% endif %} -->
-
-                                    
                                 </div>
-                                
-                                <div class="right-container" style="">
-                                    <!-- Build Progress Timeline -->
+                                <div class="right-container">
                                     <div class="build-progress-container">
-                                        <h5>Build Progress</h5>
+                                        <h5 class="text-white">Build Progress</h5>
                                         <div class="timeline">
                                             {% for stage in booked_package.BUILD_TYPE_CHOICES %}
                                                 <div class="timeline-step {% if booked_package.BUILD_TYPE_CHOICES_index >= forloop.counter0 %}completed{% elif booked_package.build_type == stage.0 %}current{% endif %}">
@@ -165,7 +134,7 @@
                                                             <i class="far fa-circle"></i>
                                                         {% endif %}
                                                     </div>
-                                                    <div class="timeline-content" style="display: flex;flex-direction: column;gap: 0px;">
+                                                    <div class="timeline-content" style="display: flex; flex-direction: column; gap: 0px;">
                                                         <h6>{{ stage.1 }}</h6>
                                                         {% if booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
                                                             <small class="text-warning">
@@ -176,12 +145,10 @@
                                                         {% else %}
                                                             <small class="text-muted">Pending</small>
                                                         {% endif %}
-                                                        
-                                                        <!-- Display payment if available for this stage -->
                                                         {% for payment in payments %}
                                                             {% if payment.regarding == stage.0 or payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}
-                                                                <div class="payment-info " style="{% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}  margin-top:-30px {% endif %}">
-                                                                    <span class="badge bg-info">${{ payment.amount }}  {% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}  {% endif %}</span>
+                                                                <div class="payment-info" style="{% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %} margin-top:-30px {% endif %}">
+                                                                    <span class="badge bg-info">${{ payment.amount }}</span>
                                                                     <small class="text-muted">{{ payment.created_at|date:"M d, Y" }}</small>
                                                                 </div>
                                                             {% endif %}
@@ -191,9 +158,7 @@
                                             {% endfor %}
                                         </div>
                                     </div>
-                                    <!-- buildprogress container ends -->
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -203,18 +168,17 @@
     </div>
 </div>
 
-<!-- Payment History Modal -->
 <div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-labelledby="paymentHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header  text-white" style="background-color: rgba(255, 255, 255, 0.092);">
-                <h5 class="modal-title" id="paymentHistoryModalLabel">Payment History</h5>
+        <div class="modal-content" style="background-color: #1e1e1e; border-radius: 12px;">
+            <div class="modal-header" style="background-color: #2a2a2a; border-radius: 12px 12px 0 0;">
+                <h5 class="modal-title text-white" id="paymentHistoryModalLabel">Payment History</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 {% if payments %}
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-blacks table-striped">
                             <thead>
                                 <tr>
                                     <th>Payment ID</th>
@@ -233,7 +197,7 @@
                                         <span class="badge 
                                             {% if payment.status == 'succeeded' %}bg-success
                                             {% elif payment.status == 'failed' %}bg-danger
-                                            {% else %}bg-warning text-dark{% endif %}">
+                                            {% else %}bg-warning text-dark{% endif %}" style="border-radius: 6px;">
                                             {{ payment.status }}
                                         </span>
                                     </td>
@@ -245,24 +209,47 @@
                         </table>
                     </div>
                 {% else %}
-                    <div class="alert alert-info">
+                    <div class="alert alert-dark" role="alert">
                         No payment records found.
                     </div>
                 {% endif %}
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer" style="background-color: #2a2a2a; border-radius: 0 0 12px 12px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block header %}
 <style>
-    .timeline {
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn {
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.timeline {
     position: relative;
     padding-left: 30px;
-    margin-right: 15px; /* Add more space on the right */
+    margin-right: 15px;
 }
 
 .payment-info {
@@ -283,96 +270,96 @@
 .timeline-content {
     padding-left: 10px;
     position: relative;
-    min-width: 150px; /* Ensure enough space for payment info */
+    min-width: 150px;
 }
-    
-    .timeline-step {
-        position: relative;
-        padding-bottom: 2px;
-    }
-    
-    .timeline-marker {
-        position: absolute;
-        left: -30px;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fff;
-        border: 2px solid #dee2e6;
-    }
-    
-    .timeline-step.completed .timeline-marker {
-        border-color: #28a745;
-        color: #28a745;
-    }
-    
-    .timeline-step.current .timeline-marker {
-        border-color: #007bff;
-        color: #007bff;
-    }
-    
-    /* .timeline-content {
-        padding-left: 10px;
-    } */
-    
-    .timeline h6 {
-        margin-bottom: 5px;
-        font-size: 0.9rem;
-    }
-    
-    .timeline small {
-        font-size: 0.8rem;
-    }
-    
-    /* Connector lines between steps */
-    .timeline-step:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        left: -19px;
-        top: 24px;
-        height: calc(100% - 24px);
-        width: 2px;
-        background: #dee2e6;
-    }
-    
-    .timeline-step.completed:not(:last-child)::after {
-        background: #28a745;
-    }
-    .right-container{
-        display: flex; 
-        justify-content: center; 
-        align-items: start;
+
+.timeline-step {
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2a2a2a;
+    border: 2px solid #dee2e6;
+}
+
+.timeline-step.completed .timeline-marker {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.timeline-step.current .timeline-marker {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.timeline h6 {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.timeline small {
+    font-size: 0.8rem;
+}
+
+.timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 24px;
+    height: calc(100% - 24px);
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-step.completed:not(:last-child)::after {
+    background: #28a745;
+}
+
+.right-container {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    width: 50%;
+}
+#left-container{
+        
         width: 50%;
     }
-    @media only screen and (max-width: 600px) {
-  .right-container{
-    display: flex; 
-        justify-content: end; 
-        align-items: start;
-    width: 100%;
-    /* border: 2px solid white; */
-  }
+@media only screen and (max-width: 600px) {
+    .right-container {
+        justify-content: end;
+        width: 100%;
+    }
+    #left-container{
+        justify-content: end;
+        width: 100%;
+    }
 }
 </style>
 {% endblock %}
 
-{% block script%}
+{% block script %}
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const payNowBtn = document.querySelector('.btn-primary[style*="margin-top: 0px;"]');
+    const payNowBtn = document.querySelector('.btn-primary');
     
     if (payNowBtn) {
         payNowBtn.addEventListener('click', async function() {
             try {
-                // Show loading state
                 payNowBtn.disabled = true;
                 payNowBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
                 
-                // Step 1: Initiate payment
                 const initiateUrl = "{% url 'initiate_build_payment' %}"
                 const initiateResponse = await fetch(initiateUrl, {
                     method: 'POST',
@@ -391,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(initiateData.message);
                 }
                 
-                // Step 2: Create checkout session
                 const checkoutSessionUrl = "{% url 'create_build_checkout_session' %}"
                 const sessionResponse = await fetch(checkoutSessionUrl, {
                     method: 'POST',
@@ -408,16 +394,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(sessionData.message);
                 }
                 
-                // Redirect to Stripe checkout
                 window.location.href = sessionData.checkout_url;
                 
             } catch (error) {
                 console.error('Payment error:', error);
                 alert('Payment failed: ' + error.message);
                 
-                // Reset button state
                 payNowBtn.disabled = false;
                 payNowBtn.textContent = 'Pay Now';
+            }
+        });
+    }
+
+
+    const showMoreBtn = document.querySelector('.show-more-btn');
+    const featuresText = document.querySelector('#features-text');
+    const fullFeatures = document.querySelector('.full-features');
+
+    if (showMoreBtn) {
+        showMoreBtn.addEventListener('click', function() {
+            if (showMoreBtn.textContent === 'Show More') {
+                // Show full features
+                featuresText.innerHTML = fullFeatures.textContent;
+                showMoreBtn.textContent = 'Show Less';
+            } else {
+                // Show truncated features
+                featuresText.innerHTML = `{{ booked_package.extra_features|title_case|truncatechars:50|escapejs }} <button class="btn btn-link text-primary p-0 ms-1 show-more-btn" style="text-decoration: none;">Show More</button>`;
+                showMoreBtn.textContent = 'Show More';
+                // Re-attach event listener to the new button
+                const newShowMoreBtn = document.querySelector('.show-more-btn');
+                newShowMoreBtn.addEventListener('click', arguments.callee);
             }
         });
     }

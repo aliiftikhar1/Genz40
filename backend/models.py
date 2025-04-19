@@ -508,7 +508,7 @@ class PostOrderStatus(models.Model):
             for index, status in enumerate(DEFAULT_STATUSES, start=1):
                 PostOrderStatus.objects.create(
                     payment=instance,
-                    name=status["name"],
+                    status=status["name"],
                     position=index,
                     is_active=status["is_active"]
                 )
@@ -647,7 +647,7 @@ class BookedPackage(models.Model):
         ('in_progress', 'In Progress'),
         ('payment_done', 'Payment Done'),
         ('completed', 'Completed'),
-        ('awaiting_payment', 'Awaiting Payment'),
+        # ('awaiting_payment', 'Awaiting Payment'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

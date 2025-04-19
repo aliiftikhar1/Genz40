@@ -155,7 +155,7 @@
                 {% for item in nav_items %}
                 <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
                     <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
-                    href="{% if item.get_absolute_url %}{% url 'car_configurator_slug' item.slug %}{% else %}{% url 'index' %}{% endif %}"
+                    href="{% if item.get_absolute_url %}{% url 'car_configurator' item.slug %}{% else %}{% url 'index' %}{% endif %}"
                     {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
                         {{ item.title }}
                     </a>

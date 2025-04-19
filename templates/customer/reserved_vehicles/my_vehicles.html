@@ -69,15 +69,17 @@
                                                                 <p class="text-muted mb-1"><strong>Price:</strong> ${{ package.price|floatformat:2|default:"0.00" }}</p>
                                                                 <p class="text-muted mb-1"><strong>Status:</strong> 
                                                                     {% if package.status == 'pending' %}
-                                                                    <span class="badge bg-warning">Reserve Payment Pending</span>
+                                                                    <span class="badge bg-warning" style="font-size:12px">Reserve Payment Pending</span>
                                                                 {% elif package.status == 'confirmed' %}
-                                                                    <span class="badge bg-success">Confirmed</span>
+                                                                    <span class="badge bg-success" style="font-size:12px">Confirmed</span>
+                                                                    {% elif package.status == 'payment_done' %}
+                                                                    <span class="badge bg-primary" style="font-size:12px">Reserve Payment Received</span>
                                                                 {% elif package.status == 'in_progress' %}
-                                                                <span class="badge bg-warning">In Progress</span>
+                                                                <span class="badge bg-warning" style="font-size:12px">In Progress</span>
                                                                 {% elif package.status == 'delivered' %}
-                                                                <span class="badge bg-btn-outline-success">Delivered</span>
+                                                                <span class="badge bg-btn-outline-success" style="font-size:12px">>Delivered</span>
                                                                 {% elif package.status == 'cancelled' %}
-                                                                <span class="badge bg-danger">Cancelled</span>
+                                                                <span class="badge bg-danger" style="font-size:12px">Cancelled</span>
                                                                 {% endif %}
                                                                 </p>
                                                             

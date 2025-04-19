@@ -149,7 +149,9 @@
             height: 100%;
             transition: transform 0.2s ease-in-out;
             border: 1px solid #666666;
-            padding: 1.2rem;
+            padding-top: 1.2rem;
+            padding-left: 1.2rem;
+            padding-right: 1.2rem;
         }
 
         
@@ -171,10 +173,19 @@
             height: 17rem;
             overflow:hidden;
         }
+        .card-car-image-container-mark-IV {
+            background-color: #d2d1d1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            height: 30rem;
+            overflow:hidden;
+        }
         
         .card-car-image {
             /* border: 2px solid #00ff26; */
-            object-fit: cover;
+            object-fit: contain;
             width: 100%;
             max-width: 100%;
             height: 100%;
@@ -249,14 +260,24 @@
         }
         
         @media (max-width: 768px) {
+            .card-car-image-container-mark-IV {
+            background-color: #d2d1d1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            height: 17rem;
+            overflow:hidden;
+        }
             .card-car-image {
             max-width: 100%;
             height: 12rem;
             object-fit: contain;
         }
             .car-card {
-                margin-bottom: 1.5rem;
-                padding: 1rem;
+                padding-top: 1.2rem;
+            padding-left: 1.2rem;
+            padding-right: 1.2rem;
             }
             .btn-primary {
             background-color: #0d6efd;
@@ -668,7 +689,7 @@
                         
                         {% for item in nav_items %}
                             {% if forloop.counter == 2 %}
-                            <div class="link-container" style="display: flex; justify-content: space-between;">
+                            <div class="link-container" style="display: flex; justify-content: space-between; ;">
                                 <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
                                 <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
                                     Order Now
@@ -695,9 +716,9 @@
         </div>
 
           <!-- Mark 4 card -->
-          <div class="col-12 col-md-6" style="margin: auto; margin-top: 20px;">
+          <div class="col-12 " style="margin: auto; margin-top: 20px;">
             <div class="car-card">
-                <div class="card-car-image-container">
+                <div class="card-car-image-container-mark-IV" >
                     <img src="{{ section_3.image.url }}"  alt="Red Racing Car #1" class="card-car-image">
                 </div>
                 <div class="card-content">

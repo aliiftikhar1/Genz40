@@ -36,17 +36,18 @@
 
                         <form class="bg-white text-black" id="checkout-form" method="POST">
                             {% csrf_token %}
+                            <input id="user_id" name="id" value="{{user_details.id}}" required hidden/>
                             <div class="row g-3">
                                 <div class="col-sm-6">
                                     <label for="firstName" class="form-label">First Name<span class="text-danger"> *</span></label>
-                                    <input type="text" class="form-control" {% if user_details.first_name %} style='background-color: lightgray !important' {% endif %} name="first_name"
-                                    id="first_name" value="{{ user_details.first_name }}" {% if user_details.first_name and user_details.first_name|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="text" class="form-control" {% if user_details.first_name %} style='background-color: rgb(255, 255, 255) !important' {% endif %} name="first_name"
+                                    id="first_name" value="{{ user_details.first_name }}"  required />
                                 </div>
 
                                 <div class="col-sm-6">
                                     <label for="lastName" class="form-label">Last Name<span class="text-danger"> *</span></label>
-                                    <input type="text" class="form-control" {% if user_details.last_name %} style='background-color: lightgray !important' {% endif %} name="last_name"
-                                    id="last_name" value="{{ user_details.last_name }}" {% if user_details.last_name and user_details.last_name|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="text" class="form-control" {% if user_details.last_name %} style='background-color: rgb(255, 255, 255)gray !important' {% endif %} name="last_name"
+                                    id="last_name" value="{{ user_details.last_name }}"  required />
                                 </div>
 
                                 <div class="col-sm-6">

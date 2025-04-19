@@ -28,7 +28,13 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import BookedPackage
 from .serializers import BookedPackageSerializer
-
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from decimal import Decimal
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
 
 def clean_price_value(value):
     if value is None or value == '':
@@ -245,10 +251,9 @@ def package_list(request):
 
 @login_required
 def booked_package_list(request):
-    all_booked_package_list = BookedPackage.objects.all()
-    all_payment_list = PostPayment.objects.all()
+    all_booked_package_list = BookedPackage.objects.all().order_by('-updated_at')
+    all_payment_list = PostPayment.objects.all().order_by('-updated_at')
     return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list,'all_payment_list':all_payment_list})
-
 
 @login_required
 def package_add(request):
@@ -730,15 +735,40 @@ def update_booked_package(request, pk):
         )
     
     
-    
     serializer = BookedPackageSerializer(package, data=data)
     if serializer.is_valid():
         serializer.save()
+        newpackage = BookedPackage.objects.get(pk=pk)
+        current_site = get_current_site(request)
+        context = {
+            'user': newpackage.user,
+            'booked_package': newpackage,
+            'message': "Your reservation has been promoted to "+ newpackage.build_type + " ( "+ newpackage.build_status + " ) " +"phase of build process.",
+            'domain': current_site.domain,
+            'reservation_number': newpackage.reservation_number,
+        }
+
+        # Render email template
+        subject = 'Reservation Updates - GEN-Z 40'
+        html_content = render_to_string('email/status_updation.html', context)
+        plain_text = strip_tags(html_content)
+        
+        print("Subject:", subject, "HTML Content length:", len(html_content), "Plain Text length:", len(plain_text))
+        
+        send_mail(
+            subject=subject,  
+            message=plain_text,
+            from_email=settings.EMAIL_FROM,
+            recipient_list=[newpackage.user.email],  
+            fail_silently=False,
+            html_message=html_content
+        )
+    
         return Response(serializer.data)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POSt'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def delete_booked_package(request, pk):
     """

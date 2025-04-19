@@ -289,7 +289,7 @@ def get_register(request):
                 user = form.save(commit=False)
                 user.set_password(request.POST['password1'])
                 user.is_active = True
-                user.is_email_verified = True
+                # user.is_email_verified = True
                 
                 # Format phone number to match the expected format (removing non-digit characters)
                 if user.phone_number:
@@ -311,8 +311,9 @@ def get_register(request):
                     recipient_list = [user.email]
                     sender = settings.EMAIL_FROM
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
+                    send_activation_email(request, user, request.POST['password1'])
                     EmailThread(subject, html_content, recipient_list, sender).start()
-                    # send_activation_email(request, user, request.POST['password1'])
+                    
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
                     # Log the error for debugging
@@ -978,7 +979,7 @@ def reservation_checkout(request, id):
 def process_reservation_payment(request):
     if request.method == 'POST':
         try:
-            # Get form data
+            user_id = request.POST.get('id')
             first_name = request.POST.get('first_name')
             last_name = request.POST.get('last_name')
             email = request.POST.get('email')
@@ -987,10 +988,18 @@ def process_reservation_payment(request):
             amount = request.POST.get('amount')
             package_id = request.POST.get('package_id')
 
-            # Get the booked package
+            print("User Id is : ",str(user_id))
+
+            try:
+                custom_user = CustomUser.objects.get(id=user_id)
+                custom_user.first_name = first_name
+                custom_user.last_name = last_name
+                custom_user.save()
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'User not found'})
+
             booked_package = BookedPackage.objects.get(id=package_id)
             
-            # Create a Stripe customer
             customer = stripe.Customer.create(
                 email=email,
                 name=f"{first_name} {last_name}",
@@ -1002,7 +1011,6 @@ def process_reservation_payment(request):
                 }
             )
 
-            # Create line items for Stripe checkout
             line_items = [{
                 'price_data': {
                     'currency': 'usd',
@@ -1102,41 +1110,30 @@ def create_package_checkout_session(request):
 
 def reservation_success(request, id, sessionId):
     try:
-        # Get the booked package
-        
         booked_package = BookedPackage.objects.get(id=id)
         booked_package.status = 'confirmed'
+        booked_package.build_status = 'payment_done'
         booked_package.save()
-        
-        
-        # Get the session ID from the query parameters (Stripe redirects with session_id)
-        # session_id = request.GET.get('session_id')
+
         if sessionId:
-            # Retrieve the Stripe session to get payment details
             session = stripe.checkout.Session.retrieve(sessionId)
 
             print("Session Response is : ",session);
             
-            # Create payment record
             PostPayment.objects.create(
-                user=booked_package.user,  # Assuming BookedPackage has a user field
+                user=booked_package.user,  
                 rn_number=booked_package.reservation_number,
                 stripe_payment_id=session.payment_intent,
-                amount=100,  # Assuming price is stored in booked_package
+                amount=100,  
                 regarding="reserve",
                 currency="usd",
-                status="succeeded",  # Or you can check session.payment_status
+                status="succeeded",  
                 package_name=booked_package.title,
             )
-            
-        
-            # time.sleep(5)
-
 
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
     
     except Exception as e:
-        # Handle errors appropriately - maybe log them and still show success page
         print(f"Error in reservation_success: {str(e)}")
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
 
@@ -1148,7 +1145,6 @@ def reservation_details(request, id):
     """
     booked_package = get_object_or_404(BookedPackage, reservation_number=id)
     
-    # Ensure you're using Decimal for all calculations
     remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
     initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
     midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
@@ -1156,7 +1152,6 @@ def reservation_details(request, id):
     
     payments = PostPayment.objects.filter(rn_number=id)
 
-    # Get user location data
     ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
     data = response.json()
@@ -1335,20 +1330,49 @@ def build_payment_success(request, id, sessionId):
             previous_type = booked_package.build_type
             amount = initial_payment
             booked_package.status = 'in_progress'
-            booked_package.build_status = 'completed'
-            booked_package.build_type = 'body_complete'  # Added transition to next stage
+            booked_package.build_status = 'payment_done'
+            booked_package.build_type = 'chassis_complete' 
         elif booked_package.build_type == 'body_complete':
             previous_type = booked_package.build_type
             amount = midway_payment
             booked_package.build_type = 'assembly'
-            booked_package.build_status = 'in_progress'
+            booked_package.build_status = 'payment_done'
         elif booked_package.build_type == 'built':
             previous_type = booked_package.build_type
             amount = balance_payment
             booked_package.build_type = 'quality_check'
-            booked_package.build_status = 'in_progress'
+            booked_package.build_status = 'payment_done'
         
-        booked_package.save()  # Moved save outside if block to ensure it's always called
+        booked_package.save()  
+
+        current_site = get_current_site(request)
+        print("Current site is : ",current_site)
+        payment_date = timezone.now().strftime('%B %d, %Y')
+        context = {
+            'user': request.user,
+            'booked_package': booked_package,
+            'message': "Your " + ( "Initial Payment" if previous_type == 'order_confirmed' else "Mid Way Payment " if previous_type == 'body_complete' else "Final Balance Payment" if previous_type == 'built' else "Your Order"  ) + " has been successfully processed.",
+            'amount': str(amount),
+            'payment_date': payment_date,
+            'domain': current_site.domain,
+            'reservation_number': booked_package.reservation_number,
+        }
+
+        # Render email template
+        subject = 'Payment Confirmation - GEN-Z 40'
+        html_content = render_to_string('email/payment_successful.html', context)
+        plain_text = strip_tags(html_content)
+        
+        print("Subject:", subject, "HTML Content length:", len(html_content), "Plain Text length:", len(plain_text))
+        
+        send_mail(
+            subject=subject,  
+            message=plain_text,
+            from_email=settings.EMAIL_FROM,
+            recipient_list=[booked_package.user.email],  
+            fail_silently=False,
+            html_message=html_content
+        )
 
         if not sessionId:
             raise ValueError("No session ID provided")
@@ -1368,34 +1392,7 @@ def build_payment_success(request, id, sessionId):
             status="succeeded",
             package_name=booked_package.title,
         )
-
-        # Prepare email context
-        current_site = get_current_site(request)
-        payment_date = timezone.now().strftime('%B %d, %Y')
-        context = {
-            'user': request.user,
-            'booked_package': booked_package,
-            'amount': str(amount),
-            'payment_date': payment_date,
-            'domain': "https://genz40.com",
-            'reservation_number': booked_package.reservation_number,
-        }
-
-        # Render email template
-        subject = 'Payment Confirmation - GEN-Z 40'
-        html_content = render_to_string('email/payment_successful.html', context)
-        plain_text = strip_tags(html_content)
         
-        print("Subject:", subject, "HTML Content length:", len(html_content), "Plain Text length:", len(plain_text))
-        
-        send_mail(
-            subject=subject,  # Fixed subject inconsistency
-            message=plain_text,
-            from_email=settings.EMAIL_FROM,
-            recipient_list=[booked_package.user.email],  # Send to user's email instead of hardcoded
-            fail_silently=False,
-            html_message=html_content
-        )        
 
         return render(request, 'public/payment/success.html', {
             'is_footer_required': False,
@@ -1413,13 +1410,14 @@ def build_payment_success(request, id, sessionId):
 def send_test_email(request,id):
     booked_package = get_object_or_404(BookedPackage, id=id)
     amount = 100
+    current_site = get_current_site(request)
     try:
         context = {
                 'user': request.user,
                 'booked_package': booked_package,
                 'amount': str(amount),  # Convert to string for template
                 'payment_date': booked_package.updated_at,
-                'domain': "https://genz40.com",
+                'domain': current_site.domain,
                 'reservation_number': booked_package.reservation_number,
             }
         
