@@ -37,9 +37,9 @@
           <div class="card">
             <div class="card-body">
               <div class="mb-3">
-                <a href="{% url 'add_payment' %}" class="btn btn-primary">
+                {% comment %} <a href="{% url 'add_feature_payment' %}" class="btn btn-primary">
                   <i class="fas fa-plus"></i> Add Payment
-                </a>
+                </a> {% endcomment %}
               </div>
               <div class="row mb-3">
                 <div class="col-md-4">
@@ -76,13 +76,13 @@
               <table id="payment_tbl" class="table table-bordered table-striped">
                 <thead>
                 <th>ID</th>
-                <th>Stripe Payment Id</th>
+                <th>Transaction Id</th>
                 <th>RN Number</th>
-                <th>Package Name</th>
+                <th>Feature Name</th>
                 <th>Amount</th>
                 <th>Currency</th>
                 <th>Status</th>
-                <th>Regarding</th>
+                <th>Type</th>
                 <th>Created At</th>
                 
                 </thead>
@@ -90,13 +90,13 @@
                 {% for payment in payments %}
                     <tr>
                     <td>{{ payment.id }}</td>
-                    <td>{{ payment.stripe_payment_id }}</td>
-                    <td>{{ payment.rn_number_id }}</td>
-                    <td>{{ payment.package_name }}</td>
+                    <td>{{ payment.transaction_id }}</td>
+                    <td>{{ payment.reservation_feature.booked_package.reservation_number }}</td>
+                    <td>{{ payment.reservation_feature.features }}</td>
                     <td>{{ payment.amount }}</td>
-                    <td>{{ payment.currency }}</td>
-                    <td>{{ payment.status|title_case }}</td>
-                    <td>{{ payment.regarding|title_case }}</td>
+                    <td>USD</td>
+                    <td>{{ payment.payment_status|title_case }}</td>
+                    <td>{{ payment.payment_method|title_case }}</td>
                     <td>{{ payment.created_at }}</td>
                     
                     </tr>

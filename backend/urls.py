@@ -69,6 +69,12 @@ urlpatterns = [
     path('package-details/<uuid:pk>/', views.all_package_details, name='package_details'),
 
     path('reserved-cars/', views.reserved_car_list, name='reserved_car_list'),
+    path('reserved-cars/add-payment/', views.add_payment, name='add_payment'),
+
+
+    path('reservation-new-features/', views.reservation_new_features, name='reservation_new_features'),
+    path('feature-payments/', views.feature_payment, name='feature_payment'),
+    path('feature-payment/add-payment/', views.add_feature_payment, name='add_feature_payment'),
 
 
     # path('car/configurator/<slug:slug>/', car_configurator, name="backend_car_configurator"),
@@ -95,5 +101,10 @@ path('reservations/', views.booked_package_list, name='booked_package_list'),
     path('booked-packages/create/', views.save_booked_package, name='save-booked-package'),
     path('booked-packages/update/<uuid:pk>/', views.update_booked_package, name='update-booked-package'),
     path('booked-packages/delete/<uuid:pk>/', views.delete_booked_package, name='delete-booked-package'),
+
+    path('package-image/<str:package_id>/', views.package_detail, name='package_detail'),
+    path('package-image/<str:package_id>/upload-images/', views.upload_package_images, name='upload_package_images'),
+    path('image/<str:image_id>/delete/', views.delete_package_image, name='delete_package_image'),
+    path('image/<str:image_id>/update-build-type/', views.update_image_build_type, name='update_image_build_type'),
 
 ]

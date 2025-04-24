@@ -15,7 +15,7 @@ from .models import CustomUser, PostCommunity, PostCommunityJoiners, PostPackage
 from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm, PostPackageDetailForm, PostPackageFeatureForm, PostPartForm, PostChargingForm, PostPaintForm, \
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
-from .models import PostPackage, PostNavItem,CarConfiguration
+from .models import PostPackage, PostNavItem,CarConfiguration,ReservationFeaturesPayment, ReservationNewFeatures
 import string
 import random
 from common.utils import get_client_ip, send_custom_email
@@ -253,7 +253,8 @@ def package_list(request):
 def booked_package_list(request):
     all_booked_package_list = BookedPackage.objects.all().order_by('-updated_at')
     all_payment_list = PostPayment.objects.all().order_by('-updated_at')
-    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list,'all_payment_list':all_payment_list})
+    nav_items = PostNavItem.objects.all()
+    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list,'all_payment_list':all_payment_list, 'nav_items':nav_items})
 
 @login_required
 def package_add(request):
@@ -394,6 +395,161 @@ def reserved_car_list(request):
     all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
     payments = PostPayment.objects.filter(status='succeeded').order_by('-created_at')
     return render(request, 'admin/reserved_cars/list.html', {'payments': payments, 'all_rn_numbers': all_rn_numbers})
+
+@login_required
+def add_payment(request):
+    all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
+    
+    if request.method == 'POST':
+        try:
+            rn_number = request.POST.get('rn_number')
+            booked_package = BookedPackage.objects.get(reservation_number=rn_number)
+
+            remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
+
+            initial_payment = (remaining_payment_after_reserve * booked_package.initial_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+            midway_payment = (remaining_payment_after_reserve * booked_package.midway_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+            balance_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+
+            payment_build_type = request.POST.get('regarding') 
+            payment_amount = request.POST.get('amount')
+            if payment_build_type == 'initial_payment' and Decimal(payment_amount) != Decimal(initial_payment):
+                messages.error(request, f'Initial payment amount should be {initial_payment}')
+                return redirect('add_payment')
+            elif payment_build_type == 'midway_payment' and Decimal(payment_amount) != Decimal(midway_payment):
+                messages.error(request, f'Midway payment amount should be {midway_payment}')
+                return redirect('add_payment')
+            elif payment_build_type == 'final_payment' and Decimal(payment_amount) != Decimal(balance_payment):
+                messages.error(request, f'Final payment amount should be {balance_payment}')
+                return redirect('add_payment')
+
+            booked_package.build_status = 'payment_done'
+            booked_package.save()
+            
+            payment = PostPayment.objects.create(
+                user=request.user,
+                rn_number=booked_package,
+                stripe_payment_id=request.POST.get('stripe_payment_id', ''),
+                regarding=request.POST.get('regarding'),
+                package_name=booked_package.title,
+                type=request.POST.get('type'),
+                amount=request.POST.get('amount'),
+                currency=request.POST.get('currency'),
+                status=request.POST.get('status'),
+                created_at=timezone.now(),
+                updated_at=timezone.now()
+            )
+            messages.success(request, 'Payment added successfully!')
+            return redirect('reserved_car_list')
+        except BookedPackage.DoesNotExist:
+            messages.error(request, 'Invalid RN Number')
+        except Exception as e:
+            messages.error(request, f'Error adding payment: {str(e)}')
+    
+    return render(request, 'admin/reserved_cars/addPayment.html', {'all_rn_numbers': all_rn_numbers})
+
+# Feature Payments COde Started
+
+@login_required
+def reservation_new_features(request):
+    all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
+    
+    # Start with all pending features
+    all_features = ReservationNewFeatures.objects.filter(status='pending').order_by('-created_at')
+    
+    # Apply reservation number filter if provided
+    rn_filter = request.GET.get('rn_filter')
+    if rn_filter:
+        all_features = all_features.filter(booked_package__reservation_number=rn_filter)
+    
+    return render(request, 'admin/feature_payments/Features.html', {
+        'all_features': all_features,
+        'all_rn_numbers': all_rn_numbers
+    })
+
+@login_required
+def feature_payment(request):
+    all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
+    payments = ReservationFeaturesPayment.objects.filter(payment_status='completed').order_by('-created_at')
+    return render(request, 'admin/feature_payments/list.html', {'payments': payments, 'all_rn_numbers': all_rn_numbers})
+
+@login_required
+def add_feature_payment(request):
+    all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
+    
+    # Initialize variables
+    booked_package = None
+    filtered_features = ReservationNewFeatures.objects.none()
+    
+    if request.method == 'GET':
+        # Handle filtering based on GET parameters
+        rn_number = request.GET.get('rn_number')
+        feature_id = request.GET.get('feature_id')
+        
+        if rn_number:
+            try:
+                booked_package = BookedPackage.objects.get(reservation_number=rn_number)
+                filtered_features = ReservationNewFeatures.objects.filter(
+                    booked_package=booked_package,
+                    status='pending'
+                )
+                
+                if feature_id:
+                    try:
+                        selected_feature = ReservationNewFeatures.objects.get(
+                            id=feature_id,
+                            booked_package=booked_package
+                        )
+                        # You could add more context about the selected feature here
+                    except ReservationNewFeatures.DoesNotExist:
+                        messages.error(request, 'Invalid feature selected')
+            except BookedPackage.DoesNotExist:
+                messages.error(request, 'Invalid reservation number')
+    
+    if request.method == 'POST':
+        try:
+            feature_id = request.POST.get('reservation_feature')
+            reservation_feature = ReservationNewFeatures.objects.get(id=feature_id)
+            
+            # Create the payment object from form data
+            payment = ReservationFeaturesPayment.objects.create(
+                reservation_feature=reservation_feature,
+                amount=Decimal(request.POST.get('amount')),
+                payment_date=request.POST.get('payment_date') or timezone.now(),
+                payment_status=request.POST.get('payment_status'),
+                payment_method=request.POST.get('payment_method'),
+                transaction_id=request.POST.get('transaction_id', ''),
+                payment_notes=request.POST.get('payment_notes', '')
+            )
+            
+            # If payment is completed, update the feature status
+            if payment.is_completed:
+                reservation_feature.status = 'completed'
+                reservation_feature.save()
+                
+                if payment.booked_package:
+                    booked_package = payment.booked_package
+                    booked_package.build_status = 'payment_done'
+                    booked_package.save()
+            
+            messages.success(request, 'Payment added successfully!')
+            return redirect('feature_payment')
+            
+        except ReservationNewFeatures.DoesNotExist:
+            messages.error(request, 'Invalid Reservation Feature')
+        except Exception as e:
+            messages.error(request, f'Error adding payment: {str(e)}')
+    
+    context = {
+        'all_rn_numbers': all_rn_numbers,
+        'filtered_features': filtered_features,
+        'booked_package': booked_package,
+        'selected_rn': request.GET.get('rn_number', ''),
+        'selected_feature': request.GET.get('feature_id', ''),
+    }
+    return render(request, 'admin/feature_payments/addPayment.html', context)
+
+# Feature Payment Code Ends
 
 @login_required
 def community_member_list(request):
@@ -646,7 +802,6 @@ def get_booked_packages_by_user_id(request, user_id):
     return Response(serializer.data)
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def save_booked_package(request):
@@ -660,7 +815,6 @@ def save_booked_package(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['POST'])
@@ -681,28 +835,46 @@ def update_booked_package(request, pk):
     print("Fetched Data : ", data)
     
     # Check for existing payments
-    order_confirmed_exists = PostPayment.objects.filter(
+    initial_payment_exists = PostPayment.objects.filter(
         rn_number=data['reservation_number'], 
-        regarding='order_confirmed'
+        regarding='initial_payment'
     ).exists()
     
     mid_way_exists = PostPayment.objects.filter(
         rn_number=data['reservation_number'], 
-        regarding='body_complete'
+        regarding='midway_payment'
     ).exists()
     
     final_balance_exists = PostPayment.objects.filter(
         rn_number=data['reservation_number'], 
-        regarding='built'
+        regarding='final_payment'
     ).exists()
 
-    if not order_confirmed_exists and data['build_type'] in [ 'chassis_complete', 'body_complete', 'assembly', 'built','quality_check', 'available_for_delivery']:
+    if initial_payment_exists and Decimal(data['initial_payment_percentage']) != Decimal(package.initial_payment_percentage):
+        return Response(
+            {"error": "Initial Payment Percentage can not be changed after payment."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if mid_way_exists and Decimal(data['midway_payment_percentage']) != Decimal(package.midway_payment_percentage):
+        return Response(
+            {"error": "Mid Way Payment Percentage can not be changed after payment."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if final_balance_exists and Decimal(data['final_payment_percentage']) != Decimal(package.final_payment_percentage):
+        return Response(
+            {"error": "Final Payment Percentage can not be changed after payment."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not initial_payment_exists and data['build_type'] in [ 'chassis_complete','midway_payment','final_payment', 'body_complete', 'assembly', 'built','quality_check', 'available_for_delivery']:
         return Response(
             {"error": "Reservation can not be proceeded next without initital payment"},
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    if not mid_way_exists and data['build_type'] in ['assembly', 'built','quality_check', 'available_for_delivery']:
+    if not mid_way_exists and data['build_type'] in ['assembly', 'built', 'final_payment' , 'quality_check', 'available_for_delivery']:
         return Response(
             {"error": "Reservation can not be proceeded next without midway payment"},
             status=status.HTTP_400_BAD_REQUEST
@@ -716,7 +888,7 @@ def update_booked_package(request, pk):
 
     
     # Check if cancellation is allowed based on payment status
-    if (data['status'] == 'pending' or data['status'] == 'confirmed') and order_confirmed_exists:
+    if (data['status'] == 'pending' or data['status'] == 'confirmed') and initial_payment_exists:
         return Response(
             {"error": "You cannot cancel the reservation because initial payment has been done."},
             status=status.HTTP_400_BAD_REQUEST
@@ -783,3 +955,189 @@ def delete_booked_package(request, pk):
             {"error": "Booked package not found"},
             status=status.HTTP_404_NOT_FOUND
         )
+    
+
+
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django import forms
+from .models import BookedPackage, BookedPackageImage
+
+# Define build type choices manually
+BUILD_TYPE_CHOICES = [
+        ('order_confirmed', 'Order Confirmed'),
+        ('initial_payment', 'Initial Payment'),
+        ('chassis_complete', 'Chassis Complete'),
+        ('body_complete', 'Body Complete'),
+        ('midway_payment', 'Mid Way Payment'),
+        ('assembly', 'Assembly'),
+        ('built', 'Built'),
+        ('final_payment', 'Final Payment'),
+        ('quality_check', 'Quality Check'),
+        ('available_for_delivery', 'Available For Delivery'),
+]
+
+# Manual form for image uploads
+class PackageImageUploadForm(forms.Form):
+    build_type = forms.ChoiceField(
+        choices=BUILD_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        required=True,
+        label='Build Stage'
+    )
+    images = forms.FileField(
+        required=True,
+        label='Images'
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control', 'placeholder': 'Optional: Add notes about these images'}),
+        required=False,
+        label='Description'
+    )
+
+    def clean_images(self):
+        images = self.files.getlist('images')
+        if not images:
+            raise forms.ValidationError("At least one image is required.")
+        for image in images:
+            if not image.content_type.startswith('image/'):
+                raise forms.ValidationError("Only image files are allowed.")
+            if image.size > 5 * 1024 * 1024:  # 5MB limit
+                raise forms.ValidationError("Each image must be less than 5MB.")
+        return images
+
+# Manual form for updating build type
+class ImageBuildTypeForm(forms.ModelForm):
+    class Meta:
+        model = BookedPackageImage
+        fields = ['build_type']
+        widgets = {
+            'build_type': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'build_type': 'Build Stage',
+        }
+
+    build_type = forms.ChoiceField(
+        choices=BUILD_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        required=True,
+        label='Build Stage'
+    )
+
+@login_required
+def package_detail(request, package_id):
+    """Display details of a booked package"""
+    package = get_object_or_404(BookedPackage, id=package_id)
+    images = BookedPackageImage.objects.filter(booked_package=package)
+    context = {
+        'package': package,
+        'images': images,
+        'build_types': BUILD_TYPE_CHOICES,
+    }
+    return render(request, 'admin/booked_package/PackageDetails.html', context)
+
+@login_required
+def upload_package_images(request, package_id):
+    """Upload multiple images for a booked package"""
+    package = get_object_or_404(BookedPackage, id=package_id)
+    
+    # Check if user has permission to upload images
+    if request.user != package.user and not request.user.is_staff:
+        messages.error(request, "You don't have permission to upload images to this package.")
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = PackageImageUploadForm(request.POST, request.FILES)
+        # Handle multiple files
+        files = request.FILES.getlist('images')
+        
+        if form.is_valid() and files:
+            build_type = form.cleaned_data['build_type']
+            description = form.cleaned_data['description']
+            
+            for image_file in files:
+                BookedPackageImage.objects.create(
+                    booked_package=package,
+                    image=image_file,
+                    build_type=build_type,
+                    description=description
+                )
+            
+            messages.success(request, f"{len(files)} image(s) uploaded successfully.")
+            return redirect('package_detail', package_id=package.id)
+    else:
+        form = PackageImageUploadForm()
+    
+    context = {
+        'package': package,
+        'form': form,
+        'build_types': BUILD_TYPE_CHOICES,
+    }
+    return render(request, 'admin/booked_package/UploadReservationImage.html', context)
+
+@login_required
+def delete_package_image(request, image_id):
+    """Delete a specific package image"""
+    image = get_object_or_404(BookedPackageImage, id=image_id)
+    package = image.booked_package
+    
+    # Check if user has permission to delete
+    if request.user != package.user and not request.user.is_staff:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+        messages.error(request, "You don't have permission to delete this image.")
+        return redirect('package_detail', package_id=package.id)
+    
+    if request.method == 'POST' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Delete the image file
+        image.image.delete(save=False)
+        # Delete the record
+        image.delete()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        messages.success(request, "Image deleted successfully.")
+        return redirect('package_detail', package_id=package.id)
+    
+    return redirect('package_detail', package_id=package.id)
+
+@login_required
+def update_image_build_type(request, image_id):
+    """Update the build type of a specific image"""
+    image = get_object_or_404(BookedPackageImage, id=image_id)
+    package = image.booked_package
+    
+    # Check if user has permission
+    if request.user != package.user and not request.user.is_staff:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+        messages.error(request, "You don't have permission to update this image.")
+        return redirect('package_detail', package_id=package.id)
+    
+    if request.method == 'POST':
+        form = ImageBuildTypeForm(request.POST, instance=image)
+        if form.is_valid():
+            form.save()
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
+            
+            messages.success(request, "Image build type updated successfully.")
+            return redirect('package_detail', package_id=package.id)
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    else:
+        form = ImageBuildTypeForm(instance=image)
+    
+    context = {
+        'form': form,
+        'image': image,
+        'package': package,
+    }
+    return render(request, 'admin/booked_package/UploadReservationImage.html', context)

@@ -45,8 +45,10 @@ urlpatterns = [
     path('<slug:slug>/', views.navitem_detail, name='navitem_detail'),
     path("car-selector/", views.car_selector, name="car_selector"),  # Fixed URL
     path('discount/<slug:slug>/', views.reserve_now, name='car_details'),  # Slug should be last
-    path('new/car/configurator/<slug:slug>/', views.new_car_configurator, name='car_configurator'),
+    # path('new/car/configurator/<slug:slug>/', views.new_car_configurator, name='car_configurator'),
     path('car/configurator/<slug:slug>/', views.car_configurator, name='car_configurator_slug'),
+    path('dynamic-configurator/<slug:car_model_slug>/', views.dynamic_configurator, name='car_configurator'),
+    # path('dynamic-configurator/<slug:car_model_slug>/', views.dynamic_configurator, name='dynamic_configurator'),
 
     path('configuration/<slug:config_id>/', views.view_configuration, name='car_configuration_detail'),
     path('car/checkout/', views.checkout, name='checkout'),
@@ -61,6 +63,15 @@ urlpatterns = [
     path('reservation/create-build-checkout-session/', views.create_build_checkout_session, name='create_build_checkout_session'),
     path('reservation/build-payment-success/<str:id>/<str:sessionId>/', views.build_payment_success, name='build_payment_success'),
 
-    path('mail/send-test-mail/<str:id>/', views.send_test_email, name='send-text-email')
+    path('mail/send-test-mail/<str:id>/', views.send_test_email, name='send-text-email'),
+   
+    # New URLs
+    path('reservation/<str:reservation_number>/add-feature/', views.add_reservation_feature, name='add_reservation_feature'),
+    path('feature/<str:feature_id>/initiate-payment/', views.initiate_feature_payment, name='initiate_feature_payment'),
+    path('feature/create-feature-checkout-session/', views.create_feature_checkout_session, name='create_feature_checkout_session'),
+    # path('feature/payment-success/', views.new_feature_payment_success, name='new_feature_payment_success'),
+    path('feature/feature-payment-success/<str:id>/<str:sessionId>/', views.new_feature_payment_success, name='new_feature_payment_success'),
+
+    
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

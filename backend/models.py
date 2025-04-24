@@ -464,72 +464,6 @@ class PostContactUs(models.Model):
         db_table = 'contact_us'
 
 
-class PostPayment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
-    rn_number = models.CharField(max_length=64, blank=True, null=True)
-    stripe_payment_id = models.CharField(max_length=255, blank=True, null=True)
-    regarding = models.CharField(max_length=255, blank=True, null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default="usd", blank=True, null=True)
-    status = models.CharField(max_length=50, blank=True, null=True)
-    package_name = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return str(self.id)
-    
-    class Meta:
-        db_table = 'payment'
-
-
-class PostOrderStatus(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    payment = models.ForeignKey(PostPayment, on_delete=models.CASCADE, related_name="order_statuses")
-    status = models.CharField(max_length=255, blank=True, null=True)
-    position = models.PositiveIntegerField()  # Defines the order of steps
-    is_active = models.BooleanField(default=False)
-    status_updated_date = models.DateTimeField(auto_now_add=False, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ["position"]  # Ensures steps are retrieved in correct order
-        db_table = 'order_status'
-
-    def __str__(self):
-        return f"{self.status} - {'Active' if self.is_active else 'Inactive'}"
-
-    # Signal to create statuses when an order is created
-    @receiver(post_save, sender=PostPayment)
-    def create_order_statuses(sender, instance, created, **kwargs):
-        if created:  # Only create statuses for new orders
-            for index, status in enumerate(DEFAULT_STATUSES, start=1):
-                PostOrderStatus.objects.create(
-                    payment=instance,
-                    status=status["name"],
-                    position=index,
-                    is_active=status["is_active"]
-                )
-
-class PostSubStatus(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    order_status = models.ForeignKey(PostOrderStatus, on_delete=models.CASCADE, related_name="sub_statuses")
-    name = models.CharField(max_length=255)
-    position = models.PositiveIntegerField()  # Defines sub-status order
-    is_active = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["position"]
-        db_table = 'order_sub_status'
-
-    def __str__(self):
-        return f"{self.name} - {'Active' if self.is_active else 'Inactive'}"
-    
-
 
 
 class CarConfiguration(models.Model):
@@ -634,11 +568,13 @@ class BookedPackage(models.Model):
     
     BUILD_TYPE_CHOICES = [
         ('order_confirmed', 'Order Confirmed'),
-        # ('car_production', 'Car Production'),
+        ('initial_payment', 'Initial Payment'),
         ('chassis_complete', 'Chassis Complete'),
         ('body_complete', 'Body Complete'),
+        ('midway_payment', 'Mid Way Payment'),
         ('assembly', 'Assembly'),
         ('built', 'Built'),
+        ('final_payment', 'Final Payment'),
         ('quality_check', 'Quality Check'),
         ('available_for_delivery', 'Available For Delivery'),
     ]
@@ -647,7 +583,7 @@ class BookedPackage(models.Model):
         ('in_progress', 'In Progress'),
         ('payment_done', 'Payment Done'),
         ('completed', 'Completed'),
-        # ('awaiting_payment', 'Awaiting Payment'),
+        ('awaiting_payment', 'Awaiting Payment'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -658,6 +594,10 @@ class BookedPackage(models.Model):
     extra_features = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    remaining_price = models.IntegerField(default=0, null=True)
+    initial_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=40)
+    midway_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=40)
+    final_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=20)
     
     # New fields
     build_type = models.CharField(max_length=30, choices=BUILD_TYPE_CHOICES, default='order_confirmed')
@@ -669,15 +609,27 @@ class BookedPackage(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.reservation_number:
-            # Generate a unique reservation number starting with RN
-            random_str = get_random_string(length=8, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-            self.reservation_number = f"RN{random_str}"
+            today = timezone.now().date()
+            month = today.strftime('%m')
+            day = today.strftime('%d')
+            year = today.strftime('%Y')
             
-            # Check if the generated number exists and regenerate if needed
-            while BookedPackage.objects.filter(reservation_number=self.reservation_number).exists():
-                random_str = get_random_string(length=8, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-                self.reservation_number = f"RN{random_str}"
+            # Find the highest existing number for today
+            today_prefix = f"RN{month}{day}{year}"
+            last_reservation = BookedPackage.objects.filter(
+                reservation_number__startswith=today_prefix
+            ).order_by('-reservation_number').first()
+            
+            if last_reservation:
+                # Extract the number part and increment
+                last_number = int(last_reservation.reservation_number.replace(today_prefix, ''))
+                new_number = last_number + 1
+            else:
+                # Start from 1010 if no reservations exist for today
+                new_number = 1010
                 
+            self.reservation_number = f"{today_prefix}{new_number:04d}"
+        
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -696,3 +648,363 @@ class BookedPackage(models.Model):
             if value == self.build_type:
                 return index
         return 0
+    
+
+
+class PostPayment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
+    rn_number = models.ForeignKey(BookedPackage, on_delete=models.CASCADE, to_field='reservation_number', related_name='payments')
+    stripe_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    regarding = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=50, default="stripe", blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="usd", blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    package_name = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.id)
+    
+    class Meta:
+        db_table = 'payment'
+
+
+class PostOrderStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    payment = models.ForeignKey(PostPayment, on_delete=models.CASCADE, related_name="order_statuses")
+    status = models.CharField(max_length=255, blank=True, null=True)
+    position = models.PositiveIntegerField()  # Defines the order of steps
+    is_active = models.BooleanField(default=False)
+    status_updated_date = models.DateTimeField(auto_now_add=False, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ["position"]  # Ensures steps are retrieved in correct order
+        db_table = 'order_status'
+
+    def __str__(self):
+        return f"{self.status} - {'Active' if self.is_active else 'Inactive'}"
+
+    # Signal to create statuses when an order is created
+    @receiver(post_save, sender=PostPayment)
+    def create_order_statuses(sender, instance, created, **kwargs):
+        if created:  # Only create statuses for new orders
+            for index, status in enumerate(DEFAULT_STATUSES, start=1):
+                PostOrderStatus.objects.create(
+                    payment=instance,
+                    status=status["name"],
+                    position=index,
+                    is_active=status["is_active"]
+                )
+
+class PostSubStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order_status = models.ForeignKey(PostOrderStatus, on_delete=models.CASCADE, related_name="sub_statuses")
+    name = models.CharField(max_length=255)
+    position = models.PositiveIntegerField()  # Defines sub-status order
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["position"]
+        db_table = 'order_sub_status'
+
+    def __str__(self):
+        return f"{self.name} - {'Active' if self.is_active else 'Inactive'}"
+    
+
+class BookedPackageImage(models.Model):
+    BUILD_TYPE_CHOICES = [
+        ('order_confirmed', 'Order Confirmed'),
+        ('initial_payment', 'Initial Payment'),
+        ('chassis_complete', 'Chassis Complete'),
+        ('body_complete', 'Body Complete'),
+        ('midway_payment', 'Mid Way Payment'),
+        ('assembly', 'Assembly'),
+        ('built', 'Built'),
+        ('final_payment', 'Final Payment'),
+        ('quality_check', 'Quality Check'),
+        ('available_for_delivery', 'Available For Delivery'),
+    ]
+    
+    booked_package = models.ForeignKey(
+        BookedPackage,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    build_type = models.CharField(max_length=50)
+    image = models.ImageField(
+        upload_to='booked_package_images/%Y/%m/%d/',
+        blank=True,
+        null=True
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Booked Package Image'
+        verbose_name_plural = 'Booked Package Images'
+
+    def get_build_type_display(self):
+        """
+        Returns the human-readable status label.
+        You can customize this if you need special logic.
+        """
+        return dict(self.BUILD_TYPE_CHOICES).get(self.build_type, self.build_type)
+
+    def __str__(self):
+        return f"Image for {self.booked_package.reservation_number} - {self.get_build_type_display()}"
+    
+
+class ReservationNewFeatures(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('completed', 'Completed'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    booked_package = models.ForeignKey(BookedPackage, on_delete=models.CASCADE, related_name='new_features')
+    features = models.TextField(help_text="Describe the new features to be added")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"New features for {self.booked_package.reservation_number} - {self.status}"
+    
+class ReservationFeaturesPayment(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+    
+    PAYMENT_METHOD_CHOICES = [
+        ('credit_card', 'Credit Card'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('cash', 'Cash'),
+        ('online_payment', 'Online Payment'),
+        ('other', 'Other'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reservation_feature = models.ForeignKey(ReservationNewFeatures, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(default=timezone.now)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Payment {self.id} for feature {self.reservation_feature.id} - {self.payment_status}"
+    
+    class Meta:
+        ordering = ['-payment_date']
+        
+    @property
+    def is_completed(self):
+        return self.payment_status == 'completed'
+        
+    @property
+    def booked_package(self):
+        """Shortcut to access the booked package associated with this payment"""
+        return self.reservation_feature.booked_package
+    
+
+
+
+class DynamicPackages(models.Model):
+    PACKAGE_TYPES = (
+        ('roller', 'Roller Package'),
+        ('roller_plus', 'Roller Plus Package'),
+        ('builder', 'Builder Package'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    package_type = models.CharField(max_length=20, choices=PACKAGE_TYPES)
+    car_model = models.ForeignKey('PostNavItem', on_delete=models.CASCADE, related_name='packages')
+    description = models.TextField()
+    baseAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    discountAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    reserveAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_package_type_display()}) - {self.car_model}"
+
+    class Meta:
+        db_table = 'dynamic_packages'
+        verbose_name_plural = 'Dynamic Packages'
+
+
+class FeaturesSection(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.name} "
+
+    class Meta:
+        db_table = 'dynamic_features_sections'
+        verbose_name_plural = 'Features Sections'
+
+
+class PackageFeatureRoller(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+
+    included = models.BooleanField(default=False)
+    
+    in_rollerPlus = models.BooleanField(
+        default=True,
+        verbose_name="Available in Roller Plus",
+        help_text="Whether this feature is available in Roller Plus models"
+    )
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_roller_package_features'
+        verbose_name_plural = 'All Roller Package Features'
+
+    def __str__(self):
+        return f"{self.name} - {self.section}"
+    
+
+class PackageFeatureRollerPlus(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    included = models.BooleanField(default=False)
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_rollerplus_package_features'
+        verbose_name_plural = 'All Roller Plus Package Features'
+
+    def __str__(self):
+        return f"{self.name} - {self.section} "
+    
+
+class PackageFeatureBuilder(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    included = models.BooleanField(default=False)
+    
+    # New fields for car model compatibility
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_builder_package_features'
+        verbose_name_plural = 'All Builder Package Features'
+        # abstract = True
+
+    def __str__(self):
+        return f"{self.name} - {self.section} "
+
+

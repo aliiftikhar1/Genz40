@@ -2,6 +2,9 @@
 
 from django import template
 import re
+from collections import defaultdict
+from backend.models import BookedPackage
+from django.utils.text import slugify as django_slugify
 
 register = template.Library()
 
@@ -52,3 +55,91 @@ def title_case(value):
     # Join parts with comma and space
     return ', '.join(formatted_parts)
 
+@register.filter
+def multiply(value, arg):
+    """Multiplies the value by the argument."""
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return 0
+
+@register.filter
+def divide(value, arg):
+    """Divides the value by the argument."""
+    try:
+        return float(value) / float(arg)
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 0
+    
+@register.filter
+def group_by_build_type(images):
+    """Group images by their build_type attribute."""
+    grouped = defaultdict(list)
+    for image in images:
+        grouped[image.build_type].append(image)
+
+    return dict(grouped)
+@register.filter
+def get_item(dictionary, key):
+    """Get an item from a dictionary by key, return empty list if key not found."""
+    return dictionary.get(key, [])
+@register.filter
+def custom_floatformat(value, arg=0):
+    """
+    Format a number to the specified number of decimal places and optionally append a % sign.
+    """
+    try:
+        value = float(value)
+        decimal_places = int(arg)
+        # Round to specified decimal places
+        formatted_value = f"{value:.{decimal_places}f}"
+        # Remove decimals if decimal_places is 0
+        if decimal_places == 0:
+            formatted_value = str(int(round(value)))
+        return formatted_value
+    except (ValueError, TypeError):
+        return value  # Return unchanged if not a number
+    
+register.filter
+def filter_by_build_type(images, build_type):
+    """Filter images by the specified build type."""
+    if not build_type:
+        return images  # Return all images if no build type is specified
+    return [image for image in images if image.build_type == build_type]
+
+register.filter
+def get_status_badge_class(status):
+    """Return Bootstrap badge class based on status."""
+    status_classes = {
+        'confirmed': 'bg-success',
+        'pending': 'bg-warning',
+        'cancelled': 'bg-danger',
+        'completed': 'bg-success',
+        'in_progress': 'bg-primary',
+        'awaiting_payment': 'bg-warning',
+    }
+    return status_classes.get(status, 'bg-info')
+
+@register.filter
+def build_type_label(value):
+    return dict(BookedPackage.BUILD_TYPE_CHOICES).get(value, "Unknown")
+
+
+@register.filter
+def is_feature_available(feature, car_model_title):
+    if car_model_title == 'Mark I':
+        return feature.in_mark_I
+    elif car_model_title == 'Mark II':
+        return feature.in_mark_II
+    elif car_model_title == 'Mark IV':
+        return feature.in_mark_IV
+    return True
+
+@register.filter
+def filter_by_section(features, section):
+    return [feature for feature in features if feature.section == section]
+
+
+@register.filter
+def slugify(value):
+    return django_slugify(value)

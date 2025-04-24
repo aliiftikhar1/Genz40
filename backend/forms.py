@@ -132,3 +132,4 @@ class PostPaintForm(forms.ModelForm):
         fields = ['paint_name', 'paint_desc', 'file', 'amount', 'is_active']
 
     file = forms.ImageField(required=False)
+

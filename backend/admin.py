@@ -1,7 +1,14 @@
 from django.contrib import admin
 from backend.models import CustomUser, PostCommunity, PostReview, PostBlog, PostMeta, PostNavItem, PostPackage, PostPackageDetail, \
     PostPackageFeature, PostPart, PostCharging, PostAccessories, PostPaint, PostImage, PostSubscribers, PostWheels, PostLandingPageImages, PostPayment, PostOrderStatus, PostSubStatus,\
-    CarConfiguration,BookedPackage
+    CarConfiguration,BookedPackage,BookedPackageImage, DynamicPackages, FeaturesSection,PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder 
+# , RollerPackageFeatures
+from django.contrib import messages
+
+# from .models import (
+#     RollerPlusPackageFeatures,
+#     BuilderPackageFeatures,
+# )
 # Register your models here.
 admin.site.register(CustomUser)
 admin.site.register(PostReview)
@@ -16,6 +23,68 @@ admin.site.register(PostPayment)
 admin.site.register(PostOrderStatus)
 admin.site.register(PostSubStatus)
 admin.site.register(CarConfiguration)
+admin.site.register(BookedPackageImage)
+admin.site.register(DynamicPackages)
+admin.site.register(FeaturesSection)
+admin.site.register(PackageFeatureRollerPlus)
+admin.site.register(PackageFeatureBuilder)
+@admin.register(PackageFeatureRoller)
+class PackageFeatureRollerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'section', 'type', 'price', 'checked', 'disabled')
+    list_filter = ('section', 'type', 'checked', 'disabled', 'in_mark_I', 'in_mark_II', 'in_mark_IV')
+    search_fields = ('name',)
+    actions = ['copy_to_roller_plus', 'copy_to_builder']
+    
+    def copy_to_roller_plus(self, request, queryset):
+        count = 0
+        for feature in queryset:
+            if not PackageFeatureRollerPlus.objects.filter(name=feature.name, section=feature.section).exists():
+                roller_plus_feature = PackageFeatureRollerPlus(
+                    section=feature.section,
+                    name=feature.name,
+                    type=feature.type,
+                    price=feature.price,
+                    option1=feature.option1,
+                    option2=feature.option2,
+                    option1_price=feature.option1_price,
+                    option2_price=feature.option2_price,
+                    checked=feature.checked,
+                    disabled=feature.disabled,
+                    in_mark_I=feature.in_mark_I,
+                    in_mark_II=feature.in_mark_II,
+                    in_mark_IV=feature.in_mark_IV
+                )
+                roller_plus_feature.save()
+                count += 1
+        messages.success(request, f'Successfully copied {count} features to Roller Plus')
+    
+    copy_to_roller_plus.short_description = "Copy selected features to Roller Plus"
+    
+    def copy_to_builder(self, request, queryset):
+        count = 0
+        for feature in queryset:
+            if not PackageFeatureBuilder.objects.filter(name=feature.name, section=feature.section).exists():
+                builder_feature = PackageFeatureBuilder(
+                    section=feature.section,
+                    name=feature.name,
+                    type=feature.type,
+                    price=feature.price,
+                    option1=feature.option1,
+                    option2=feature.option2,
+                    option1_price=feature.option1_price,
+                    option2_price=feature.option2_price,
+                    checked=feature.checked,
+                    disabled=feature.disabled,
+                    in_mark_I=feature.in_mark_I,
+                    in_mark_II=feature.in_mark_II,
+                    in_mark_IV=feature.in_mark_IV
+                )
+                builder_feature.save()
+                count += 1
+        messages.success(request, f'Successfully copied {count} features to Builder')
+    
+    copy_to_builder.short_description = "Copy selected features to Builder"
+
 @admin.register(BookedPackage)
 class BookedPackageAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'car_model', 'title', 'price', 'status']

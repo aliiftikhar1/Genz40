@@ -16,7 +16,7 @@
     }
 
     .modal-dialog {
-        max-width: 700px; /* Reduced modal size */
+        max-width: 700px;
         margin: 1.5rem auto;
     }
 
@@ -68,6 +68,34 @@
 
     .modal-footer {
         padding: 0.75rem;
+    }
+
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    .btn-loading::after {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
     }
 
     @media (max-width: 768px) {
@@ -171,7 +199,7 @@
                                             <th>Status</th>
                                             <th>Build Type</th>
                                             <th>Build Status</th>
-                                            {% comment %} <th>Payment Amount</th> {% endcomment %}
+                                            
                                             <th>Created At</th>
                                             <th>Updated At</th>
                                             <th>Actions</th>
@@ -192,7 +220,7 @@
                                             </td>
                                             <td><span class="badge badge-build">{{ package.build_type|title_case }}</span></td>
                                             <td><span class="badge badge-build-status">{{ package.build_status|title_case }}</span></td>
-                                            {% comment %} <td>{{ package.build_payment_amount }}</td> {% endcomment %}
+                                           
                                             <td>{{ package.created_at|date:"Y-m-d H:i" }}</td>
                                             <td>{{ package.updated_at|date:"Y-m-d H:i" }}</td>
                                             <td>
@@ -209,10 +237,14 @@
                                                     data-status="{{ package.status }}"
                                                     data-build_type="{{ package.build_type }}"
                                                     data-build_status="{{ package.build_status }}"
-                                                    data-build_payment_amount="{{ package.build_payment_amount }}"
+                                                    
                                                     data-build_message="{{ package.build_message }}"
                                                     data-created_at="{{ package.created_at|date:'Y-m-d H:i' }}"
-                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}">
+                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}"
+                                                    data-initial_payment_percentage="{{ package.initial_payment_percentage }}"
+                                                    data-midway_payment_percentage="{{ package.midway_payment_percentage }}"
+                                                    data-final_payment_percentage="{{ package.final_payment_percentage }}"
+                                                    data-remaining_price="{{ package.remaining_price }}">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-info action-btn edit-btn"
@@ -228,10 +260,14 @@
                                                     data-status="{{ package.status }}"
                                                     data-build_type="{{ package.build_type }}"
                                                     data-build_status="{{ package.build_status }}"
-                                                    data-build_payment_amount="{{ package.build_payment_amount }}"
+                                                   
                                                     data-build_message="{{ package.build_message }}"
                                                     data-created_at="{{ package.created_at|date:'Y-m-d H:i' }}"
-                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}">
+                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}"
+                                                    data-initial_payment_percentage="{{ package.initial_payment_percentage }}"
+                                                    data-midway_payment_percentage="{{ package.midway_payment_percentage }}"
+                                                    data-final_payment_percentage="{{ package.final_payment_percentage }}"
+                                                    data-remaining_price="{{ package.remaining_price }}">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-danger action-btn delete-btn"
@@ -239,6 +275,9 @@
                                                     data-status="{{ package.status }}">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
+                                                <a href="{% url 'package_detail' package.id %}" class="btn btn-sm btn-primary ">
+                                                    <i class="fas fa-upload"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -260,7 +299,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editReservationModalLabel">Update Reservation</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <form id="editReservationForm" method="post">
@@ -286,7 +325,12 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 <label>Car Model</label>
-                                <input type="text" class="form-control" id="car_model" readonly>
+                                <select class="form-control" name="car_model" id="car_model">
+                                    <option value="">Select Car Model</option>
+                                    {% for car in nav_items %}
+                                        <option value="{{ car.id }}">{{ car.title }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
@@ -303,12 +347,13 @@
                                 <input type="text" name="price" class="form-control" id="package_price" readonly>
                             </div>
                         </div>
-                        <!-- <div class="col-md-6 col-12">
+                        
+                        <div class="col-md-6 col-12">
                             <div class="form-group">
-                                <label>Build Payment Amount</label>
-                                <input type="number" class="form-control" id="build_payment_amount" name="build_payment_amount">
+                                <label>Remaining Price</label>
+                                <input type="number" class="form-control" id="remaining_price" name="remaining_price" min="0" readonly>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 col-12">
@@ -346,7 +391,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label>Extra Features</label>
-                                <textarea class="form-control" id="extra_features" name="extra_features" rows="2" readonly></textarea>
+                                <textarea class="form-control" id="extra_features" name="extra_features" rows="2" ></textarea>
                             </div>
                         </div>
                     </div>
@@ -372,11 +417,58 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-2">Payment Information</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Initial Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="initial_payment_percentage" name="initial_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="initial_payment_error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Midway Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="midway_payment_percentage" name="midway_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="midway_payment_error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Final Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="final_payment_percentage" name="final_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="final_payment_error"></div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <!-- <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Payment Summary</label>
+                                <div class="card bg-light">
+                                    <div class="card-body p-2">
+                                        <small>
+                                            <div id="initial_payment_amount_display">Initial Payment (40%): $0.00</div>
+                                            <div id="midway_payment_amount_display">Midway Payment (40%): $0.00</div>
+                                            <div id="final_payment_amount_display">Final Payment (20%): $0.00</div>
+                                            <hr class="my-1">
+                                            <div id="total_payment_display">Total: $0.00</div>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
                 </div>
                 <div id="urls" data-update-url="{% url 'update-booked-package' '00000000-0000-0000-0000-000000000000' %}"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-sm btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-sm btn-primary" id="saveChangesBtn">Save changes</button>
                 </div>
             </form>
         </div>
@@ -390,7 +482,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="viewDetailsModalLabel">Reservation Details</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -429,12 +521,12 @@
                             <input type="text" class="form-control" id="view_package_price" readonly>
                         </div>
                     </div>
-                    <!-- <div class="col-md-6 col-12">
+                    <div class="col-md-6 col-12">
                         <div class="form-group">
-                            <label>Build Payment Amount</label>
-                            <input type="text" class="form-control" id="view_build_payment_amount" readonly>
+                            <label>Remaining Price</label>
+                            <input type="text" class="form-control" id="view_remaining_price" readonly>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-12">
@@ -486,6 +578,50 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-2">Payment Information</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Initial Payment (%)</label>
+                            <input type="text" class="form-control" id="view_initial_payment_percentage" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Midway Payment (%)</label>
+                            <input type="text" class="form-control" id="view_midway_payment_percentage" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Final Payment (%)</label>
+                            <input type="text" class="form-control" id="view_final_payment_percentage" readonly>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Payment Summary</label>
+                            <div class="card bg-light">
+                                <div class="card-body p-2">
+                                    <small>
+                                        <div id="view_initial_payment_amount_display">Initial Payment: $0.00</div>
+                                        <div id="view_midway_payment_amount_display">Midway Payment: $0.00</div>
+                                        <div id="view_final_payment_amount_display">Final Payment: $0.00</div>
+                                        <hr class="my-1">
+                                        <div id="view_total_payment_display">Total: $0.00</div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
@@ -599,6 +735,47 @@ $(document).ready(function () {
         return cookieValue;
     }
 
+    // Sanitize input to prevent XSS
+    function sanitizeInput(input) {
+        const div = document.createElement('div');
+        div.textContent = input;
+        return div.innerHTML;
+    }
+
+    // Validate payment percentages
+    function validatePercentages() {
+        const initial = parseFloat($('#initial_payment_percentage').val()) || 0;
+        const midway = parseFloat($('#midway_payment_percentage').val()) || 0;
+        const final = parseFloat($('#final_payment_percentage').val()) || 0;
+        const total = initial + midway + final;
+
+        $('.error-message').text('');
+        if (total !== 100) {
+            $('#initial_payment_error').text('Percentages must sum to 100%');
+            return false;
+        }
+        return true;
+    }
+
+    // Calculate payments
+    function calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage) {
+        price = parseFloat(price) || 0;
+        initialPercentage = parseFloat(initialPercentage) || 0;
+        midwayPercentage = parseFloat(midwayPercentage) || 0;
+        finalPercentage = parseFloat(finalPercentage) || 0;
+        
+        const initialAmount = (price * initialPercentage / 100).toFixed(2);
+        const midwayAmount = (price * midwayPercentage / 100).toFixed(2);
+        const finalAmount = (price * finalPercentage / 100).toFixed(2);
+        
+        return {
+            initial: initialAmount,
+            midway: midwayAmount,
+            final: finalAmount,
+            total: price.toFixed(2)
+        };
+    }
+
     // View button handler
     $(document).on('click touchstart', '.view-btn', function (e) {
         e.preventDefault();
@@ -608,19 +785,35 @@ $(document).ready(function () {
             const formattedBuildType = data.build_type ? data.build_type.charAt(0).toUpperCase() + data.build_type.slice(1).replace(/_/g, ' ') : '';
             const formattedBuildStatus = data.build_status ? data.build_status.charAt(0).toUpperCase() + data.build_status.slice(1).replace(/_/g, ' ') : '';
 
-            $('#view_reservation_number').val(data.reservation_number || '');
-            $('#view_user_name').val(data.user || '');
-            $('#view_car_model').val(data.car || '');
-            $('#view_package_title').val(data.title || '');
-            $('#view_extra_features').val(data.features || '');
-            $('#view_package_price').val(data.price || '');
-            $('#view_reservation_status').val(formattedStatus);
-            $('#view_build_type').val(formattedBuildType);
-            $('#view_build_status').val(formattedBuildStatus);
-            $('#view_build_payment_amount').val(data.build_payment_amount || '0');
-            $('#view_build_message').val(data.build_message || '');
-            $('#view_created_at').val(data.created_at || '');
-            $('#view_updated_at').val(data.updated_at || '');
+            $('#view_reservation_number').val(sanitizeInput(data.reservation_number || ''));
+            $('#view_user_name').val(sanitizeInput(data.user || ''));
+            $('#view_car_model').val(sanitizeInput(data.car || ''));
+            $('#view_package_title').val(sanitizeInput(data.title || ''));
+            $('#view_extra_features').val(sanitizeInput(data.features || ''));
+            $('#view_package_price').val(sanitizeInput(data.price || ''));
+            $('#view_reservation_status').val(sanitizeInput(formattedStatus));
+            $('#view_build_type').val(sanitizeInput(formattedBuildType));
+            $('#view_build_status').val(sanitizeInput(formattedBuildStatus));
+           
+            $('#view_build_message').val(sanitizeInput(data.build_message || ''));
+            $('#view_created_at').val(sanitizeInput(data.created_at || ''));
+            $('#view_updated_at').val(sanitizeInput(data.updated_at || ''));
+            $('#view_initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
+            $('#view_midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
+            $('#view_final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
+            $('#view_remaining_price').val(sanitizeInput(data.remaining_price || '0'));
+
+            const price = data.price || 0;
+            const initialPercentage = data.initial_payment_percentage || 40;
+            const midwayPercentage = data.midway_payment_percentage || 40;
+            const finalPercentage = data.final_payment_percentage || 20;
+            
+            const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+            
+            $('#view_initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+            $('#view_midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+            $('#view_final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+            $('#view_total_payment_display').text(`Total: $${payments.total}`);
 
             $('#viewDetailsModal').modal('show');
         } catch (error) {
@@ -644,31 +837,83 @@ $(document).ready(function () {
         const urlPattern = $('#urls').data('update-url');
         const url = urlPattern.replace('00000000-0000-0000-0000-000000000000', data.id);
 
-        $('#reservation_number').val(data.reservation_number || '');
-        $('#user_id').val(data.user_id || '');
-        $('#car_model_id').val(data.car_model_id || '');
-        $('#user_name').val(data.user || '');
-        $('#car_model').val(data.car || '');
-        $('#package_title').val(data.title || '');
-        $('#extra_features').val(data.features || '');
-        $('#package_price').val(data.price || '');
-        $('#reservation_status').val(data.status || '');
-        $('#build_type').val(data.build_type || '');
-        $('#build_status').val(data.build_status || '');
-        $('#build_payment_amount').val(data.build_payment_amount || '0');
-        $('#build_message').val(data.build_message || '');
-        $('#created_at').val(data.created_at || '');
-        $('#updated_at').val(data.updated_at || '');
-        $('#editReservationForm').attr('action', url);
+        $('#reservation_number').val(sanitizeInput(data.reservation_number || ''));
+        $('#user_id').val(sanitizeInput(data.user_id || ''));
+        $('#car_model_id').val(sanitizeInput(data.car_model_id || ''));
+        $('#user_name').val(sanitizeInput(data.user || ''));
+        $('#car_model').val(sanitizeInput(data.car_model_id || ''));
+        $('#package_title').val(sanitizeInput(data.title || ''));
+        $('#extra_features').val(sanitizeInput(data.features || ''));
+        $('#package_price').val(sanitizeInput(data.price || ''));
+        $('#reservation_status').val(sanitizeInput(data.status || ''));
+        $('#build_type').val(sanitizeInput(data.build_type || ''));
+        $('#build_status').val(sanitizeInput(data.build_status || ''));
+     
+        $('#build_message').val(sanitizeInput(data.build_message || ''));
+        $('#created_at').val(sanitizeInput(data.created_at || ''));
+        $('#updated_at').val(sanitizeInput(data.updated_at || ''));
+        $('#initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
+        $('#midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
+        $('#final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
+        $('#remaining_price').val(sanitizeInput(data.remaining_price || '0'));
 
+        const price = data.price || 0;
+        const initialPercentage = data.initial_payment_percentage || 40;
+        const midwayPercentage = data.midway_payment_percentage || 40;
+        const finalPercentage = data.final_payment_percentage || 20;
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+        $('#midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+        $('#final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+        $('#total_payment_display').text(`Total: $${payments.total}`);
+        
+        $('#editReservationForm').attr('action', url);
         $('#editReservationModal').modal('show');
     });
 
-    // Form submission handler
+    // Update payment calculations when percentages change
+    $('.payment-percentage').on('input', function() {
+        const price = $('#package_price').val();
+        const initialPercentage = $('#initial_payment_percentage').val();
+        const midwayPercentage = $('#midway_payment_percentage').val();
+        const finalPercentage = $('#final_payment_percentage').val();
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+        $('#midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+        $('#final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+        $('#total_payment_display').text(`Total: $${payments.total}`);
+        
+        validatePercentages();
+    });
+
+    // Form submission handler with loading state
     $('#editReservationForm').on('submit', function (e) {
         e.preventDefault();
+        
+        if (!validatePercentages()) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Invalid percentages',
+                text: 'Payment percentages must sum to 100%',
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true
+            });
+            return;
+        }
+
         const form = $(this);
         const url = form.attr('action');
+        const $submitBtn = $('#saveChangesBtn');
+        
+        // Show loading state
+        $submitBtn.addClass('btn-loading').prop('disabled', true);
+        $submitBtn.text('Saving...');
 
         $.ajax({
             type: 'POST',
@@ -699,6 +944,11 @@ $(document).ready(function () {
                     timer: 3000,
                     toast: true
                 });
+            },
+            complete: function () {
+                // Reset button state
+                $submitBtn.removeClass('btn-loading').prop('disabled', false);
+                $submitBtn.text('Save changes');
             }
         });
     });
@@ -768,7 +1018,14 @@ $(document).ready(function () {
 
     // Reset modals on close
     $('#editReservationModal, #viewDetailsModal').on('hidden.bs.modal', function () {
-        $(this).find('form').trigger('reset');
+        const $form = $(this).find('form');
+        $form.trigger('reset');
+        $form.find('input, textarea, select').val('');
+        $('.error-message').text('');
+        $('#initial_payment_amount_display').text('Initial Payment (40%): $0.00');
+        $('#midway_payment_amount_display').text('Midway Payment (40%): $0.00');
+        $('#final_payment_amount_display').text('Final Payment (20%): $0.00');
+        $('#total_payment_display').text('Total: $0.00');
     });
 });
 </script>

@@ -2,183 +2,338 @@
 {% load static %}
 {% load humanize %}
 {% load frontend_custom_filters %}
+{% load reservation_tags %}
 
 {% block content %}
-<div class="container-fluid" style="margin-top: 90px; background-color: #000000; min-height: calc(100vh - 80px); ">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-md-12">
-            <div class="card shadow-lg" style="background-color: #1e1e1e; border: none; border-radius: 12px;">
-                <div class="card-header" style="background-color: #2a2a2a; border-radius: 12px 12px 0 0; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="mb-0 text-white" style="font-weight: 600;">Reservation Details</h3>
-                    <button type="button" class="btn btn-outline-light btn-md" data-bs-toggle="modal" data-bs-target="#paymentHistoryModal" style="border-radius: 8px;">
-                        Payment History
+<div class="reservation-details-container">
+    <!-- Header Section -->
+    <div class="reservation-header">
+        <div class="reservation-info">
+            <h1>Reservation #{{ booked_package.reservation_number }}</h1>
+            <div class="status-badge {% if booked_package.status == 'confirmed' %}confirmed
+                {% elif booked_package.status == 'cancelled' %}cancelled
+                {% else %}pending{% endif %}">
+                {{ booked_package.get_status_display }}
+            </div>
+        </div>
+        
+        <div class="reservation-meta">
+            <div class="meta-item">
+                <span class="meta-label">Car:</span>
+                <span class="meta-value">{{ booked_package.car_model.title }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Package:</span>
+                <span class="meta-value">{{ booked_package.title }}</span>
+            </div>
+            <div class="meta-item highlight">
+                <span class="meta-label">Total Price:</span>
+                <span class="meta-value">${{ booked_package.price|intcomma }}</span>
+            </div>
+            <div class="meta-item highlight">
+                <span class="meta-label">Remaining:</span>
+                <span class="meta-value">${{ booked_package.remaining_price|intcomma }}</span>
+            </div>
+        </div>
+        
+        <!-- <button class="payment-history-btn" data-bs-toggle="modal" data-bs-target="#paymentHistoryModal">
+            <i class="fas fa-history"></i> Payment History
+        </button> -->
+    </div>
+
+    <div class="reservation-content">
+        <!-- Main Content Column -->
+        <div class="main-content">
+            <!-- Car Image Section -->
+            <div class="image-section">
+                {% if car_image %}
+                    <img src="{{ car_image.image.url }}" alt="Car Image" class="car-image">
+                {% else %}
+                    <div class="no-image-placeholder">
+                        <i class="fas fa-car"></i>
+                        <p>No image available</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section card-style">
+                <div class="section-header">
+                    <h2>Features</h2>
+                    <button class="toggle-btn" id="toggleFeatures">
+                        <span class="toggle-text">Show</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
-                <div class="card-body" style="padding: 2rem;">
-                    <div class="row">
-                        <div class="col-md-6 mb-4 mb-md-0">
-                            {% if car_image %}
-                                <div class="card" style="background-color: #1e1e1e; border: none; border-radius: 12px; overflow: hidden;">
-                                    <img src="{{ car_image.image.url }}" alt="Car Image" class="card-img">
-                                </div>
-                            {% else %}
-                                <div class="card" style="background-color: #1e1e1e; border: none; border-radius: 12px;">
-                                    <div class="card-body d-flex align-items-center justify-content-center" style="height: 250px;">
-                                        <p class="text-muted mb-0">No image available</p>
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
-                                    <div class="mb-4 mt-4" style="background-color: #3d3d3d; padding: 1rem; border-radius: 8px;">
-                                        <h5 class="text-white">Note</h5>
-                                        <p class="text-white">{{ booked_package.build_message }}</p>
-                                    </div>
-                                    {% endif %}
+                
+                <div class="features-content" id="featuresContent">
+                    {% if booked_package.extra_features %}
+                        <div class="features-description">
+                            {{ booked_package.extra_features|title_case }}
                         </div>
-                        <div class="col-md-6 col-12">
-                            <div class="d-flex flex-column flex-md-row" style="gap: 2rem;">
-                                <div id="left-container" >
-                                    <div class="mb-4">
-                                        <h4 class="text-white">Reservation #{{ booked_package.reservation_number }}</h4>
-                                        <p class="mb-1 text-white"><strong>Status:</strong> 
-                                            <span class="badge 
-                                                {% if booked_package.status == 'confirmed' %}bg-success
-                                                {% elif booked_package.status == 'cancelled' %}bg-danger
-                                                {% else %}bg-warning text-dark{% endif %}" style="border-radius: 6px; padding: 0.5em 1em;">
-                                                {{ booked_package.get_status_display }}
-                                            </span>
-                                        </p>
-                                        <p class="mb-1 text-white"><strong>Package:</strong> {{ booked_package.title }}</p>
-                                        <p class="mb-1 text-white"><strong>Car:</strong> {{ booked_package.car_model.title }}</p>
-                                        <p class="mb-1 text-white"><strong>Price:</strong> ${{ booked_package.price }}</p>
+                    {% else %}
+                        <p class="no-features">No features specified</p>
+                    {% endif %}
+                    
+                   
+                    
+                    <!-- Added Features List -->
+                    <div class="added-features">
+                        <h3>Added Features</h3>
+                        <div id="added-features-container">
+                            {% for new_feature in booked_package.new_features.all %}
+                                <div class="feature-card {% if new_feature.status == 'approved' %}approved
+                                    {% elif new_feature.status == 'rejected' %}rejected
+                                    {% elif new_feature.status == 'completed' %}completed
+                                    {% else %}pending{% endif %}">
+                                    <div class="feature-info">
+                                        <h4>{{ new_feature.features }}</h4>
+                                        <div class="feature-meta">
+                                            <span class="amount">${{ new_feature.amount|intcomma }}</span>
+                                            <span class="status-badge">{{ new_feature.get_status_display }}</span>
+                                        </div>
+                                        {% if new_feature.status == 'pending' %}
+                                        <form method="POST" action="{% url 'initiate_feature_payment' new_feature.id %}" class="feature-payment-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="reservation_number" value="{{ booked_package.reservation_number }}">
+                                            <input type="hidden" name="feature_id" value="{{ new_feature.id }}">
+                                            <button type="submit" class="btn-pay-now">
+                                                <i class="fas fa-credit-card"></i> Pay Now
+                                            </button>
+                                        </form>
+                                        {% endif %}
                                     </div>
-                                    <div class="mb-4">
-                                        <h5 class="text-white">User Information</h5>
-                                        <p class="mb-1 text-white"><strong>Name:</strong> {{ booked_package.user.first_name }} {{ booked_package.user.last_name }}</p>
-                                        <p class="mb-1 text-white"><strong>Email:</strong> {{ booked_package.user.email }}</p>
-                                    </div>
-                                    {% if booked_package.extra_features %}
-                                    <div class="mb-4">
-                                        <h5 class="text-white">Features</h5>
-                                        <p class="text-white">{{ booked_package.extra_features|title_case }}</p>
-                                    </div>
-                                    {% endif %}
-                                    {% comment %} {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
-                                    <div class="mb-4" style="background-color: #3d3d3d; padding: 1rem; border-radius: 8px;">
-                                        <h5 class="text-white">Note</h5>
-                                        <p class="text-white">{{ booked_package.build_message }}</p>
-                                    </div>
-                                    {% endif %} {% endcomment %}
-                                    {% if booked_package.status == 'pending' and booked_package.build_type == 'order_confirmed' %}
-                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
-                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
-                                        <p class="text-white mb-2">Your reserve payment is pending, do payment to confirm the order!</p>
-                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
-                                            Amount: 100 USD
-                                        </p>
-                                        <a href="{% url 'reservation_checkout' booked_package.id %}" class="btn btn-success" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</a>
-                                    </div>
-                                    {% elif booked_package.status == 'confirmed' and booked_package.build_type == 'order_confirmed' and booked_package.build_status == 'completed' %}
-                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
-                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
-                                        <p class="text-white mb-2">
-                                            Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production.
-                                        </p>
-                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
-                                            Amount (40%): {{ initial_payment }} USD
-                                        </p>
-                                        <button class="btn btn-primary" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</button>
-                                    </div>
-                                    {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' or booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
-                                    <div class="mb-4" style="background-color: #2a2a2a; padding: 1.5rem; border-radius: 12px;">
-                                        <h5 class="text-white" style="font-weight: 600; margin-bottom: 0.5rem;">Pay Now</h5>
-                                        <p class="text-white mb-2">
-                                            {% if booked_package.build_type == 'order_confirmed' %}
-                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, your reservation has been confirmed. Now do the initial 40% payment so that we can start production.
-                                            {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' %}
-                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, Body of car has been completed. Now do the midway 40% payment so that we can proceed.
-                                            {% elif booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
-                                                Dear {{booked_package.user.first_name}} {{booked_package.user.last_name}}, Car built has been completed. Now do the final balance payment so that we can start quality check.
-                                            {% endif %}
-                                        </p>
-                                        <p class="text-warning font-weight-bold mb-3" style="background-color: #3d3d3d; padding: 0.5rem; border-radius: 8px;">
-                                            Amount: 
-                                            {% if booked_package.build_type == 'order_confirmed' %}
-                                                {{ initial_payment }}
-                                            {% elif booked_package.build_type == 'body_complete' and booked_package.build_status == 'completed' %}
-                                                {{ midway_payment }}
-                                            {% elif booked_package.build_type == 'built' and booked_package.build_status == 'completed' %}
-                                                {{ balance_payment }}
-                                            {% else %}
-                                                0
-                                            {% endif %}
-                                            USD
-                                        </p>
-                                        <button class="btn btn-primary" style="border-radius: 8px; padding: 0.5rem 1.5rem;">Pay Now</button>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <div class="right-container">
-                                    <div class="build-progress-container">
-                                        <h5 class="text-white">Build Progress</h5>
-                                        <div class="timeline">
-                                            {% for stage in booked_package.BUILD_TYPE_CHOICES %}
-                                                <div class="timeline-step {% if booked_package.BUILD_TYPE_CHOICES_index >= forloop.counter0 %}completed{% elif booked_package.build_type == stage.0 %}current{% endif %}">
-                                                    <div class="timeline-marker">
-                                                        {% if booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
-                                                            <i class="fas fa-check"></i>
-                                                        {% elif booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
-                                                            <i class="fas fa-arrow-right"></i>
-                                                        {% else %}
-                                                            <i class="far fa-circle"></i>
-                                                        {% endif %}
+                                    
+                                    {% if new_feature.status == 'completed' %}
+                                        <div class="payment-details">
+                                            {% for payment in new_feature.payments.all %}
+                                                {% if payment.is_completed %}
+                                                    <div class="payment-item">
+                                                        <i class="fas fa-receipt"></i>
+                                                        <div>
+                                                            <span class="date">{{ payment.payment_date|date:"Y-m-d H:i" }}</span>
+                                                            <span class="status completed">Completed</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="timeline-content" style="display: flex; flex-direction: column; gap: 0px;">
-                                                        <h6>{{ stage.1 }}</h6>
-                                                        {% if booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
-                                                            <small class="text-warning">
-                                                                {{ booked_package.get_build_status_display }}
-                                                            </small>
-                                                        {% elif booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
-                                                            <small class="text-success">Completed</small>
-                                                        {% else %}
-                                                            <small class="text-muted">Pending</small>
-                                                        {% endif %}
-                                                        {% for payment in payments %}
-                                                            {% if payment.regarding == stage.0 or payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}
-                                                                <div class="payment-info" style="{% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %} margin-top:-30px {% endif %}">
-                                                                    <span class="badge bg-info">${{ payment.amount }}</span>
-                                                                    <small class="text-muted">{{ payment.created_at|date:"M d, Y" }}</small>
-                                                                </div>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </div>
+                                                {% endif %}
+                                            {% empty %}
+                                                <div class="no-payments">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    No completed payments found
                                                 </div>
                                             {% endfor %}
                                         </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
-                            </div>
+                            {% empty %}
+                                <div class="no-features-added">
+                                    <i class="fas fa-info-circle"></i>
+                                    No additional features added yet
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
+                     <!-- Add New Features Form -->
+                     <div class="add-features-form">
+                        <h3>Add New Features</h3>
+                        <form id="add-feature-form" method="POST" action="{% url 'add_reservation_feature' booked_package.reservation_number %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="feature-select">Select Feature</label>
+                                <select id="feature-select" name="feature" class="form-control">
+                                    <option value="" disabled selected>Select a feature</option>
+                                    {% for feature in reservation_features %}
+                                        <option value="{{ feature.name }}" 
+                                                data-amount="{{ feature.estimated_amount }}"
+                                                data-description="{{ feature.description }}">
+                                            {{ feature.name }} ({{ feature.category }}) - ${{ feature.estimated_amount }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                             <div class="form-group" hidden>
+                                <label for="feature-description">Description</label>
+                                <textarea id="feature-description" name="description" class="form-control" style="background-color: #111111;color: white;" readonly></textarea>
+                            </div>
+                            <div class="form-group" hidden>
+                                <label for="feature-amount">Estimated Amount (USD)</label>
+                                <input id="feature-amount" name="amount" class="form-control" style="background-color: #111111;color: white;" readonly>
+                            </div> 
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-plus"></i> Add Feature
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Payment Section -->
+            {% comment %} {{booked_package.build_type}} - {{ booked_package.build_status }} {% endcomment %}
+            {% if booked_package.build_type in 'initial_payment,midway_payment,final_payment' and booked_package.build_status == 'awaiting_payment' %}
+                <div class="payment-cta card-style">
+                    <div class="payment-message">
+                        <h3>Payment Required</h3>
+                        <p>
+                            Dear {{ booked_package.user.first_name }} {{ booked_package.user.last_name }},
+                            {% if booked_package.build_type == 'initial_payment' %}
+                                your reservation is ready for the initial payment. Please make the initial {{ booked_package.initial_payment_percentage }}% payment to start production.
+                            {% elif booked_package.build_type == 'midway_payment' %}
+                                the car body has been completed. Please make the midway {{ booked_package.midway_payment_percentage }}% payment to proceed.
+                            {% elif booked_package.build_type == 'final_payment' %}
+                                the car build is complete. Please make the final {{ booked_package.final_payment_percentage }}% payment to proceed with quality checks.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="payment-amount">
+                        <span>Amount Due:</span>
+                        <span class="amount">
+                            {% if booked_package.build_type == 'initial_payment' %}
+                                {{ initial_payment }}
+                            {% elif booked_package.build_type == 'midway_payment' %}
+                                {{ midway_payment }}
+                            {% elif booked_package.build_type == 'final_payment' %}
+                                {{ balance_payment }}
+                            {% else %}
+                                0
+                            {% endif %}
+                            USD
+                        </span>
+                    </div>
+                    <button class="btn-pay-now">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </button>
+                </div>
+            {% endif %}
+
+            <!-- Notes Section -->
+            {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
+                <div class="notes-section card-style">
+                    <div class="notes-header">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Important Note</h3>
+                    </div>
+                    <div class="notes-content">
+                        {{ booked_package.build_message }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Build Images Gallery -->
+            {% with grouped_images=booked_package.images.all|dictsortreversed:"uploaded_at"|group_by_build_type %}
+                {% if grouped_images %}
+                    <div class="gallery-section">
+                        <h2>Build Progress Photos</h2>
+                        <div class="gallery-grid">
+                            {% for build_type, images in grouped_images.items %}
+                                <div class="gallery-group">
+                                    <h4>{{ build_type|build_type_label }}</h4>
+                                    <div class="gallery-items">
+                                        {% for image in images %}
+                                            <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal" data-image-url="{{ image.image.url }}">
+                                                <img src="{{ image.image.url }}" alt="Build Image">
+                                                <div class="gallery-overlay">
+                                                    <i class="fas fa-search-plus"></i>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Timeline Sidebar -->
+        <div class="timeline-sidebar">
+            <div class="timeline-container card-style">
+                <h2>Build Progress</h2>
+                <div class="timeline">
+                    {% for stage in booked_package.BUILD_TYPE_CHOICES %}
+                        <div class="timeline-step {% if booked_package.BUILD_TYPE_CHOICES_index >= forloop.counter0 %}completed{% elif booked_package.build_type == stage.0 %}current{% endif %}">
+                            <div class="timeline-marker">
+                                {% if booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
+                                    <i class="fas fa-check"></i>
+                                {% elif booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
+                                    <i class="fas fa-arrow-right"></i>
+                                {% else %}
+                                    <i class="fas fa-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <h4>{{ stage.1 }}</h4>
+                                <div class="timeline-meta">
+                                    {% if stage.0 == 'initial_payment' %} 
+                                        <span class="percentage">{{ booked_package.initial_payment_percentage|floatformat:0 }}%</span>
+                                    {% elif stage.0 == 'midway_payment' %} 
+                                        <span class="percentage">{{ booked_package.midway_payment_percentage|floatformat:0 }}%</span>
+                                    {% elif stage.0 == 'final_payment' %} 
+                                        <span class="percentage">{{ booked_package.final_payment_percentage|floatformat:0 }}%</span>
+                                    {% endif %}
+                                    
+                                    {% if booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
+                                        <span class="status current">{{ booked_package.get_build_status_display }}</span>
+                                    {% elif booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
+                                        <span class="status completed">Completed</span>
+                                    {% else %}
+                                        <span class="status pending">Pending</span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% for payment in payments %}
+                                    {% if payment.regarding == stage.0  %}
+                                        <div class="payment-info">
+                                            <span class="amount">${{ payment.amount|intcomma }}</span>
+                                            <span class="date">{{ payment.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% for payment in payments %}
+                                    {% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}
+                                        <div class="payment-info">
+                                            <span class="amount">${{ payment.amount|intcomma }}</span>
+                                            <span class="date">{{ payment.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Full-Screen Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="fullScreenImage" src="" alt="Full Screen Image">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment History Modal -->
 <div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-labelledby="paymentHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background-color: #1e1e1e; border-radius: 12px;">
-            <div class="modal-header" style="background-color: #2a2a2a; border-radius: 12px 12px 0 0;">
-                <h5 class="modal-title text-white" id="paymentHistoryModalLabel">Payment History</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment History</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 {% if payments %}
                     <div class="table-responsive">
-                        <table class="table table-blacks table-striped">
+                        <table class="payment-history-table">
                             <thead>
                                 <tr>
                                     <th>Payment ID</th>
@@ -192,12 +347,11 @@
                                 {% for payment in payments %}
                                 <tr>
                                     <td>{{ payment.stripe_payment_id|default:"N/A" }}</td>
-                                    <td>${{ payment.amount }}</td>
+                                    <td>${{ payment.amount|intcomma }}</td>
                                     <td>
-                                        <span class="badge 
-                                            {% if payment.status == 'succeeded' %}bg-success
-                                            {% elif payment.status == 'failed' %}bg-danger
-                                            {% else %}bg-warning text-dark{% endif %}" style="border-radius: 6px;">
+                                        <span class="status-badge {% if payment.status == 'succeeded' %}success
+                                            {% elif payment.status == 'failed' %}failed
+                                            {% else %}pending{% endif %}">
                                             {{ payment.status }}
                                         </span>
                                     </td>
@@ -209,13 +363,14 @@
                         </table>
                     </div>
                 {% else %}
-                    <div class="alert alert-dark" role="alert">
-                        No payment records found.
+                    <div class="no-payments">
+                        <i class="fas fa-info-circle"></i>
+                        No payment records found
                     </div>
                 {% endif %}
             </div>
-            <div class="modal-footer" style="background-color: #2a2a2a; border-radius: 0 0 12px 12px;">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -224,58 +379,589 @@
 
 {% block header %}
 <style>
+    :root {
+    --primary-color: #4a6bff;
+    --secondary-color: #d4d4d4;
+    --dark-color: #000000;
+    --light-color: #ffffff;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+    --transition: all 0.3s ease;
+}
+
 body {
-    background-color: #121212;
+    background-color: #000000;
     color: #ffffff;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
 }
 
-.card {
-    transition: transform 0.2s;
+/* Main Container */
+.reservation-details-container {
+    max-width: 1400px;
+    margin: 90px auto 30px;
+    padding: 0 20px;
 }
 
-.card:hover {
+/* Header Section */
+.reservation-header {
+    background-color: #111111;
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reservation-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.reservation-info h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--light-color);
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge.confirmed {
+    background-color: rgba(40, 167, 69, 0.3);
+    color: var(--success-color);
+}
+
+.status-badge.cancelled {
+    background-color: rgba(220, 53, 69, 0.3);
+    color: var(--danger-color);
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 193, 7, 0.3);
+    color: var(--warning-color);
+}
+
+.reservation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 25px;
+    align-items: center;
+}
+
+.meta-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.meta-item.highlight {
+    background-color: rgba(74, 107, 255, 0.3);
+    padding: 6px 12px;
+    border-radius: var(--border-radius);
+}
+
+.meta-label {
+    font-weight: 500;
+    color: #999;
+}
+
+.meta-value {
+    font-weight: 600;
+    color: var(--light-color);
+}
+
+.payment-history-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.payment-history-btn:hover {
+    background-color: #3a5bef;
     transform: translateY(-2px);
 }
 
-.btn {
-    transition: background-color 0.2s, transform 0.2s;
+/* Main Content Layout */
+.reservation-content {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
+.main-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.timeline-sidebar {
+    width: 350px;
+    min-width: 0;
+}
+
+/* Card Style */
+.card-style {
+    background-color: #111111;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+/* Image Section */
+.image-section {
+    margin-bottom: 25px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.car-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    display: block;
+}
+
+.no-image-placeholder {
+    background-color: #1a1a1a;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.no-image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+/* Features Section */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--light-color);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.toggle-btn:hover {
+    background-color: rgba(74, 107, 255, 0.3);
+}
+
+.features-content {
+    display: none;
+}
+
+.features-content.active {
+    display: block;
+}
+
+.features-description {
+    background-color: #1a1a1a;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 25px;
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+.no-features {
+    color: #999;
+    font-style: italic;
+    margin-bottom: 25px;
+}
+
+/* Add Features Form */
+.add-features-form {
+    margin-bottom: 30px;
+}
+
+.add-features-form h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--light-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #cccccc;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #333;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background-color: #222;
+    accent-color: var(--primary-color);
+    color: white;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.4);
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: #3a5bef;
+    transform: translateY(-2px);
+}
+
+/* Added Features */
+.added-features h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--light-color);
+}
+
+.feature-card {
+    border-left: 4px solid #333;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background-color: #1a1a1a;
+    transition: var(--transition);
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.feature-card.approved {
+    border-left-color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.15);
+}
+
+.feature-card.rejected {
+    border-left-color: var(--danger-color);
+    background-color: rgba(220, 53, 69, 0.15);
+}
+
+.feature-card.completed {
+    border-left-color: var(--info-color);
+    background-color: rgba(23, 162, 184, 0.15);
+}
+
+.feature-card.pending {
+    border-left-color: var(--warning-color);
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.feature-info h4 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+    color: var(--light-color);
+}
+
+.feature-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.amount {
+    font-weight: 600;
+    color: var(--light-color);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.feature-card .status-badge {
+    text-transform: capitalize;
+}
+
+.btn-pay-now {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-pay-now:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.payment-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+}
+
+.payment-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.payment-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.payment-item .date {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.payment-item .status {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.payment-item .status.completed {
+    color: var(--success-color);
+}
+
+.no-payments, .no-features-added {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #999;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border-radius: var(--border-radius);
+}
+
+/* Payment CTA */
+.payment-cta {
+    background-color: rgba(74, 107, 255, 0.2);
+    border-left: 4px solid var(--primary-color);
+}
+
+.payment-message h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.payment-amount {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    font-size: 1.1rem;
+}
+
+.payment-amount .amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Notes Section */
+.notes-section {
+    border-left: 4px solid var(--warning-color);
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.notes-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.notes-header i {
+    color: var(--warning-color);
+    font-size: 1.5rem;
+}
+
+.notes-header h3 {
+    margin: 0;
+    color: var(--warning-color);
+}
+
+.notes-content {
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+/* Gallery Section */
+.gallery-section {
+    margin-top: 30px;
+}
+
+.gallery-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--light-color);
+}
+
+.gallery-group {
+    margin-bottom: 30px;
+}
+
+.gallery-group h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #cccccc;
+}
+
+.gallery-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+    aspect-ratio: 4/3;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay i {
+    color: white;
+    font-size: 2rem;
+}
+
+/* Timeline Sidebar */
+.timeline-container h2 {
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--light-color);
 }
 
 .timeline {
     position: relative;
     padding-left: 30px;
-    margin-right: 15px;
 }
 
-.payment-info {
-    margin-top: 5px;
-    display: flex;
+.timeline::before {
+    content: '';
     position: absolute;
-    left: -7rem;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.payment-info .badge {
-    font-size: 0.75rem;
-    padding: 0.25em 0.5em;
-    margin-right: 5px;
-}
-
-.timeline-content {
-    padding-left: 10px;
-    position: relative;
-    min-width: 150px;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #333;
 }
 
 .timeline-step {
     position: relative;
-    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
+
+.timeline-step:last-child {
+    margin-bottom: 0;
 }
 
 .timeline-marker {
@@ -287,73 +973,443 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #2a2a2a;
-    border: 2px solid #dee2e6;
+    background-color: #111111;
+    border: 2px solid #444;
+    z-index: 1;
 }
 
 .timeline-step.completed .timeline-marker {
-    border-color: #28a745;
-    color: #28a745;
+    border-color: var(--success-color);
+    color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.2);
 }
 
 .timeline-step.current .timeline-marker {
-    border-color: #007bff;
-    color: #007bff;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(74, 107, 255, 0.2);
 }
 
-.timeline h6 {
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-    color: #ffffff;
+.timeline-content {
+    padding-bottom: 0px;
 }
 
-.timeline small {
-    font-size: 0.8rem;
+.timeline-content h4 {
+    margin: 0 0 0px;
+    font-size: 1.1rem;
+    color: var(--light-color);
 }
 
-.timeline-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: -19px;
-    top: 24px;
-    height: calc(100% - 24px);
-    width: 2px;
-    background: #dee2e6;
-}
-
-.timeline-step.completed:not(:last-child)::after {
-    background: #28a745;
-}
-
-.right-container {
+.timeline-meta {
     display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.percentage {
+    font-size: 0.85rem;
+    background-color: #222;
+    padding: 3px 8px;
+    border-radius: 20px;
+    color: #ccc;
+}
+
+.status {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status.completed {
+    color: var(--success-color);
+}
+
+.status.current {
+    color: var(--primary-color);
+}
+
+.status.pending {
+    color: #999;
+}
+
+.payment-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-top: 0px;
+}
+
+.payment-info .amount {
+    font-weight: 600;
+    color: var(--light-color);
+}
+
+.payment-info .date {
+    color: #999;
+}
+
+/* Image Modal */
+.modal-content {
+    background-color: rgba(0, 0, 0, 0.9);
+    border: none;
+}
+
+.modal-body {
+    padding: 0;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: start;
-    width: 50%;
 }
-#left-container{
-        
-        width: 50%;
+
+#fullScreenImage {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.btn-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    color: white;
+    border: none;
+    transition: var(--transition);
+}
+
+.btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Payment History Modal */
+.modal-content {
+    background-color: #111111;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #333;
+    color: var(--light-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.payment-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #cccccc;
+}
+
+.payment-history-table th, 
+.payment-history-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.payment-history-table th {
+    font-weight: 600;
+    color: var(--light-color);
+    background-color: #222;
+}
+
+.payment-history-table tr:hover {
+    background-color: #1a1a1a;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Status Badges */
+.status-badge.success {
+    background-color: rgba(40, 167, 69, 0.3);
+    color: var(--success-color);
+}
+
+.status-badge.failed {
+    background-color: rgba(220, 53, 69, 0.3);
+    color: var(--danger-color);
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 193, 7, 0.3);
+    color: var(--warning-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .reservation-content {
+        flex-direction: column;
     }
-@media only screen and (max-width: 600px) {
-    .right-container {
-        justify-content: end;
+    
+    .timeline-sidebar {
         width: 100%;
     }
-    #left-container{
-        justify-content: end;
-        width: 100%;
+    
+    .timeline-container {
+        max-width: 100%;
     }
 }
-</style>
+
+@media (max-width: 768px) {
+    .reservation-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .reservation-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .reservation-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .payment-history-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .gallery-items {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .reservation-details-container {
+        padding: 0 15px;
+        margin-top: 70px;
+    }
+    
+    .reservation-info h1 {
+        font-size: 1.5rem;
+    }
+    
+    .gallery-items {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .payment-history-table th, 
+    .payment-history-table td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+}
+    </style>
 {% endblock %}
 
 {% block script %}
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const payNowBtn = document.querySelector('.btn-primary');
+    // Toggle features section
+    const toggleFeaturesBtn = document.getElementById('toggleFeatures');
+    const featuresContent = document.getElementById('featuresContent');
     
+    if (toggleFeaturesBtn && featuresContent) {
+        toggleFeaturesBtn.addEventListener('click', function() {
+            const isHidden = !featuresContent.classList.contains('active');
+            featuresContent.classList.toggle('active', isHidden);
+            
+            const toggleText = this.querySelector('.toggle-text');
+            const toggleIcon = this.querySelector('i');
+            
+            if (isHidden) {
+                toggleText.textContent = 'Hide';
+                toggleIcon.classList.remove('fa-chevron-down');
+                toggleIcon.classList.add('fa-chevron-up');
+            } else {
+                toggleText.textContent = 'Show';
+                toggleIcon.classList.remove('fa-chevron-up');
+                toggleIcon.classList.add('fa-chevron-down');
+            }
+        });
+    }
+
+    // Handle feature selection
+    const featureSelect = document.getElementById('feature-select');
+    const descriptionField = document.getElementById('feature-description');
+    const amountField = document.getElementById('feature-amount');
+
+    if (featureSelect && descriptionField && amountField) {
+        featureSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const description = selectedOption.getAttribute('data-description');
+            const amount = selectedOption.getAttribute('data-amount');
+
+            descriptionField.value = description || '';
+            amountField.value = amount || '';
+        });
+    }
+
+    // Handle feature form submission with AJAX
+    const addFeatureForm = document.getElementById('add-feature-form');
+    if (addFeatureForm) {
+        addFeatureForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+                
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Failed to add feature');
+                    }
+                } else {
+                    alert('Failed to add feature');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the feature');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    }
+
+    // Handle individual feature payment
+    document.querySelectorAll('.feature-payment-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('.btn-pay-now');
+            const originalBtnText = submitBtn.innerHTML;
+    
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+                // Prepare JSON payload for initiate_feature_payment
+                const formData = new FormData(this);
+                const payload = {
+                    reservation_number: formData.get('reservation_number')
+                };
+                const featureId = formData.get('feature_id');
+                if (featureId) {
+                    payload.feature_id = featureId;
+                }
+    
+                // Call initiate_feature_payment to prepare payment data
+                const initiateResponse = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(payload)
+                });
+    
+                const initiateData = await initiateResponse.json();
+    
+                if (!initiateResponse.ok || !initiateData.success) {
+                    alert(initiateData.message || 'Failed to initiate payment process');
+                    return;
+                }
+    
+                // Call create_feature_checkout_session with session_data
+                const checkoutResponse = await fetch('{% url "create_feature_checkout_session" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(initiateData.session_data)
+                });
+    
+                const checkoutData = await checkoutResponse.json();
+    
+                if (!checkoutResponse.ok || !checkoutData.success) {
+                    alert(checkoutData.message || 'Failed to create checkout session');
+                    return;
+                }
+    
+                // Redirect to Stripe checkout page
+                if (checkoutData.checkout_url) {
+                    window.location.href = checkoutData.checkout_url;
+                } else {
+                    alert('No checkout URL received');
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during payment processing');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    });
+
+    // Handle build payment button
+    const payNowBtn = document.querySelector('.payment-cta .btn-pay-now');
     if (payNowBtn) {
         payNowBtn.addEventListener('click', async function() {
             try {
@@ -401,32 +1457,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Payment failed: ' + error.message);
                 
                 payNowBtn.disabled = false;
-                payNowBtn.textContent = 'Pay Now';
+                payNowBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay Now';
             }
         });
     }
 
+    // Handle image click to show in modal
+    const imageCards = document.querySelectorAll('.gallery-item');
+    const fullScreenImage = document.getElementById('fullScreenImage');
 
-    const showMoreBtn = document.querySelector('.show-more-btn');
-    const featuresText = document.querySelector('#features-text');
-    const fullFeatures = document.querySelector('.full-features');
-
-    if (showMoreBtn) {
-        showMoreBtn.addEventListener('click', function() {
-            if (showMoreBtn.textContent === 'Show More') {
-                // Show full features
-                featuresText.innerHTML = fullFeatures.textContent;
-                showMoreBtn.textContent = 'Show Less';
-            } else {
-                // Show truncated features
-                featuresText.innerHTML = `{{ booked_package.extra_features|title_case|truncatechars:50|escapejs }} <button class="btn btn-link text-primary p-0 ms-1 show-more-btn" style="text-decoration: none;">Show More</button>`;
-                showMoreBtn.textContent = 'Show More';
-                // Re-attach event listener to the new button
-                const newShowMoreBtn = document.querySelector('.show-more-btn');
-                newShowMoreBtn.addEventListener('click', arguments.callee);
+    imageCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const imageUrl = this.getAttribute('data-image-url');
+            if (fullScreenImage && imageUrl) {
+                fullScreenImage.src = imageUrl;
             }
         });
-    }
+    });
 });
 </script>
 {% endblock %}

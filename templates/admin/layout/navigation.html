@@ -96,6 +96,18 @@
           </li>
 
           <li class="nav-item">
+            <a href="{% url 'reservation_new_features' %}" class="nav-link {% if request.resolver_match.url_name == 'reservation_new_features' %}active{% endif %}">
+              <i class="nav-icon fa fa-car"></i>
+              <p class="text-bold">Reservation New Features</p>
+            </a>
+          </li>
+<li class="nav-item">
+            <a href="{% url 'feature_payment' %}" class="nav-link {% if request.resolver_match.url_name == 'feature_payment' %}active{% endif %}">
+              <i class="nav-icon fa fa-car"></i>
+              <p class="text-bold">New Features Payments</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{% url 'community_member_list' %}" class="nav-link {% if request.resolver_match.url_name == 'community_member_list' %}active{% endif %}">
               <i class="nav-icon fa fa-users"></i>
               <p class="text-bold">Community Members</p>

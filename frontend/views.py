@@ -11,11 +11,14 @@ from .forms import PostContactForm, RegisterForm
 from backend.models import CarConfiguration, BookedPackage , CustomUser, PostCommunity, PostCommunityJoiners, PostContactUs, PostNavItem, PostLandingPageImages, PostPackage, PostPayment, PostSubscribers
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from frontend.forms import PostSubscribeForm
 from django.urls import path
 from django.views import View
+from django.urls import reverse
+from backend.models import BookedPackage, ReservationNewFeatures, ReservationFeaturesPayment, DynamicPackages, FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -39,9 +42,11 @@ from .tokens import account_activation_token
 from common.utils import send_otp, verify_otp
 from django.core.cache import cache
 from decimal import Decimal
+from django.db.models import Sum
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
 
 User = get_user_model()
@@ -225,11 +230,10 @@ def register_page(request):
     return render(request, 'registration/register.html', context)
 
 def send_activation_email(request, user, random_password):
-   
     current_site = get_current_site(request)
-    mail_subject = "Activate Your Account"
+    subject = "Activate Your Account"
     print("User Details before sending activation email",current_site,user,random_password)
-    html_message = render_to_string("email/activation_email.html", {
+    html_content = render_to_string("email/activation_email.html", {
         "email": user.email,
         "password": random_password,
         "user": user,
@@ -238,17 +242,36 @@ def send_activation_email(request, user, random_password):
         "token": account_activation_token.make_token(user),
     })
     
-    # Create a plain text version for email clients that don't support HTML
-    plain_message = strip_tags(html_message)
+    plain_text = strip_tags(html_content)
+    sender = settings.EMAIL_FROM
+    recipient_list = [user.email]
+    EmailThread(subject, html_content, recipient_list, sender).start()
+
+# def send_activation_email(request, user, random_password):
+   
+#     current_site = get_current_site(request)
+#     mail_subject = "Activate Your Account"
+#     print("User Details before sending activation email",current_site,user,random_password)
+#     html_message = render_to_string("email/activation_email.html", {
+#         "email": user.email,
+#         "password": random_password,
+#         "user": user,
+#         # "domain": 'http://178.128.150.238',
+#         "domain": current_site.domain,
+#         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+#         "token": account_activation_token.make_token(user),
+#     })
     
-    # Send mail with both HTML and plain text versions
-    send_mail(
-        subject=mail_subject,
-        message=plain_message,  # Plain text version
-        from_email=settings.EMAIL_FROM,
-        recipient_list=[user.email],
-        html_message=html_message  # HTML version
-    )
+#     plain_message = strip_tags(html_message)
+    
+#     # Send mail with both HTML and plain text versions
+#     send_mail(
+#         subject=mail_subject,
+#         message=plain_message,  # Plain text version
+#         from_email=settings.EMAIL_FROM,
+#         recipient_list=[user.email],
+#         html_message=html_message  # HTML version
+    # )
 
 def get_register_community(request):
     if request.method == 'POST':
@@ -979,13 +1002,11 @@ def reservation_checkout(request, id):
 def process_reservation_payment(request):
     if request.method == 'POST':
         try:
-            user_id = request.POST.get('id')
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            email = request.POST.get('email')
-            phone_number = request.POST.get('phone_number')
-            zip_code = request.POST.get('zip_code')
-            amount = request.POST.get('amount')
+            user_id = request.user.id
+            first_name = request.user.first_name
+            last_name = request.user.last_name
+            email = request.user.email
+            phone_number = request.user.phone_number
             package_id = request.POST.get('package_id')
 
             print("User Id is : ",str(user_id))
@@ -1007,7 +1028,6 @@ def process_reservation_payment(request):
                 metadata={
                     'package_id': str(package_id),
                     'user_email': email,
-                    'zip_code': zip_code
                 }
             )
 
@@ -1024,7 +1044,6 @@ def process_reservation_payment(request):
                 'quantity': 1,
             }]
 
-            # Prepare session data to be used in create_checkout_session
             session_data = {
                 'customer_id': customer.id,
                 'line_items': line_items,
@@ -1111,18 +1130,20 @@ def create_package_checkout_session(request):
 def reservation_success(request, id, sessionId):
     try:
         booked_package = BookedPackage.objects.get(id=id)
+        remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
         booked_package.status = 'confirmed'
         booked_package.build_status = 'payment_done'
+        booked_package.remaining_price = remaining_payment_after_reserve
         booked_package.save()
 
         if sessionId:
             session = stripe.checkout.Session.retrieve(sessionId)
-
-            print("Session Response is : ",session);
+            print("Session Response is : ", session)
             
+            booked_package_instance = BookedPackage.objects.get(reservation_number=booked_package.reservation_number)
             PostPayment.objects.create(
                 user=booked_package.user,  
-                rn_number=booked_package.reservation_number,
+                rn_number=booked_package_instance,  
                 stripe_payment_id=session.payment_intent,
                 amount=100,  
                 regarding="reserve",
@@ -1130,27 +1151,177 @@ def reservation_success(request, id, sessionId):
                 status="succeeded",  
                 package_name=booked_package.title,
             )
+        subject = "Reservation Confirmation - GEN-Z 40"
+        current_site = get_current_site(request)
+        context = {
+                'user': request.user,
+                'booked_package': booked_package,
+                'amount': 100,  # Convert to string for template
+                'payment_date': booked_package.updated_at,
+                'domain': current_site.domain,
+                'reservation_number': booked_package.reservation_number,
+            }
+        html_content = render_to_string('email/payment_successful.html', context)
 
+        plain_text = strip_tags(html_content)
+        receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
+        sender = settings.EMAIL_FROM
+        
+        EmailThread(subject, html_content, receipient_list, sender).start()
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
     
     except Exception as e:
         print(f"Error in reservation_success: {str(e)}")
-        return render(request, 'public/payment/success.html', {'is_footer_required': False})
+        return render(request, 'public/payment/error.html', {'error': str(e), 'is_footer_required': False})
 
 
 
+RESERVATION_FEATURE_OPTIONS = [
+    # Interior upgrades
+    {
+        'category': 'Interior',
+        'name': 'Premium Leather Seats',
+        'description': 'Upgrade to high-quality leather seats with custom stitching',
+        'estimated_amount': 2500.00,
+    },
+    {
+        'category': 'Interior',
+        'name': 'Custom Dashboard',
+        'description': 'Bespoke dashboard with premium materials and custom finishes',
+        'estimated_amount': 1800.00,
+    },
+    {
+        'category': 'Interior',
+        'name': 'Advanced Entertainment System',
+        'description': 'High-end audio system with additional speakers and subwoofer',
+        'estimated_amount': 3200.00,
+    },
+    {
+        'category': 'Interior',
+        'name': 'Ambient Lighting Package',
+        'description': 'Customizable interior LED lighting with multiple color options',
+        'estimated_amount': 950.00,
+    },
+    
+    # Exterior upgrades
+    {
+        'category': 'Exterior',
+        'name': 'Custom Paint Job',
+        'description': 'Premium paint with custom color matching and metallic finish',
+        'estimated_amount': 3500.00,
+    },
+    {
+        'category': 'Exterior',
+        'name': 'Carbon Fiber Package',
+        'description': 'Carbon fiber hood, mirrors, and trim elements',
+        'estimated_amount': 4200.00,
+    },
+    {
+        'category': 'Exterior',
+        'name': 'Custom Wheels',
+        'description': 'Premium alloy wheels with custom design and finish',
+        'estimated_amount': 2800.00,
+    },
+    {
+        'category': 'Exterior',
+        'name': 'Enhanced Lighting Package',
+        'description': 'LED headlights, taillights and additional lighting elements',
+        'estimated_amount': 1600.00,
+    },
+    
+    # Performance upgrades
+    {
+        'category': 'Performance',
+        'name': 'Performance Exhaust System',
+        'description': 'Custom exhaust system with improved flow and sound',
+        'estimated_amount': 2200.00,
+    },
+    {
+        'category': 'Performance',
+        'name': 'Suspension Upgrade',
+        'description': 'Enhanced suspension system with adjustable settings',
+        'estimated_amount': 3800.00,
+    },
+    {
+        'category': 'Performance',
+        'name': 'Brake System Upgrade',
+        'description': 'High-performance brake calipers, rotors and pads',
+        'estimated_amount': 3200.00,
+    },
+    {
+        'category': 'Performance',
+        'name': 'Engine Tuning',
+        'description': 'Custom engine calibration for improved performance',
+        'estimated_amount': 1800.00,
+    },
+    
+    # Technology upgrades
+    {
+        'category': 'Technology',
+        'name': 'Advanced Driver Assistance',
+        'description': 'Additional sensors and camera systems for enhanced safety',
+        'estimated_amount': 2600.00,
+    },
+    {
+        'category': 'Technology',
+        'name': 'Digital Dash Upgrade',
+        'description': 'Fully customizable digital instrument cluster',
+        'estimated_amount': 1900.00,
+    },
+    {
+        'category': 'Technology',
+        'name': 'Remote Management System',
+        'description': 'Enhanced connectivity with smartphone app integration',
+        'estimated_amount': 1400.00,
+    },
+    {
+        'category': 'Technology',
+        'name': 'Advanced Navigation System',
+        'description': 'Premium navigation with real-time updates and advanced routing',
+        'estimated_amount': 1200.00,
+    },
+    
+    # Comfort upgrades
+    {
+        'category': 'Comfort',
+        'name': 'Climate Control Upgrade',
+        'description': 'Enhanced climate system with additional zones and features',
+        'estimated_amount': 1700.00,
+    },
+    {
+        'category': 'Comfort',
+        'name': 'Massage Seat Function',
+        'description': 'Addition of massage functionality to driver and passenger seats',
+        'estimated_amount': 2300.00,
+    },
+    {
+        'category': 'Comfort',
+        'name': 'Noise Reduction Package',
+        'description': 'Additional sound insulation for quieter cabin',
+        'estimated_amount': 1500.00,
+    },
+    {
+        'category': 'Comfort',
+        'name': 'Heated/Cooled Cup Holders',
+        'description': 'Temperature-controlled cup holders for hot and cold beverages',
+        'estimated_amount': 800.00,
+    },
+]
 def reservation_details(request, id):
     """
     View the reservation checkout page.
     """
     booked_package = get_object_or_404(BookedPackage, reservation_number=id)
     
-    remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
-    initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-    midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-    balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+    remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
+
+    initial_payment = (remaining_payment_after_reserve * booked_package.initial_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+    midway_payment = (remaining_payment_after_reserve * booked_package.midway_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+    balance_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+
     
     payments = PostPayment.objects.filter(rn_number=id)
+
 
     ip = get_country_info(request)
     response = requests.get(f'https://ipinfo.io/{ip}/json')
@@ -1161,7 +1332,13 @@ def reservation_details(request, id):
     car_image = None
     if booked_package.car_model.images.exists():
         car_image = booked_package.car_model.images.first()
-
+        
+    
+    # Check if there are pending features
+    has_pending_features = booked_package.new_features.filter(status='pending').exists()
+    
+    # Calculate total pending amount if needed
+    pending_features_total = booked_package.new_features.filter(status='pending').aggregate(total=Sum('amount'))['total'] or 0
     context = {
         'user_details': request.user,
         'booked_package': booked_package,
@@ -1169,10 +1346,13 @@ def reservation_details(request, id):
         'country_code': country_code,
         'country_flag_url': country_flag_url,
         'car_image': car_image,
-        'remaining_payment_after_reserve': remaing_payment_after_reserve,
+        'remaining_payment_after_reserve': remaining_payment_after_reserve,
         'initial_payment': initial_payment,
         'midway_payment': midway_payment,
         'balance_payment': balance_payment,
+        'reservation_features': RESERVATION_FEATURE_OPTIONS,
+        'has_pending_features': has_pending_features,
+        'pending_features_total': pending_features_total,
     }
 
     return render(request, 'public/reservation_details.html', context)
@@ -1187,25 +1367,28 @@ def initiate_build_payment(request):
             data = json.loads(request.body)
             reservation_number = data.get('reservation_number')
             booked_package = get_object_or_404(BookedPackage, reservation_number=reservation_number)
-            remaing_payment_after_reserve = booked_package.price - Decimal('100.00')
-            initial_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-            midway_payment = (remaing_payment_after_reserve * Decimal('0.40')).quantize(Decimal('1'))
-            balance_payment = (remaing_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
-            amount = Decimal('0')
-            previous_type = ''
-            if booked_package.build_type == 'order_confirmed':
-                amount = initial_payment
-                previous_type = 'order_confirmed'
-            elif booked_package.build_type == 'body_complete':
-                amount = midway_payment
-                previous_type = 'body_complete'
-            elif booked_package.build_type == 'built':
-                amount = balance_payment
-                previous_type = 'built'
 
-            print("Amount is ",amount)
-            
-            
+            remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
+
+            initial_payment = (remaining_payment_after_reserve * booked_package.initial_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+            midway_payment = (remaining_payment_after_reserve * booked_package.midway_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+            final_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+
+
+            amount = Decimal('0')
+            build_type = booked_package.build_type
+
+            if build_type == 'initial_payment':
+                amount = initial_payment
+                previous_type = 'initial_payment'
+            elif build_type == 'midway_payment':
+                amount = midway_payment
+                previous_type = 'midway_payment'
+            elif build_type == 'final_payment':
+                amount = final_payment
+                previous_type = 'final_payment'
+
+            print("Amount is", amount)
 
             customer = stripe.Customer.create(
                 email=booked_package.user.email,
@@ -1319,31 +1502,32 @@ def build_payment_success(request, id, sessionId):
     try:
         booked_package = get_object_or_404(BookedPackage, id=id)
         remaining_payment_after_reserve = booked_package.price - Decimal('100.00')
-        initial_payment = (remaining_payment_after_reserve * Decimal('0.40')).quantize(Decimal('0.01'))
-        midway_payment = (remaining_payment_after_reserve * Decimal('0.40')).quantize(Decimal('0.01'))
-        balance_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('0.01'))
+
+    # Calculate payments based on percentages from booked_package
+        initial_payment = (remaining_payment_after_reserve * booked_package.initial_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+        midway_payment = (remaining_payment_after_reserve * booked_package.midway_payment_percentage / Decimal('100')).quantize(Decimal('1'))
+        balance_payment = (remaining_payment_after_reserve - (initial_payment + midway_payment)).quantize(Decimal('1'))
+
         amount = Decimal('0.00')
         previous_type = ''
-        
-        # Update build type and status based on current state
-        if booked_package.build_type == 'order_confirmed':
+
+
+        if booked_package.build_type == 'initial_payment':
             previous_type = booked_package.build_type
             amount = initial_payment
             booked_package.status = 'in_progress'
             booked_package.build_status = 'payment_done'
-            booked_package.build_type = 'chassis_complete' 
-        elif booked_package.build_type == 'body_complete':
+        elif booked_package.build_type == 'midway_payment':
             previous_type = booked_package.build_type
             amount = midway_payment
-            booked_package.build_type = 'assembly'
             booked_package.build_status = 'payment_done'
-        elif booked_package.build_type == 'built':
+        elif booked_package.build_type == 'final_payment':
             previous_type = booked_package.build_type
             amount = balance_payment
-            booked_package.build_type = 'quality_check'
             booked_package.build_status = 'payment_done'
-        
-        booked_package.save()  
+
+        booked_package.remaining_price = booked_package.remaining_price - amount
+        booked_package.save()
 
         current_site = get_current_site(request)
         print("Current site is : ",current_site)
@@ -1351,7 +1535,7 @@ def build_payment_success(request, id, sessionId):
         context = {
             'user': request.user,
             'booked_package': booked_package,
-            'message': "Your " + ( "Initial Payment" if previous_type == 'order_confirmed' else "Mid Way Payment " if previous_type == 'body_complete' else "Final Balance Payment" if previous_type == 'built' else "Your Order"  ) + " has been successfully processed.",
+            'message': "Your " + ( "Initial Payment" if previous_type == 'initial_payment' else "Mid Way Payment " if previous_type == 'midway_payment' else "Final Balance Payment" if previous_type == 'final_payment' else "Order"  ) + " has been successfully processed.",
             'amount': str(amount),
             'payment_date': payment_date,
             'domain': current_site.domain,
@@ -1362,17 +1546,19 @@ def build_payment_success(request, id, sessionId):
         subject = 'Payment Confirmation - GEN-Z 40'
         html_content = render_to_string('email/payment_successful.html', context)
         plain_text = strip_tags(html_content)
+        receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
+        sender = settings.EMAIL_FROM
         
-        print("Subject:", subject, "HTML Content length:", len(html_content), "Plain Text length:", len(plain_text))
+        EmailThread(subject, html_content, receipient_list, sender).start()
         
-        send_mail(
-            subject=subject,  
-            message=plain_text,
-            from_email=settings.EMAIL_FROM,
-            recipient_list=[booked_package.user.email],  
-            fail_silently=False,
-            html_message=html_content
-        )
+        # send_mail(
+        #     subject=subject,  
+        #     message=plain_text,
+        #     from_email=settings.EMAIL_FROM,
+        #     recipient_list=[booked_package.user.email],  
+        #     fail_silently=False,
+        #     html_message=html_content
+        # )
 
         if not sessionId:
             raise ValueError("No session ID provided")
@@ -1382,16 +1568,18 @@ def build_payment_success(request, id, sessionId):
         print("Session Data is: ", session)
         
         # Create payment record
-        payment = PostPayment.objects.create(
-            user=booked_package.user,
-            rn_number=booked_package.reservation_number,
-            stripe_payment_id=session.payment_intent,
-            amount=float(amount),
-            regarding=previous_type,
-            currency="usd",
-            status="succeeded",
-            package_name=booked_package.title,
+        booked_package_instance = BookedPackage.objects.get(reservation_number=booked_package.reservation_number)
+        PostPayment.objects.create(
+                user=booked_package.user,  
+                rn_number=booked_package_instance,  
+                stripe_payment_id=session.payment_intent,
+                amount=float(amount),
+                regarding=previous_type,
+                currency="usd",
+                status="succeeded",  
+                package_name=booked_package.title,
         )
+       
         
 
         return render(request, 'public/payment/success.html', {
@@ -1436,3 +1624,422 @@ def send_test_email(request,id):
         return HttpResponse("HTML Email sent successfully!")
     except Exception as e:
         return HttpResponse(f"Error sending email: {str(e)}")
+    
+
+
+def add_reservation_feature(request, reservation_number):
+    """
+    Add a new feature to a booked package via AJAX.
+    """
+    booked_package = get_object_or_404(BookedPackage, reservation_number=reservation_number)
+    
+    if request.method == 'POST':
+        feature_name = request.POST.get('feature')
+        description = request.POST.get('description')
+        amount = request.POST.get('amount')
+
+        if not all([feature_name, description, amount]):
+            return JsonResponse({
+                'success': False,
+                'message': 'All fields are required.'
+            }, status=400)
+
+        try:
+            amount = Decimal(amount)
+        except (ValueError, TypeError):
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid amount format.'
+            }, status=400)
+
+        # Create new feature with pending status
+        ReservationNewFeatures.objects.create(
+            booked_package=booked_package,
+            features=feature_name,
+            amount=amount,
+            status='pending'
+        )
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Feature added successfully. It is pending approval.',
+            'reservation_number': reservation_number
+        })
+
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.'
+    }, status=405)
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+from decimal import Decimal
+import json
+import stripe
+from backend.models import BookedPackage, ReservationNewFeatures, CustomUser
+
+@csrf_exempt
+def initiate_feature_payment(request, feature_id=None):
+    """
+    Initiate payment for a single feature or all pending features.
+    Validates user ownership and feature status, creates a Stripe customer,
+    and prepares data for the checkout session.
+    :param feature_id: UUID of the feature to pay for (optional, None for 'pay all')
+    """
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid request method'
+        }, status=405)
+
+    try:
+        # Validate user is authenticated
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False,
+                'message': 'Authentication required'
+            }, status=401)
+
+        # Parse JSON payload
+        data = json.loads(request.body)
+        reservation_number = data.get('reservation_number')
+        if not reservation_number:
+            return JsonResponse({
+                'success': False,
+                'message': 'Reservation number is required'
+            }, status=400)
+
+        # Get booked package and validate user ownership
+        booked_package = get_object_or_404(
+            BookedPackage,
+            reservation_number=reservation_number,
+            user=request.user
+        )
+
+        # Create Stripe customer
+        customer = stripe.Customer.create(
+            email=request.user.email,
+            name=f"{request.user.first_name} {request.user.last_name}",
+            metadata={
+                'reservation_number': reservation_number,
+                'user_id': str(request.user.id),
+                'package_id': str(booked_package.id)
+            }
+        )
+
+        if feature_id:
+            # Handle single feature payment
+            feature = get_object_or_404(
+                ReservationNewFeatures,
+                id=feature_id,
+                booked_package=booked_package
+            )
+
+            if feature.status != 'pending':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'This feature is not available for payment'
+                }, status=400)
+
+            amount = Decimal(str(feature.amount))  # Convert float to Decimal
+            line_items = [{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': f"Feature: {feature.features}",
+                        'description': f"{feature.features} for {booked_package.car_model.title}",
+                    },
+                    'unit_amount': int(float(amount) * 100),  # Convert to cents
+                },
+                'quantity': 1,
+            }]
+            metadata = {
+                'feature_id': str(feature.id),
+                'reservation_number': reservation_number,
+                'is_pay_all': 'false',
+                'user_id': str(request.user.id)
+            }
+
+        else:
+            # Handle "pay all" pending features
+            pending_features = booked_package.new_features.filter(status='pending')
+            if not pending_features.exists():
+                return JsonResponse({
+                    'success': False,
+                    'message': 'No pending features available for payment'
+                }, status=400)
+
+            amount = sum(Decimal(str(feature.amount)) for feature in pending_features)
+            line_items = [{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': f"Multiple Features for {booked_package.car_model.title}",
+                        'description': f"Payment for {pending_features.count()} features (Reservation: {reservation_number})",
+                    },
+                    'unit_amount': int(float(amount) * 100),  # Convert to cents
+                },
+                'quantity': 1,
+            }]
+            metadata = {
+                'feature_ids': ','.join(str(feature.id) for feature in pending_features),
+                'reservation_number': reservation_number,
+                'is_pay_all': 'true',
+                'user_id': str(request.user.id)
+            }
+
+        # Prepare session data
+        session_data = {
+            'customer_id': customer.id,
+            'line_items': line_items,
+            'package_id': str(booked_package.id),
+            'reservation_number': reservation_number,
+             'success_url': request.build_absolute_uri(
+                            f'/feature/feature-payment-success/{reservation_number}/'
+                            ) + '{CHECKOUT_SESSION_ID}'+'/',
+            'cancel_url': request.build_absolute_uri(
+                reverse('reservation_details', args=[reservation_number])
+            ),
+            'metadata': metadata,
+            'payment_intent_data': {
+                'description': f"Feature payment for {booked_package.car_model.title} (Reservation: {reservation_number})",
+                'metadata': metadata
+            }
+        }
+
+        return JsonResponse({
+            'success': True,
+            'session_data': session_data,
+            'message': 'Payment session prepared successfully'
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid JSON payload'
+        }, status=400)
+    except stripe.error.StripeError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Payment processing error: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        # Log error in production
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
+@csrf_exempt
+def create_feature_checkout_session(request):
+    """
+    Create a Stripe checkout session for feature payment(s) using session data.
+    """
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid request method'
+        }, status=405)
+
+    try:
+        # Parse JSON payload
+        data = json.loads(request.body)
+
+        # Create Stripe checkout session
+        session = stripe.checkout.Session.create(
+            customer=data['customer_id'],
+            payment_method_types=['card'],
+            line_items=data['line_items'],
+            mode='payment',
+            success_url=data['success_url'],
+            cancel_url=data['cancel_url'],
+            metadata=data['metadata'],
+            payment_intent_data=data['payment_intent_data']
+        )
+
+        return JsonResponse({
+            'success': True,
+            'checkout_url': session.url,
+            'session_id': session.id
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid JSON payload'
+        }, status=400)
+    except stripe.error.StripeError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Payment processing error: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        # Log error in production
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
+def new_feature_payment_success(request, id, sessionId):
+    """
+    Handle successful feature payment and update feature status.
+    Verifies the Stripe session and updates the corresponding feature(s).
+    """
+    session_id = sessionId
+    reservation_number = id
+
+    print("Session ID:", session_id, "Reservation Number:", reservation_number)
+    if not all([session_id, reservation_number]):
+        messages.error(request, "Invalid payment session or reservation number.")
+        return redirect('reservation_details', reservation_number=reservation_number)
+
+    try:
+        # Retrieve Stripe session
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        # Verify payment status
+        if session.payment_status != 'paid':
+            messages.error(request, "Payment not completed.")
+            return redirect('reservation_details', reservation_number=reservation_number)
+
+        # Verify reservation exists and user ownership
+        booked_package = get_object_or_404(
+            BookedPackage,
+            reservation_number=reservation_number,
+            user=request.user
+        )
+
+        is_pay_all = session.metadata.get('is_pay_all') == 'true'
+
+        if is_pay_all:
+            # Handle "pay all" features
+            feature_ids = session.metadata.get('feature_ids', '').split(',')
+            if not feature_ids or feature_ids == ['']:
+                messages.error(request, "No features specified for payment.")
+                return redirect('reservation_details', reservation_number=reservation_number)
+
+            features = ReservationNewFeatures.objects.filter(
+                id__in=feature_ids,
+                booked_package=booked_package,
+                status='pending'
+            )
+            if not features.exists():
+                messages.error(request, "No valid pending features found.")
+                return redirect('reservation_details', reservation_number=reservation_number)
+
+            # Verify total amount
+            expected_amount = sum(Decimal(str(feature.amount)) for feature in features)
+            paid_amount = Decimal(str(session.amount_total / 100.0))
+            if abs(expected_amount - paid_amount) > Decimal('0.01'):
+                messages.error(request, "Payment amount mismatch.")
+                return redirect('reservation_details', reservation_number=reservation_number)
+
+            # Update features and create payment records
+            for feature in features:
+                feature.status = 'completed'
+                feature.save()
+                ReservationFeaturesPayment.objects.create(
+                    reservation_feature=feature,
+                    amount=Decimal(str(feature.amount)),
+                    payment_status='completed',
+                    payment_method='card',
+                    transaction_id=session.payment_intent
+                )
+            messages.success(request, f"Payment successful! {features.count()} feature(s) added.")
+        else:
+            # Handle single feature payment
+            feature_id = session.metadata.get('feature_id')
+            if not feature_id:
+                messages.error(request, "Feature ID not provided.")
+                return redirect('reservation_details', id=reservation_number)
+
+            feature = get_object_or_404(
+                ReservationNewFeatures,
+                id=feature_id,
+                booked_package=booked_package,
+                status='pending'
+            )
+
+            # Verify amount
+            expected_amount = Decimal(str(feature.amount))
+            paid_amount = Decimal(str(session.amount_total / 100.0))
+            if abs(expected_amount - paid_amount) > Decimal('0.01'):
+                messages.error(request, "Payment amount mismatch.")
+                return redirect('reservation_details', id=reservation_number)
+
+            # Update feature and create payment record
+            feature.status = 'completed'
+            feature.save()
+            ReservationFeaturesPayment.objects.create(
+                reservation_feature=feature,
+                amount=expected_amount,
+                payment_status='completed',
+                payment_method='card',
+                transaction_id=session.payment_intent
+            )
+            subject = "New Additional Feature Payment Confirmation- GEN-Z 40"
+            current_site = get_current_site(request)
+            context = {
+                    'user': request.user,
+                    'booked_package': booked_package,
+                    'amount': 100,  # Convert to string for template
+                    'payment_date': booked_package.updated_at,
+                    'domain': current_site.domain,
+                    'reservation_number': booked_package.reservation_number,
+                }
+            html_content = render_to_string('email/payment_successful.html', context)
+
+            plain_text = strip_tags(html_content)
+            receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
+            sender = settings.EMAIL_FROM
+            
+            EmailThread(subject, html_content, receipient_list, sender).start()
+            messages.success(request, f"Payment successful! Feature '{feature.features}' added.")
+
+        return redirect('reservation_details', id=reservation_number)
+
+    except stripe.error.InvalidRequestError as e:
+        messages.error(request, f"Invalid payment session: {str(e)}")
+        return redirect('reservation_details', id=reservation_number)
+    except stripe.error.StripeError as e:
+        messages.error(request, f"Payment processing error: {str(e)}")
+        return redirect('reservation_details', id=reservation_number)
+    except Exception as e:
+        # Log error in production
+        messages.error(request, f"Error processing payment: {str(e)}")
+        return redirect('reservation_details', id=reservation_number)
+    
+
+
+
+    # Dynamic Package Page
+from django.shortcuts import render, get_object_or_404
+from django.utils.text import slugify
+from decimal import Decimal
+
+
+def dynamic_configurator(request, car_model_slug):
+    car_model = get_object_or_404(PostNavItem, slug=car_model_slug)
+    
+    packages = DynamicPackages.objects.all().order_by('created_at')
+    
+    sections = FeaturesSection.objects.all().order_by('created_at')
+    
+    rollerfeatures = PackageFeatureRoller.objects.all().order_by('created_at')
+    rollerplusfeatures = PackageFeatureRollerPlus.objects.all().order_by('created_at')
+    builderfeatures = PackageFeatureBuilder.objects.all().order_by('created_at')
+    
+    context = {
+        'car_model': car_model,
+        'packages': packages,
+        'sections': sections,
+        'rollerfeatures': rollerfeatures,
+        'rollerplusfeatures': rollerplusfeatures,
+        'builderfeatures': builderfeatures,
+    }
+    
+    return render(request, 'public/DynamicConfigurator/configurator.html', context)
