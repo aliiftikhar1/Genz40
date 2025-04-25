@@ -22,7 +22,7 @@ urlpatterns = [
 
     path('tech-specs/<slug:slug>/', views.tech_specs, name='tech_specs'),
     path('learn-more/<slug:slug>/', views.learn_more, name='learn_more'),
-    path('lock-your-price-now/<slug:slug>/', views.lock_your_price_now, name='lock_your_price_now'),
+    path('lock-your-price-now/<slug:slug>/<str:packageId>/', views.lock_your_price_now, name='lock_your_price_now'),
     path('create-account-before-checkout/', views.create_account_before_checkout, name='create_account_before_checkout'),
     path('create-checkout-session/', views.create_checkout_session, name='create_checkout_session'),
     path('success/', views.payment_success, name='payment_success'),

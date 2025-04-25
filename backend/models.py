@@ -614,21 +614,18 @@ class BookedPackage(models.Model):
             day = today.strftime('%d')
             year = today.strftime('%Y')
             
-            # Find the highest existing number for today
-            today_prefix = f"RN{month}{day}{year}"
-            last_reservation = BookedPackage.objects.filter(
-                reservation_number__startswith=today_prefix
-            ).order_by('-reservation_number').first()
+            # Find the highest existing number in the system
+            last_reservation = BookedPackage.objects.order_by('-reservation_number').first()
             
             if last_reservation:
-                # Extract the number part and increment
-                last_number = int(last_reservation.reservation_number.replace(today_prefix, ''))
+                # Extract the last 4 digits from the existing reservation number
+                last_number = int(last_reservation.reservation_number[-4:])
                 new_number = last_number + 1
             else:
-                # Start from 1010 if no reservations exist for today
-                new_number = 1010
+                # Start from 1000 if no reservations exist
+                new_number = 1000
                 
-            self.reservation_number = f"{today_prefix}{new_number:04d}"
+            self.reservation_number = f"RN{month}{day}{year}{new_number:04d}"
         
         super().save(*args, **kwargs)
 

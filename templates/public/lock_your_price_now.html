@@ -13,6 +13,26 @@
         background-color: #fff !important;
         color: #000 !important;
     }
+    .password-toggle {
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    .password-input-group {
+        position: relative;
+    }
+    .eye-icon{
+        position: absolute;
+        right: 20px;
+        top: 70%;
+    }
+    .disabled-field {
+        background-color: #e9ecef !important;
+        opacity: 1 !important;
+    }
 </style>
 {% endblock header %}
 
@@ -34,68 +54,100 @@
                             </div>
                         </div>
                         
+                        {% if user.is_authenticated %}
+                        <div class="alert alert-info alert-dismissible fade show text-light mt-3 mb-3" role="alert"
+                            style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
+                            <i class="uil uil-user-circle fs-5 align-middle me-1 text-light"></i><strong
+                                class="text-uppercase">Welcome back, {{ user.first_name }}!</strong><br>
+                            Your account details have been pre-filled below. You can proceed with your reservation.
+                        </div>
+                        {% else %}
                         <div class="alert alert-info alert-dismissible fade show text-light mt-3 mb-3" role="alert"
                             style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
                             <i class="uil uil-info-circle fs-5 align-middle me-1 text-light"></i><strong
                                 class="text-uppercase">Reserve now, Configure later</strong><br>
-                            This reservation will save your position in line. When you car is available
+                            This reservation will save your position in line. When your car is available
                             for production, we will invite you to configure and choose from dozens of options to make it
                             complete personalized and unique.
-                            <button type="button" class="btn-close btn btn-icon btn-sm text-black float-end"
-                                style="width: 20px; height: 20px; background-color: rgb(59 130 246 / .9) !important;"
-                                data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                        {% endif %}
 
-                        <!-- <form class="needs-validation bg-white text-light" novalidate> -->
                         <form class="bg-white text-light" id="checkout-form" method="POST">
-                                {% csrf_token %}
-                                <input type="text" value="{{ random_password }}" name="password1" hidden>
-                                <input type="text" value="{{ random_password }}" name="password2" hidden>
-                                <input type="text" value="{{ country_code }}" name="country" hidden>
-                                <input type="text" value="customer" name="role" hidden>
+                            {% csrf_token %}
+                            <input type="text" value="{{ country_code }}" name="country" hidden>
+                            <input type="text" value="customer" name="role" hidden>
                             <div class="row g-3">
                                 <div class="col-sm-6">
                                     <label for="firstName" class="form-label">First Name<span class="text-danger"> *</span></label>
-                                    <input type="text" class="form-control" {% if user_data.first_name %} style='background-color: lightgray !important' {% endif %} name="first_name"
-                                    id="first_name" value="{{user_data.first_name}}" {% if user_data.first_name and user_data.first_name|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="text" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="first_name" id="first_name" 
+                                           value="{{ user.first_name }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
                                 </div>
 
                                 <div class="col-sm-6">
                                     <label for="lastName" class="form-label">Last Name<span class="text-danger"> *</span></label>
-                                    <input type="text" class="form-control" {% if user_data.last_name %} style='background-color: lightgray !important' {% endif %} name="last_name"
-                                    id="last_name" value="{{user_data.last_name}}" {% if user_data.last_name and user_data.last_name|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="text" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="last_name" id="last_name" 
+                                           value="{{ user.last_name }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
                                 </div>
 
                                 <div class="col-sm-6">
                                     <label for="email" class="form-label">Email<span class="text-danger"> *</span></label>
-                                    <input type="email" class="form-control" {% if user_data.email %} style='background-color: lightgray !important' {% endif %} name="email" id="email"
-                                    value="{{user_data.email}}" {% if user_data.email and user_data.email|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="email" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="email" id="email"
+                                           value="{{ user.email }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
                                 </div>
 
                                 <div class="col-sm-6 position-relative">
                                     <label for="phone_number" class="form-label">Phone Number<span class="text-danger"> *</span></label>
                                     <div class="input-group has-validation">
-                                        <span class="input-group-text bg-white text-muted border" style="border-radius: 4px 0px 0px 4px;"><img class="fea icon-sm icons" src="{{ country_flag_url }}"
-                                            alt="Country Flag" style="width: 28px; height: 28px;" /></span>
-                                            <input type="tel" class="form-control" {% if user_data.phone_number %} style='background-color: lightgray !important' {% endif %} name="phone_number"
-                                            value="{{user_data.phone_number}}" id="phone_number" maxlength="14" {% if user_data.phone_number and user_data.phone_number|length > 0 %}readonly="readonly"{% endif %} required />
+                                        <span class="input-group-text bg-white text-muted border" style="border-radius: 4px 0px 0px 4px;">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                alt="Country Flag" style="width: 28px; height: 28px;" />
+                                        </span>
+                                        <input type="tel" class="form-control {% if user.is_authenticated and user.phone_number %}disabled-field{% endif %}" 
+                                               name="phone_number" id="phone_number" 
+                                               value="{% if user.is_authenticated %}{{ user.phone_number|default:'' }}{% endif %}" 
+                                               {% if user.is_authenticated and user.phone_number %}readonly{% endif %} 
+                                               maxlength="14" required />
                                     </div>
                                 </div>
 
+                                {% if not user.is_authenticated %}
+                                <div class="col-sm-6 password-input-group">
+                                    <label for="password1" class="form-label">Password<span class="text-danger"> *</span></label>
+                                    <input type="password" class="form-control" name="password1" id="password1" required />
+                                    <i class="uil uil-eye password-toggle eye-icon" onclick="togglePassword('password1', this)"></i>
+                                </div>
+
+                                <div class="col-sm-6 password-input-group">
+                                    <label for="password2" class="form-label">Confirm Password<span class="text-danger"> *</span></label>
+                                    <input type="password" class="form-control" name="password2" id="password2" required />
+                                    <i class="uil uil-eye password-toggle eye-icon" onclick="togglePassword('password2', this)"></i>
+                                </div>
+                                {% else %}
+                                <input type="hidden" name="password1" value="authenticated-user" />
+                                <input type="hidden" name="password2" value="authenticated-user" />
+                                {% endif %}
+
                                 <div class="col-sm-3">
                                     <label for="zip_code" class="form-label">Delivery Zip Code<span class="text-danger"> *</span></label>
-                                    <input type="text" class="form-control" name="zip_code" id="zip_code" {% if user_data.zip_code %} style='background-color: lightgray !important' {% endif %}
-                                    value="{{ user_data.zip_code|default_if_none:"" }}" maxlength="5" {% if user_data.zip_code and user_data.zip_code|length > 0 %}readonly="readonly"{% endif %} required />
+                                    <input type="text" class="form-control {% if user.is_authenticated and user.zip_code %}disabled-field{% endif %}" 
+                                           name="zip_code" id="zip_code"
+                                           value="{% if user.is_authenticated %}{{ user.zip_code|default:'' }}{% endif %}"
+                                           {% if user.is_authenticated and user.zip_code %}readonly{% endif %}
+                                           maxlength="5" required />
                                 </div>
 
                                 <div class="col-md-12 text-light">
                                     <small class="text-gray text-sm" style="font-size: 11px;">
                                         By entering my contact information above, I authorize Alvi Automobiles to
-                                        contact me about this request and Alvi Automobiles Updates including other Alvi
-                                        Automobiles
-                                        products, services and events. I can opt out in the Alvi Automobiles app or by
-                                        unsubscribing. This is not a purchase requirement.</span>
-    
+                                        contact me about this request and Alvi Automobiles Updates including other Alvi
+                                        Automobiles products, services and events. I can opt out in the Alvi Automobiles app or by
+                                        unsubscribing. This is not a purchase requirement.
                                     </small>
                                 </div>
     
@@ -103,18 +155,19 @@
                                     <h4 class="mb-0">Due Today
                                         <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
                                     </h4>
-                                    <!-- <h4 class="mb-0 float-end">$100</h4> -->
                                     <small>Fully Refundable</small>
                                 </div>
-
                             </div>
 
-                            <input type="hidden" value="{{ amount_due }}" name="amount" />
-                             <input type="hidden" value="{{ items.title }}" name="package" />
-                             <div class="d-grid mt-3 mb-1">
+                            <input type="hidden" value="{{ amount_due|floatformat:"0" }}" name="amount" />
+                            <input type="hidden" value="{{ items.slug }}" name="car_slug" />
+                            <input type="hidden" value="{{ package.id }}" name="package_id" />
+                            <input type="hidden" value="{{ package.name }}" name="package_name" />
+                            <input type="hidden" value="{{ items.id }}" name="car_model" />
+                            <input type="hidden" value="{{ package.discountAmount }}" name="price" />
+                            <div class="d-grid mt-3 mb-1">
                                 <button type="submit"
                                     class="mb-1 btn btn-secondary text-light text-uppercase">
-                                    <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
                                     Reserve Now
                                     <span class="spinner-border spinner-border-sm" id="pro" role="status"
                                         aria-hidden="true" style="display: none;"></span>
@@ -164,12 +217,38 @@
     
         e.target.value = formattedValue;
     });
+    
+    function togglePassword(fieldId, icon) {
+        const passwordField = document.getElementById(fieldId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("uil-eye");
+            icon.classList.add("uil-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("uil-eye-slash");
+            icon.classList.add("uil-eye");
+        }
+    }
 </script>
 <script>
     $("#checkout-form").submit(function (e) {
-    e.preventDefault();
-    var data = new FormData(this);
-    $('#pro').show();
+        e.preventDefault();
+        
+        {% if not user.is_authenticated %}
+        // Only check passwords for new users
+        const password1 = $('#password1').val();
+        const password2 = $('#password2').val();
+        
+        if (password1 !== password2) {
+            toastr.error("Passwords do not match");
+            return false;
+        }
+        {% endif %}
+        
+        var data = new FormData(this);
+        $('#pro').show();
+        
         $.ajax({
             type: 'POST',
             url: "{% url 'create_account_before_checkout' %}",
@@ -183,64 +262,110 @@
             crossDomain: true,
             success: function (response) {
                 if (response.is_success) {
-                    // console.log(response['session_data']);
-                    call_checkout(response['session_data']);
-                    // toastr.success(response['message']);
-                   
+        
+                        saveBookedPackage(response.session_data);
+                    
                 } else {
-                    toastr.error(response['message']);
+                    toastr.error(response.message);
+                    $('#pro').hide();
                 }
-                $('#pro').hide();
             },
             error: function (response) {
-                if (!response.is_success) {
-                    toastr.error(response['message']);
-                }
-                // alert the error if any error occurred
+                toastr.error("An error occurred during account creation");
                 $('#pro').hide();
             }
-        })
-    })
-
-function call_checkout(session_data){
-    $.ajax({
+        });
+    });
+    
+    function loginUser(email, password, callback) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_login' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            data: {
+                'email': email,
+                'password': password,
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    callback();
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred during login");
+                $('#pro').hide();
+            }
+        });
+    }
+    
+    function saveBookedPackage(session_data) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'save-booked-package' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            data: session_data,
+            success: function (response) {
+                if (response.id) {
+                    var newdata = Object.assign({}, session_data, { booking_id: response.id });
+                    
+                    call_checkout(newdata);
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred while saving your package");
+                $('#pro').hide();
+            }
+        });
+    }
+    
+    function call_checkout(session_data){
+        $.ajax({
             type: 'POST',
             url: "{% url 'create_checkout_session' %}",
             data: JSON.stringify(session_data), 
             headers: {
-                'X-CSRFToken': getCookie('csrftoken'), // Fix CSRF Issue
+                'X-CSRFToken': getCookie('csrftoken'),
                 "Content-Type": "application/json"
             },
             success: function (response) {
                 if (response.is_success) {
-                    // toastr.success(response['message']);
                     window.location.href = response.checkout_url;
                 } else {
-                    toastr.error(response['message']);
+                    toastr.error(response.message);
+                    $('#pro').hide();
                 }
             },
             error: function (response) {
-                if (!response.is_success) {
-                    toastr.error(response['message']);
-                }
+                toastr.error("An error occurred during checkout");
+                $('#pro').hide();
             }
         });
-}
+    }
 </script>
 <script>
     function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 </script>
 {% endblock script %}

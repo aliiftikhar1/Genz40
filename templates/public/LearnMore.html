@@ -505,88 +505,23 @@
 {% comment %} Gallery Section Ends {% endcomment %}
 
 <section id="exclusive-discount" class="bg-half-100 d-table w-100">
-    <div class="container-fluid">
+    {% comment %} <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 d-flex justify-content-between align-items-center">
-                <!-- Lock Your Price Button (Visible Only on Mobile) -->
                 <a href="{% url 'lock_your_price_now' items.slug %}" class="btn btn-success text-light fw-bold btn-sm text-uppercase d-block d-lg-none">
                     Lock your price now
                 </a>
-                <!-- Spacer to keep alignment correct on desktop -->
+                
                 <div class="d-none d-lg-block flex-grow-1"></div>
     
-                <!-- Technical Specs Link (Always Visible & Positioned on the Right) -->
                
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 col-lg-6">
-                <div class="mb-3 mt-2">
-                    <label for="car-select" class="fw-bold text-black me-2">Select Car Model:</label>
-                    <select id="car-select" class="form-select d-inline-block w-auto">
-                        {% for item in allitems %}
-                            <option value="{{ item.slug }}" {% if item.title == items.title %} selected {% endif %}>
-                                {{ item.title }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                
-                <div class="">
-                    {% if items.title == 'Mark I' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
-                    {% elif items.title == 'Mark II' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk2.gif' %}" alt="Mark II GIF">
-                    {% elif items.title == 'Mark IV' %}
-                    <img class="w-100 img-fluid rounded" src="{% static 'mk4.gif' %}" alt="Mark IV GIF">
-                    {% endif %}
-                    
-                </div>
-                
-            </div>
-            <div class="col-md-6 col-lg-6 text-center">
-                
-                <h1 class="text-light text-center pt-4">
-                    Save your spot & lock in a 20% discount with $100 deposit today.
-                </h1>
-                <p class="text-light text-center">
-                    Prices go up closer to launch.
-                </p>
-                <div class="row">
-                    {% for package in package_details %}
-                    <div class="col-md-6 text-dark">
-                        <p class="text-light text-center">
-                            {{ package.name }}
-                         </p>
-                         <h6 class="text-center text-black-50 text-decoration-line-through">${{ package.amount_reserve|intcomma }}</h6>
-                         <h2 class="text-center text-light">${{ package.amount|intcomma }}</h2>
-
-                        
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <a href="{% url 'lock_your_price_now' items.slug %}" class="btn btn-lg me-2 btn-success text-light fw-bold text-uppercase mt-4 mb-3 text-center">
-                    Lock your price now
-                </a>
-                <br>
-                <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-                        class="text-center text-decoration-underline">
-                        Technical Specs
-            </a>
-                <p class="text-light">* Reservation today will save your spot and lock your price for either Package "Roller or Turnkey Minus"</p>
-                <h3 class="text-light">
-                    Spots are limited. Launching soon.
-                </h3>
-            </div>
-        </div>
-
-       
-    </div>
+    <!-- lock your price now section -->
+    {% include "public/LockPriceSection.html" %}
+     <!-- lock your price now section end-->
 </section>
 
 <!-- tech specs Modal -->
@@ -785,10 +720,10 @@
                             </div>
                         </div><!--end col-->
                         <div class="col-md-12 d-grid">
-                            <a href="{% url 'lock_your_price_now' items.slug %}"
+                            {% comment %} <a href="{% url 'lock_your_price_now' items.slug %}"
                                 class="btn btn-lg me-2 btn-success text-dark fw-bold text-uppercase mt-4 float-end">
                                 Reserve Now
-                            </a>
+                            </a> {% endcomment %}
                             <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
                                 * Reservation today will save your spot and lock your price for either Package "Roller
                                 or Turnkey Minus"

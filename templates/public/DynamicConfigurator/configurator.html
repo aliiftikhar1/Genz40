@@ -68,12 +68,12 @@
                 {{ package.name }} Package Configurator
               </h2>
               <p>{{ package.description }}</p>
-              <p class="text-gray-300 mt-2">Base price: ${{ package.baseAmount }}</p>
+              <p class="text-gray-300 mt-2">Price: <span style="text-decoration: line-through;"> ${{ package.baseAmount }}</span>  ${{package.discountAmount}}</p>
               <div class="mt-4 h-1 w-full"></div>
             </div>
 
             <form id="{{ package.package_type }}Form" class="space-y-6 pb-28">
-              <input type="hidden" name="package_base_price" value="{{ package.baseAmount }}">
+              <input type="hidden" name="package_base_price" value="{{ package. }}">
               {% if package.package_type == 'roller' %}
              
                 {% for section in sections %}

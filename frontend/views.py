@@ -121,7 +121,7 @@ def tech_specs(request, slug):
 def learn_more(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     allitems = PostNavItem.objects.all()  
-    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+    package_details = DynamicPackages.objects.filter(car_model=items).order_by('created_at')
     
     # Use the static() function to generate URLs for static files
     markI_images = [
@@ -488,28 +488,37 @@ def reserve_now(request, slug):
                     'random_password': random_password,
                     'email': email})
 
-def lock_your_price_now(request, slug):
-    email = request.GET.get('email', '')
+def lock_your_price_now(request, slug, packageId):
+    email = request.user.email if request.user.is_authenticated else request.GET.get('email', '')
+    
     items = get_object_or_404(PostNavItem, slug=slug)
-    package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
-    amount_due = package_details[0].amount_due
-    # package = items.details.filter(is_active=True).order_by('position')
+    package_details = DynamicPackages.objects.filter(id=packageId).order_by('created_at')
+    
+    amount_due = package_details[0].reserveAmount
     random_password = generate_random_password()
     ip = get_country_info(request)
-    # ip = "103.135.189.223"
-    response = requests.get(f'https://ipinfo.io/{ip}/json')
-    data = response.json()
-    country_code = data.get('country')
-    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
-    return render(request, 'public/lock_your_price_now.html',
-                  {'items': items,
-                   'packages': package_details,
-                   'amount_due': amount_due,
-                   'country_code': country_code,
-                    'country_flag_url': country_flag_url,
-                    'random_password': random_password,
-                    'email': email})
+    
+    try:
+        response = requests.get(f'https://ipinfo.io/{ip}/json')
+        data = response.json()
+        country_code = data.get('country')
+        country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    except:
+        country_code = 'US'  # default
+        country_flag_url = f'https://www.flagsapi.com/US/flat/64.png'
+    
+    context = {
+        'items': items,
+        'package': package_details[0],
+        'amount_due': amount_due,
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+        'random_password': random_password,
+        'email': email,
+        'user': request.user if request.user.is_authenticated else None
+    }
+    
+    return render(request, 'public/lock_your_price_now.html', context)
 
 def reserve_configuration_now(request, slug):
     email = request.GET.get('email', '')
@@ -580,17 +589,22 @@ def generate_reference_number():
 
 def create_account_before_checkout(request):
     if request.method == 'POST':
-        new_ref = generate_reference_number()
+        # new_ref = generate_reference_number()
         amount = request.POST['amount']  # Amount in cents (e.g., $50.00)
-        product_name = request.POST['package']
+        product_name = request.POST['package_name']
         email = request.POST['email']
+        package_id = request.POST['package_id']
         user = CustomUser.objects.filter(email=email, phone_number=request.POST['phone_number']).first()
         if user:
             # Both email and phone exist in the same account → Proceed further
             login(request, user)
             fullName = user.first_name+ ' '+user.last_name
             session_data = {'product_name': product_name, 'amount': amount, 
-                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
+                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'car_slug':request.POST['car_slug'], 'package_id':package_id,
+                                    'car_model':request.POST['car_model'], 'price':request.POST['price'], 'title': request.POST['package_name'],
+                                    'success_url': request.build_absolute_uri(f'/car/reservation_success/'),
+                                    'cancel_url': request.build_absolute_uri(f'/car/reservation-checkout/'),
+                                    }
             # Ensure session_data is returned as a JSON response
             return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
                         
@@ -625,7 +639,11 @@ def create_account_before_checkout(request):
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
                     session_data = {'product_name': product_name, 'amount': amount, 
-                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'new_ref':new_ref}
+                                    'email':user.email, 'fullName':fullName, 'id':user.id, 'car_slug':request.POST['car_slug'], 'package_id':package_id,
+                                    'car_model':request.POST['car_model'], 'price':request.POST['price'], 'title': request.POST['package_name'],
+                                    'success_url': request.build_absolute_uri(f'/car/reservation_success/'),
+                                    'cancel_url': request.build_absolute_uri(f'/car/reservation-checkout/'),
+                                    }
                     return JsonResponse({"message": "Success.", 'is_success': True, 'session_data': session_data})
 
 def create_checkout_session(request):
@@ -637,7 +655,6 @@ def create_checkout_session(request):
             amount = data.get("amount")
             full_name = data.get("full_name")
             user_id = data.get("id")
-            new_ref = data.get("new_ref")
 
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -649,25 +666,23 @@ def create_checkout_session(request):
                             'description': 'This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.',
                             'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
                         },
-                        'unit_amount': int(amount) * 100,  # Convert to cents
+                        'unit_amount': int(amount) * 100,  
                     },
                     'quantity': 1,
                 }],
                 mode='payment',
-                success_url='https://genz40.com/success/',
-                cancel_url='https://genz40.com/cancel/',
+               success_url=f"{data['success_url']}{data['booking_id']}/{{CHECKOUT_SESSION_ID}}",
+               cancel_url=f"{data['cancel_url']}{data['booking_id']}",
                 customer_email=email,
                 metadata={
                     'full_name': full_name,
                     'email': email,
-                    'new_ref': new_ref,
                     'product_name': product_name,
                     'description': str(user_id), #Passing Userid
                 },
                 payment_intent_data={
                 'description': str(user_id), #Passing Userid
                 "metadata": {
-                    'new_ref':new_ref,
                     'product_name': product_name
                 },
                 },
@@ -2037,7 +2052,7 @@ from decimal import Decimal
 def dynamic_configurator(request, car_model_slug):
     car_model = get_object_or_404(PostNavItem, slug=car_model_slug)
     
-    packages = DynamicPackages.objects.all().order_by('created_at')
+    packages = DynamicPackages.objects.filter(car_model=car_model).order_by('created_at')
     
     sections = FeaturesSection.objects.all().order_by('created_at')
     
