@@ -335,7 +335,7 @@ def get_register(request):
                     sender = settings.EMAIL_FROM
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
                     send_activation_email(request, user, request.POST['password1'])
-                    EmailThread(subject, html_content, recipient_list, sender).start()
+                    # EmailThread(subject, html_content, recipient_list, sender).start()
                     
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
@@ -836,11 +836,23 @@ def my_vehicle_details(request, id):
 
 @login_required
 def payment_history(request):
-    reserverd_vehicles = PostPayment.objects.filter(user_id=str(request.user.id), status='succeeded')
+    # Get successful reservation payments for the current user
+    reservation_payments = PostPayment.objects.filter( user=request.user, status='succeeded' ).select_related('rn_number').order_by('-created_at')
+    
+    # Get successful feature payments for the current user
+    new_feature_payments = ReservationFeaturesPayment.objects.filter(
+         reservation_feature__booked_package__user=request.user, payment_status='completed' 
+    ).select_related(
+        'reservation_feature',
+        'reservation_feature__booked_package'
+    ).order_by('-payment_date')
+    
     context = {
-        'reserverd_vehicles':reserverd_vehicles
+        'reservation_payments': reservation_payments,
+        'new_feature_payments': new_feature_payments,
+        'is_footer_required': True
     }
-    return render(request, 'customer/reserved_vehicles/payments.html', context, {'is_footer_required': True})
+    return render(request, 'customer/reserved_vehicles/payments.html', context)
 
 @login_required
 def profile_settings(request):
