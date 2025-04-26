@@ -83,15 +83,15 @@
                                                                 {% endif %}
                                                                 </p>
                                                             
-                                                                {% if package.extra_features %}
+                                                                {% comment %} {% if package.extra_features %}
                                                                     <p class="text-muted mb-1"><strong>Features: </strong>{{ package.extra_features|title_case|truncate_chars:80 }}</p>
-                                                                {% endif %}
+                                                                {% endif %} {% endcomment %}
                                                                 
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div id="urls" data-update-url="{% url 'update-booked-package' '00000000-0000-0000-0000-000000000000' %}" style="display: none;"></div>
-                                                    <div class="d-flex justify-content-end align-items-center gap-4 pb-1">
+                                                    <div class="d-flex justify-content-end align-items-center gap-4 pb-1 pt-2">
                                                         <a href="{% url 'reservation_details' package.reservation_number %}" class="text-muted readmore">Manage <i class="uil uil-angle-right-b align-middle"></i></a>
                                                         {% if package.status == 'pending' %}
                                                         <a href="{% url 'reservation_checkout' package.id %}" class="btn btn-sm btn-success">Pay Now</a>

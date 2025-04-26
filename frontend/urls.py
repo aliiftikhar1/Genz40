@@ -67,11 +67,12 @@ urlpatterns = [
    
     # New URLs
     path('reservation/<str:reservation_number>/add-feature/', views.add_reservation_feature, name='add_reservation_feature'),
-    path('feature/<str:feature_id>/initiate-payment/', views.initiate_feature_payment, name='initiate_feature_payment'),
-    path('feature/create-feature-checkout-session/', views.create_feature_checkout_session, name='create_feature_checkout_session'),
-    # path('feature/payment-success/', views.new_feature_payment_success, name='new_feature_payment_success'),
-    path('feature/feature-payment-success/<str:id>/<str:sessionId>/', views.new_feature_payment_success, name='new_feature_payment_success'),
+    path('reservations/<str:reservation_number>/delete-feature/<str:feature_id>/', views.delete_reservation_feature, name='delete_reservation_feature'),
 
+    path('feature/payment/initiate/', views.initiate_feature_payment, name='initiate_feature_payment'),
+    path('feature/payment/initiate/<uuid:feature_id>/', views.initiate_feature_payment, name='initiate_single_feature_payment'),
+    path('feature/create-checkout-session/', views.create_feature_checkout_session, name='create_feature_checkout_session'),
+    path('feature/feature-payment-success/<str:id>/<str:sessionId>/', views.new_feature_payment_success, name='feature_payment_success'),
     
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

@@ -556,6 +556,210 @@ class CarConfiguration(models.Model):
         db_table = 'car_configurations'
 
 
+class DynamicPackages(models.Model):
+    PACKAGE_TYPES = (
+        ('roller', 'Roller Package'),
+        ('roller_plus', 'Roller Plus Package'),
+        ('builder', 'Builder Package'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    package_type = models.CharField(max_length=20, choices=PACKAGE_TYPES)
+    car_model = models.ForeignKey('PostNavItem', on_delete=models.CASCADE, related_name='packages')
+    description = models.TextField()
+    baseAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    discountAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    reserveAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_package_type_display()}) - {self.car_model}"
+
+    class Meta:
+        db_table = 'dynamic_packages'
+        verbose_name_plural = 'Dynamic Packages'
+
+
+class FeaturesSection(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.name} "
+
+    class Meta:
+        db_table = 'dynamic_features_sections'
+        verbose_name_plural = 'Features Sections'
+
+
+class PackageFeatureRoller(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+
+    included = models.BooleanField(default=False)
+    
+    in_rollerPlus = models.BooleanField(
+        default=True,
+        verbose_name="Available in Roller Plus",
+        help_text="Whether this feature is available in Roller Plus models"
+    )
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_roller_package_features'
+        verbose_name_plural = 'All Roller Package Features'
+
+    @classmethod
+    def get_feature_name_by_id(cls, feature_id):
+        """
+        Returns the name of a feature given its ID.
+        
+        Args:
+            feature_id: The UUID of the feature (can be string or UUID object)
+        
+        Returns:
+            str: The name of the feature if found, None otherwise
+        """
+        try:
+            if isinstance(feature_id, str):
+                feature_id = uuid.UUID(feature_id)
+                
+            feature = cls.objects.filter(id=feature_id).first()
+            return feature.name if feature else None
+        except (ValueError, AttributeError):
+            return None
+        
+    def __str__(self):
+        return f"{self.name} - {self.section}"
+    
+
+class PackageFeatureRollerPlus(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    included = models.BooleanField(default=False)
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_rollerplus_package_features'
+        verbose_name_plural = 'All Roller Plus Package Features'
+
+    def __str__(self):
+        return f"{self.name} - {self.section} "
+    
+
+class PackageFeatureBuilder(models.Model):
+    FEATURE_TYPE_CHOICES = (
+        ('checkbox', 'Checkbox'),
+        ('radiobox', 'Radiobox'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    option1 = models.CharField(max_length=100, blank=True, null=True)
+    option2 = models.CharField(max_length=100, blank=True, null=True)
+    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    checked = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    included = models.BooleanField(default=False)
+    
+    # New fields for car model compatibility
+    in_mark_I = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark I",
+        help_text="Whether this feature is available in Mark I models"
+    )
+    in_mark_II = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark II",
+        help_text="Whether this feature is available in Mark II models"
+    )
+    in_mark_IV = models.BooleanField(
+        default=True,
+        verbose_name="Available in Mark IV",
+        help_text="Whether this feature is available in Mark IV models"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'all_builder_package_features'
+        verbose_name_plural = 'All Builder Package Features'
+        # abstract = True
+
+    def __str__(self):
+        return f"{self.name} - {self.section} "
+
+
+
 
 class BookedPackage(models.Model):
     STATUS_CHOICES = [
@@ -591,6 +795,7 @@ class BookedPackage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='booked_Package_configuration')
     car_model = models.ForeignKey(PostNavItem, on_delete=models.CASCADE, related_name='package_car')
     title = models.CharField(max_length=255)
+    package = models.ForeignKey(DynamicPackages, on_delete=models.CASCADE, related_name='booked_Package_id')
     extra_features = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -769,6 +974,7 @@ class ReservationNewFeatures(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     booked_package = models.ForeignKey(BookedPackage, on_delete=models.CASCADE, related_name='new_features')
     features = models.TextField(help_text="Describe the new features to be added")
+    feature_id =   models.CharField(max_length=100, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(default=timezone.now)
@@ -820,188 +1026,5 @@ class ReservationFeaturesPayment(models.Model):
         return self.reservation_feature.booked_package
     
 
-
-
-class DynamicPackages(models.Model):
-    PACKAGE_TYPES = (
-        ('roller', 'Roller Package'),
-        ('roller_plus', 'Roller Plus Package'),
-        ('builder', 'Builder Package'),
-    )
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    package_type = models.CharField(max_length=20, choices=PACKAGE_TYPES)
-    car_model = models.ForeignKey('PostNavItem', on_delete=models.CASCADE, related_name='packages')
-    description = models.TextField()
-    baseAmount = models.DecimalField(max_digits=10, decimal_places=2)
-    discountAmount = models.DecimalField(max_digits=10, decimal_places=2)
-    reserveAmount = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.get_package_type_display()}) - {self.car_model}"
-
-    class Meta:
-        db_table = 'dynamic_packages'
-        verbose_name_plural = 'Dynamic Packages'
-
-
-class FeaturesSection(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.name} "
-
-    class Meta:
-        db_table = 'dynamic_features_sections'
-        verbose_name_plural = 'Features Sections'
-
-
-class PackageFeatureRoller(models.Model):
-    FEATURE_TYPE_CHOICES = (
-        ('checkbox', 'Checkbox'),
-        ('radiobox', 'Radiobox'),
-    )
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    option1 = models.CharField(max_length=100, blank=True, null=True)
-    option2 = models.CharField(max_length=100, blank=True, null=True)
-    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    checked = models.BooleanField(default=False)
-    disabled = models.BooleanField(default=False)
-
-    included = models.BooleanField(default=False)
-    
-    in_rollerPlus = models.BooleanField(
-        default=True,
-        verbose_name="Available in Roller Plus",
-        help_text="Whether this feature is available in Roller Plus models"
-    )
-    in_mark_I = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark I",
-        help_text="Whether this feature is available in Mark I models"
-    )
-    in_mark_II = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark II",
-        help_text="Whether this feature is available in Mark II models"
-    )
-    in_mark_IV = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark IV",
-        help_text="Whether this feature is available in Mark IV models"
-    )
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'all_roller_package_features'
-        verbose_name_plural = 'All Roller Package Features'
-
-    def __str__(self):
-        return f"{self.name} - {self.section}"
-    
-
-class PackageFeatureRollerPlus(models.Model):
-    FEATURE_TYPE_CHOICES = (
-        ('checkbox', 'Checkbox'),
-        ('radiobox', 'Radiobox'),
-    )
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    option1 = models.CharField(max_length=100, blank=True, null=True)
-    option2 = models.CharField(max_length=100, blank=True, null=True)
-    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    checked = models.BooleanField(default=False)
-    disabled = models.BooleanField(default=False)
-    included = models.BooleanField(default=False)
-    in_mark_I = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark I",
-        help_text="Whether this feature is available in Mark I models"
-    )
-    in_mark_II = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark II",
-        help_text="Whether this feature is available in Mark II models"
-    )
-    in_mark_IV = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark IV",
-        help_text="Whether this feature is available in Mark IV models"
-    )
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'all_rollerplus_package_features'
-        verbose_name_plural = 'All Roller Plus Package Features'
-
-    def __str__(self):
-        return f"{self.name} - {self.section} "
-    
-
-class PackageFeatureBuilder(models.Model):
-    FEATURE_TYPE_CHOICES = (
-        ('checkbox', 'Checkbox'),
-        ('radiobox', 'Radiobox'),
-    )
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    section = models.ForeignKey('FeaturesSection', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    option1 = models.CharField(max_length=100, blank=True, null=True)
-    option2 = models.CharField(max_length=100, blank=True, null=True)
-    option1_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    checked = models.BooleanField(default=False)
-    disabled = models.BooleanField(default=False)
-    included = models.BooleanField(default=False)
-    
-    # New fields for car model compatibility
-    in_mark_I = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark I",
-        help_text="Whether this feature is available in Mark I models"
-    )
-    in_mark_II = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark II",
-        help_text="Whether this feature is available in Mark II models"
-    )
-    in_mark_IV = models.BooleanField(
-        default=True,
-        verbose_name="Available in Mark IV",
-        help_text="Whether this feature is available in Mark IV models"
-    )
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'all_builder_package_features'
-        verbose_name_plural = 'All Builder Package Features'
-        # abstract = True
-
-    def __str__(self):
-        return f"{self.name} - {self.section} "
 
 

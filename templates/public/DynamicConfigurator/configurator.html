@@ -73,7 +73,7 @@
             </div>
 
             <form id="{{ package.package_type }}Form" class="space-y-6 pb-28">
-              <input type="hidden" name="package_base_price" value="{{ package. }}">
+              <input type="hidden" name="package_base_price" value="{{ package.discountAmount }}">
               {% if package.package_type == 'roller' %}
              
                 {% for section in sections %}
@@ -100,9 +100,9 @@
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
                                     data-price="{{ feature.price }}"
                                     data-feature-name="{{ feature.name }}"
+                                    data-feature-id="{{ feature.id }}"
                                     {% if feature.in_rollerPlus %}
                                     data-rollerplus="true"
-                                    data-feature-id="{{ feature.name|slugify }}"
                                     {% endif %}
                                   >
                                 </div>
@@ -144,9 +144,10 @@
                                       data-price="{{ feature.option1_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
                                       {% if feature.in_rollerPlus %}
                                       data-rollerplus="true"
-                                      data-feature-id="{{ feature.name|slugify }}"
                                       {% endif %}
                                     >
                                     <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
@@ -168,9 +169,10 @@
                                       data-price="{{ feature.option2_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
                                       {% if feature.in_rollerPlus %}
                                       data-rollerplus="true"
-                                      data-feature-id="{{ feature.name|slugify }}"
                                       {% endif %}
                                     >
                                     <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
@@ -213,6 +215,8 @@
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
                                     data-price="{{ feature.price }}"
                                     data-feature-name="{{ feature.name }}"
+                                    
+                                    data-feature-id="{{ feature.id }}"
                                   >
                                 </div>
                                 <div class="ml-3 text-lg">
@@ -249,6 +253,8 @@
                                       data-price="{{ feature.option1_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
                                     >
                                     <label for="{{ feature.name|slugify }}_option1" class="ml-3 text-gray-300">
                                       {{ feature.option1 }}
@@ -268,6 +274,8 @@
                                       data-price="{{ feature.option2_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
                                     >
                                     <label for="{{ feature.name|slugify }}_option2" class="ml-3 text-gray-300">
                                       {{ feature.option2 }}
@@ -310,6 +318,8 @@
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
                                     data-price="{{ feature.price }}"
                                     data-feature-name="{{ feature.name }}"
+                                    
+                                    data-feature-id="{{ feature.id }}"
                                   >
                                 </div>
                                 <div class="ml-3 text-lg">
@@ -346,6 +356,8 @@
                                       data-price="{{ feature.option1_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
                                     >
                                     <label for="{{ feature.name|slugify }}_option1" class="ml-3 text-gray-300">
                                       {{ feature.option1 }}
@@ -365,6 +377,8 @@
                                       data-price="{{ feature.option2_price }}"
                                       data-included="{{ feature.included }}"
                                       data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
                                     >
                                     <label for="{{ feature.name|slugify }}_option2" class="ml-3 text-gray-300">
                                       {{ feature.option2 }}
@@ -492,7 +506,7 @@
   if ({{ package.package_type }}Form) {
     {{ package.package_type }}Form.addEventListener('submit', function(e) {
       e.preventDefault();
-      handlePackageSubmit('{{ package.package_type }}');
+      handlePackageSubmit('{{ package.package_type }}','{{package.id}}');
     });
   }
   {% endfor %}
@@ -569,7 +583,7 @@ let userLoggedIn = checkUserLoggedIn();
 function checkUserLoggedIn() {
   return "{{request.user.id}}" !== "None";
 }
-function handlePackageSubmit(packageType) {
+function handlePackageSubmit(packageType,package_id) {
 
   console.log(packageType,"Pacage SUbmit form triggered");
   if (!userLoggedIn) {
@@ -580,14 +594,22 @@ function handlePackageSubmit(packageType) {
   const form = document.getElementById(`${packageType}Form`);
   if (!form) return;
 
-  const checked = document.querySelectorAll(`#${packageType}Form input[type="checkbox"]:checked:not([disabled])`);
-  const features = Array.from(checked).map(cb => cb.name).filter(Boolean);
 
-  // Handle radio buttons
+  const checked = document.querySelectorAll(`#${packageType}Form input[type="checkbox"]:checked:not([disabled])`);
+  const checkboxFeatures = Array.from(checked).map(cb => {
+    const featureId = cb.getAttribute('data-feature-id');
+    return featureId;
+  }).filter(Boolean);
+
+  const radioFeatures = [];
   const selectedRadios = document.querySelectorAll(`#${packageType}Form input[type="radio"]:checked:not([disabled])`);
   selectedRadios.forEach(radio => {
-    features.push(`${radio.name}:${radio.value}`);
+    const featureId = radio.getAttribute('data-feature-id');
+    const option = radio.getAttribute('data-option');
+    radioFeatures.push(`${featureId}:${option}`);
   });
+
+  const features = [...checkboxFeatures, ...radioFeatures];
 
   const totalPriceEl = document.getElementById(`${packageType}totalPrice`) || 
                        document.getElementById(`${packageType}mobiletotalPrice`);
@@ -597,11 +619,12 @@ function handlePackageSubmit(packageType) {
 
   const formData = new FormData();
   formData.append("title", packageType.charAt(0).toUpperCase() + packageType.slice(1));
-  formData.append("extra_features", features.length ? features.join(', ') : "None");
+  formData.append("extra_features", features.length ? features : ["None"],);
   formData.append("price", price);
   formData.append("status", "pending");
   formData.append("car_model", carModel);
   formData.append("user", userId);
+  formData.append("package", package_id);
 
   fetch("{% url 'save-booked-package' %}", {
     method: "POST",
@@ -1148,14 +1171,11 @@ function handleSignUpSubmit(e) {
         rollerPlusTab.classList.add('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
         rollerPlusContent.classList.remove('hidden');
         
-        // Initialize price calculator for roller_plus tab
         initPriceCalculator('roller_plus');
         
-        // Find the corresponding element in Roller Plus tab
         const targetFeature = rollerPlusContent.querySelector(`[name="${featureName}"]`);
         
         if (targetFeature) {
-          // Scroll to the feature with smooth animation
           setTimeout(() => {
             targetFeature.scrollIntoView({
               behavior: 'smooth', 
@@ -1172,7 +1192,7 @@ function handleSignUpSubmit(e) {
               targetFeature.style.background = originalBackground;
               targetFeature.style.boxShadow = '';
             }, 2000);
-          }, 300); // Small delay to allow tab switch to complete
+          }, 300); 
         }
       }
     });

@@ -1,3 +1,4 @@
+import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -16,6 +17,7 @@ from .forms import CustomPasswordResetForm, CustomPasswordResetConfirmForm, Post
     ImageModelForm
 from .forms import RegisterForm, PostPackageForm, PostNavItemForm
 from .models import PostPackage, PostNavItem,CarConfiguration,ReservationFeaturesPayment, ReservationNewFeatures
+from .models import  DynamicPackages, FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder
 import string
 import random
 from common.utils import get_client_ip, send_custom_email
@@ -249,12 +251,51 @@ def package_list(request):
     all_package_list = PostPackage.objects.all()
     return render(request, 'admin/package/list.html', {'packages': all_package_list})
 
+# views.py
 @login_required
 def booked_package_list(request):
-    all_booked_package_list = BookedPackage.objects.all().order_by('-updated_at')
-    all_payment_list = PostPayment.objects.all().order_by('-updated_at')
+    all_booked_package_list = BookedPackage.objects.all().order_by('reservation_number')
+    
+    # Custom serialization for features
+    def serialize_features(queryset):
+        features = []
+        for feature in queryset:
+            options = []
+            if feature.option1:
+                options.append({
+                    'value': 'option1',
+                    'label': feature.option1,
+                    'price': float(feature.option1_price)
+                })
+            if feature.option2:
+                options.append({
+                    'value': 'option2',
+                    'label': feature.option2,
+                    'price': float(feature.option2_price)
+                })
+                
+            features.append({
+                'id': str(feature.id),
+                'title': feature.name,
+                'type': feature.type,
+                'price': float(feature.price),
+                'options': options,
+                'included': feature.included
+            })
+        return json.dumps(features)
+    
+    all_roller_features = serialize_features(PackageFeatureRoller.objects.all())
+    all_roller_plus_features = serialize_features(PackageFeatureRollerPlus.objects.all())
+    all_builder_features = serialize_features(PackageFeatureBuilder.objects.all())
+    
     nav_items = PostNavItem.objects.all()
-    return render(request, 'admin/booked_package/list.html', {'booked_packages': all_booked_package_list,'all_payment_list':all_payment_list, 'nav_items':nav_items})
+    return render(request, 'admin/booked_package/list.html', {
+        'booked_packages': all_booked_package_list,
+        'nav_items': nav_items,
+        'all_roller_features': all_roller_features,
+        'all_roller_plus_features': all_roller_plus_features,
+        'all_builder_features': all_builder_features,
+    })
 
 @login_required
 def package_add(request):

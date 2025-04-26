@@ -1,6 +1,6 @@
 # frontend/templatetags/frontend_custom_filters.py
-
 from django import template
+from django.db.models import Q, Sum
 import re
 from collections import defaultdict
 from backend.models import BookedPackage
@@ -143,3 +143,7 @@ def filter_by_section(features, section):
 @register.filter
 def slugify(value):
     return django_slugify(value)
+
+@register.filter
+def sum_attr(queryset, attr):
+    return queryset.aggregate(total=Sum(attr))['total'] or 0
