@@ -107,4 +107,16 @@ path('reservations/', views.booked_package_list, name='booked_package_list'),
     path('image/<str:image_id>/delete/', views.delete_package_image, name='delete_package_image'),
     path('image/<str:image_id>/update-build-type/', views.update_image_build_type, name='update_image_build_type'),
 
+
+    # Apis for mobile application
+    path('api/landing-images/', views.get_landing_images, name='api_landing_images'),
+    path('api/nav-items/', views.get_nav_items, name='api_nav_items'),
+    path('api/car/<slug:slug>/', views.get_car_details, name='api_car_details'),
+    path('api/dynamic-packages/<slug:car_model_slug>/', views.get_dynamic_packages, name='api_dynamic_packages'),
+    path('api/feature-sections/', views.get_feature_sections, name='api_feature_sections'),
+    path('api/features/<str:feature_type>/<slug:slug>/', views.get_features_by_type, name='api_features_by_type'),
+    path('api/reservation/<str:reservation_number>/', views.get_reservation_details, name='api_reservation_details'),
+    path('api/login/', views.user_login, name='api_user_login'),
+    path('api/user-reservations/', views.get_user_reservations, name='api_user_reservations'),
+    # path('api/logout/', views.user_logout, name='api_user_logout'),
 ]

@@ -284,6 +284,7 @@ def booked_package_list(request):
             })
         return json.dumps(features)
     
+
     all_roller_features = serialize_features(PackageFeatureRoller.objects.all())
     all_roller_plus_features = serialize_features(PackageFeatureRollerPlus.objects.all())
     all_builder_features = serialize_features(PackageFeatureBuilder.objects.all())
@@ -1182,3 +1183,317 @@ def update_image_build_type(request, image_id):
         'package': package,
     }
     return render(request, 'admin/booked_package/UploadReservationImage.html', context)
+
+
+
+
+
+
+
+# For mobile application views
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth import authenticate, login
+from .models import (
+    PostLandingPageImages,
+    PostNavItem,
+    PostPackage,
+    DynamicPackages,
+    FeaturesSection,
+    PackageFeatureRoller,
+    PackageFeatureRollerPlus,
+    PackageFeatureBuilder,
+    BookedPackage,
+    PostPayment
+)
+from .serializers import (
+    LandingPageImageSerializer,
+    NavItemSerializer,
+    CarDetailSerializer,
+    # PackageSerializer,
+    DynamicPackageSerializer,
+    FeatureSectionSerializer,
+    FeatureSerializer,
+    BookedPackageSerializer,
+    PackageFeatureBuilderSerializer,
+    PackageFeatureRollerSerializer,
+    PackageFeatureRollerPlusSerializer
+
+)
+
+# Existing API Views (keeping your previous APIs intact)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_landing_images(request):
+    """API endpoint to get all landing page images"""
+    images = PostLandingPageImages.objects.all().order_by('section')
+    serializer = LandingPageImageSerializer(images, many=True)
+    return Response({
+        'success': True,
+        'data': serializer.data
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_nav_items(request):
+    """API endpoint to get all active navigation items"""
+    items = PostNavItem.objects.filter(is_active=True).order_by('position')
+    serializer = NavItemSerializer(items, many=True)
+    return Response({
+        'success': True,
+        'data': serializer.data
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_car_details(request, slug):
+    """API endpoint to get details for a specific car model"""
+    try:
+        car = PostNavItem.objects.get(slug=slug, is_active=True)
+        # packages = car.details.filter(is_active=True).order_by('position')
+        
+        car_serializer = CarDetailSerializer(car)
+        # package_serializer = PackageSerializer(packages, many=True)
+        
+        return Response({
+            'success': True,
+            'car': car_serializer.data,
+            # 'packages': package_serializer.data
+        })
+    except PostNavItem.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Car model not found'
+        }, status=404)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_dynamic_packages(request, car_model_slug):
+    """API endpoint to get dynamic packages for a car model"""
+    try:
+        car_model = PostNavItem.objects.get(slug=car_model_slug)
+        packages = DynamicPackages.objects.filter(car_model=car_model).order_by('created_at')
+        
+        serializer = DynamicPackageSerializer(packages, many=True)
+        return Response({
+            'success': True,
+            'data': serializer.data
+        })
+    except PostNavItem.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Car model not found'
+        }, status=404)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_feature_sections(request):
+    """API endpoint to get all feature sections"""
+    sections = FeaturesSection.objects.all().order_by('created_at')
+    serializer = FeatureSectionSerializer(sections, many=True)
+    return Response({
+        'success': True,
+        'data': serializer.data
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_features_by_type(request, feature_type, slug):
+    """API endpoint to get features by type (roller, rollerplus, builder)"""
+    try:
+        feature = None
+        serializer_class = None
+
+        if feature_type == 'roller':
+            if slug == 'Mark-I':
+                feature = PackageFeatureRoller.objects.filter(in_mark_I=True)
+            elif slug == 'Mark-II':
+                feature = PackageFeatureRoller.objects.filter(in_mark_II=True)
+            else:
+                feature = PackageFeatureRoller.objects.filter(in_mark_IV=True)
+            serializer_class = PackageFeatureRollerSerializer
+
+        elif feature_type == 'builder':
+            if slug == 'Mark-I':
+                feature = PackageFeatureBuilder.objects.filter(in_mark_I=True)
+            elif slug == 'Mark-II':
+                feature = PackageFeatureBuilder.objects.filter(in_mark_II=True)
+            else:
+                feature = PackageFeatureBuilder.objects.filter(in_mark_IV=True)
+            serializer_class = PackageFeatureBuilderSerializer
+
+        elif feature_type == 'rollerplus':
+            if slug == 'Mark-I':
+                feature = PackageFeatureRollerPlus.objects.filter(in_mark_I=True)
+            elif slug == 'Mark-II':
+                feature = PackageFeatureRollerPlus.objects.filter(in_mark_II=True)
+            else:
+                feature = PackageFeatureRollerPlus.objects.filter(in_mark_IV=True)
+            serializer_class = PackageFeatureRollerPlusSerializer
+
+        else:
+            return Response({
+                'success': False,
+                'message': 'Invalid feature type'
+            }, status=400)
+
+        # Serialize the data
+        serializer = serializer_class(feature, many=True)
+
+        return Response({
+            'success': True,
+            'data': serializer.data
+        }, status=200)
+
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_reservation_details(request, reservation_number):
+    """API endpoint to get reservation details"""
+    try:
+        reservation = BookedPackage.objects.get(reservation_number=reservation_number)
+        
+        # Serialize the reservation data
+        reservation_data = {
+            'id': reservation.id,
+            'reservation_number': reservation.reservation_number,
+            'car_model': reservation.car_model.title,
+            'package': reservation.title,
+            'price': str(reservation.price),
+            'status': reservation.status,
+            'build_status': reservation.build_status,
+            'created_at': reservation.created_at,
+            'updated_at': reservation.updated_at,
+        }
+        
+        # Get payments for this reservation
+        payments = PostPayment.objects.filter(rn_number=reservation).order_by('-created_at')
+        payments_data = [{
+            'id': payment.id,
+            'amount': str(payment.amount),
+            'currency': payment.currency,
+            'status': payment.status,
+            'regarding': payment.regarding,
+            'created_at': payment.created_at
+        } for payment in payments]
+        
+        return Response({
+            'success': True,
+            'reservation': reservation_data,
+            'payments': payments_data
+        })
+    except BookedPackage.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Reservation not found'
+        }, status=404)
+
+# New API Views for Login and User Reservations
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+
+@api_view(['POST'])
+@authentication_classes([])  # No session, no CSRF
+@permission_classes([AllowAny])
+def user_login(request):
+    """API endpoint for user login with JWT Token"""
+    try:
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if not email or not password:
+            return Response({
+                'success': False,
+                'message': 'Email and password are required'
+            }, status=400)
+            
+        user = authenticate(request, email=email, password=password)
+        
+        if user is not None:
+            # Create JWT tokens
+            refresh = RefreshToken.for_user(user)
+            
+            return Response({
+                'success': True,
+                'message': 'Login successful',
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'role': user.role
+                },
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }
+            })
+        else:
+            return Response({
+                'success': False,
+                'message': 'Invalid email or password'
+            }, status=401)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])  # Protect with Bearer Token
+def get_user_reservations(request):
+    """API endpoint to get all reservations for the authenticated user"""
+    try:
+        user = request.user  # Get user from the Bearer token automatically
+        reservations = BookedPackage.objects.filter(user=user).exclude(status='cancelled')
+        serializer = BookedPackageSerializer(reservations, many=True)
+        
+        return Response({
+            'success': True,
+            'data': serializer.data
+        })
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+    
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def user_logout(request):
+#     """API endpoint to log out the user by blacklisting the refresh token."""
+#     try:
+#         # Get the refresh token from request
+#         refresh_token = request.data.get("refresh_token")
+        
+#         if refresh_token is None:
+#             return Response({
+#                 "success": False,
+#                 "message": "Refresh token is required for logout."
+#             }, status=400)
+        
+#         token = RefreshToken(refresh_token)
+#         token.blacklist()  # Blacklist the token (requires setup)
+        
+#         return Response({
+#             "success": True,
+#             "message": "Logout successful."
+#         })
+    
+#     except Exception as e:
+#         return Response({
+#             "success": False,
+#             "message": str(e)
+#         }, status=500)

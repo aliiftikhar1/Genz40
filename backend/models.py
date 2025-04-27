@@ -614,9 +614,7 @@ class PackageFeatureRoller(models.Model):
     option2_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     checked = models.BooleanField(default=False)
     disabled = models.BooleanField(default=False)
-
     included = models.BooleanField(default=False)
-    
     in_rollerPlus = models.BooleanField(
         default=True,
         verbose_name="Available in Roller Plus",
