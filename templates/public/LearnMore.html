@@ -8,7 +8,7 @@
     /* Base Styles */
     body {
         font-family: 'Roboto', sans-serif;
-        background-color: #e6e6e6;
+        background-color: #f5f5f5;
         color: #333;
         overflow-x: hidden;
     }
@@ -19,52 +19,65 @@
 
     /* Hero Section */
     .hero-section {
-        padding: 5rem 0 2rem;
+        padding: 6rem 0 3rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
     }
 
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 3.8rem;
         font-weight: 700;
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem;
+        color: #222;
     }
 
-    /* Car Image Containers */
     .car-image-container {
-        margin: 2rem 0;
+        /* border:2px solid black; */
+        margin: 2.5rem 0;
         text-align: center;
+        transition: transform 0.3s ease;
     }
 
     .car-image-container img {
-        max-width: 100%;
-        height: auto;
-    }
 
+        width: 100%;
+        max-width: 900px; /* Consistent max width */
+        height: 400px; /* Fixed height for uniformity */
+        object-fit: cover ; /* Ensures images fit without distortion */
+        object-position: 0% 35%;
+    }
     /* Description Cards */
     .description-section {
-        padding: 3rem 0;
+        padding: 4rem 0;
     }
 
     .description-card {
-        max-width: 800px;
+        max-width: 850px;
         margin: auto;
-        background-color: white;
+        background-color: #ffffff;
         border-radius: 16px;
-        padding: 4rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 3rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .description-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
 
     .description-card h2 {
-        font-size: 1.8rem;
-        line-height: 1.6;
+        font-size: 1.7rem;
+        line-height: 1.5;
         font-weight: 400;
         color: #333;
     }
 
     /* Logo Styling */
     .shoreline-text {
-        font-size: 2.5rem;
+        font-size: 2.7rem;
         font-weight: 400;
-        letter-spacing: 2px;
+        letter-spacing: 2.5px;
+        color: #222;
     }
 
     .lm-text {
@@ -91,235 +104,306 @@
     /* Responsive Adjustments */
     @media (max-width: 768px) {
         .hero-title {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
         }
         
+        .car-image-container img {
+            height: 300px; /* Smaller height for tablets */
+            max-width: 100%;
+        }
+
         .description-card {
             padding: 2rem;
         }
         
         .description-card h2 {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
         }
         
         .shoreline-text {
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
     }
 
     @media (max-width: 576px) {
         .hero-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
         
+        .car-image-container img {
+            height: 200px; /* Smaller height for mobile */
+            max-width: 100%;
+        }
+
         .description-card {
             padding: 1.5rem;
         }
         
         .description-card h2 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+        }
+        
+        .shoreline-text {
+            font-size: 1.8rem;
         }
     }
-    .shadow{
-        box-shadow: none!important;
+
+    .shadow {
+        box-shadow: none !important;
     }
+
     .offcanvas.offcanvas-end, .offcanvas.offcanvas-start {
         width: 420px !important;
     }
-/* Gallery Item Styling */
-.gallery-item {
-    margin-bottom: 24px;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.,44, 1);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
 
-.gallery-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 30px rgba(0,0,0,0.15);
-}
-
-/* Image Styling */
-/* Update your existing gallery-img class */
-.gallery-img {
-    width: 100%;
-    height: 250px; /* Fixed height for all images */
-    object-fit: cover; /* This will crop images to fit while maintaining aspect ratio */
-    transition: all 0.5s ease;
-    display: block;
-    border-radius: 12px;
-}
-.gallery-item-container {
-    position: relative;
-    width: 100%;
-    height: 250px; /* Same as gallery-img height */
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.gallery-item:hover .gallery-img {
-    transform: scale(1.01);
-}
-
-/* Hide Card Elements */
-.card-body {
-    display: none;
-}
-
-.card {
-    border: none;
-    background: none;
-    box-shadow: none;
-}
-
-/* Modal Styling */
-.modal-content {
-    border-radius: 16px;
-    overflow: hidden;
-    border: none;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-}
-
-.modal-header {
-    background-color: #212529;
-    color: white;
-    border-bottom: none;
-    padding: 16px 24px;
-}
-
-.modal-img {
-    width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-    background-color: white;
-}
-
-.modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Loading Animation */
-.loading {
-    opacity: 0;
-    transform: translateY(15px);
-    transition: opacity 0.4s ease, transform 0.5s ease;
-}
-
-.loaded {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Tab Styling */
-.nav-tabs {
-    border-bottom: 2px solid #f1f3f5;
-    margin-bottom: 36px;
-}
-
-.nav-tabs .nav-link {
-    margin-bottom: -2px;
-    border: none;
-    color: #6c757d;
-    font-weight: 600;
-    padding: 14px 24px;
-    border-radius: 0;
-    transition: all 0.3s ease;
-}
-
-.nav-tabs .nav-link:hover {
-    border-color: transparent;
-    color: #495057;
-}
-
-.nav-tabs .nav-link.active {
-    color: #0d6efd;
-    background-color: transparent;
-    border-bottom: 3px solid #0d6efd;
-}
-
-.tab-content {
-    padding-top: 10px;
-}
-
-.tab-pane {
-    transition: all 0.3s ease;
-}
-
-.badge-tab {
-    margin-left: 8px;
-    background-color: #e9ecef;
-    color: #6c757d;
-    font-weight: 500;
-    font-size: 0.75rem;
-    padding: 5px 8px;
-}
-
-.nav-link.active .badge-tab {
-    background-color: #0d6efd;
-    color: white;
-}
-
-.tab-icon {
-    margin-right: 8px;
-}
-@media (max-width: 768px) {
-    .gallery-img,
-    .gallery-item-container {
-        height: 200px;
+    /* Gallery Item Styling */
+    .gallery-item {
+        margin-bottom: 24px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0, 1);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
+
+    .gallery-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+        display: block;
+        border-radius: 12px;
+    }
+
+    .gallery-item-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .gallery-item:hover .gallery-img {
+        transform: scale(1.01);
+    }
+
+    .card-body {
+        display: none;
+    }
+
+    .card {
+        border: none;
+        background: none;
+        box-shadow: none;
+    }
+
+    .modal-content {
+        border-radius: 16px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background-color: #212529;
+        color: white;
+        border-bottom: none;
+        padding: 16px 24px;
+    }
+
+    .modal-img {
+        width: 100%;
+        height:100%;
+        object-fit: contain;
+        background-color: #000; /* Black background for better contrast */
+        display: block;
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: #212529;
+        color: white;
+    }
+
+    .modal-fullscreen .modal-content {
+        border-radius: 0;
+        background-color: #000; /* Dark background for full-screen modal */
+    }
+
+    .modal-fullscreen .modal-header {
+        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent for visibility */
+    }
+
+    .modal-fullscreen .modal-footer {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .loading {
+        opacity: 0;
+        transform: translateY(15px);
+        transition: opacity 0.4s ease, transform 0.5s ease;
+    }
+
+    .loaded {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nav-tabs {
+        border-bottom: 2px solid #f1f3f5;
+        margin-bottom: 36px;
+    }
+
     .nav-tabs .nav-link {
         margin-bottom: -2px;
         border: none;
         color: #6c757d;
         font-weight: 600;
-        padding: 16px 4px;
+        padding: 14px 24px;
         border-radius: 0;
         transition: all 0.3s ease;
     }
-}
 
-@media (max-width: 576px) {
-    .gallery-img,
-    .gallery-item-container {
-        height: 150px;
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #495057;
     }
-}
 
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns for desktop */
-    gap: 20px;
-    padding: 20px 0;
-}
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: transparent;
+        border-bottom: 3px solid #0d6efd;
+    }
 
-/* Mobile layout - 2 columns */
-@media (max-width: 768px) {
+    .tab-content {
+        padding-top: 10px;
+    }
+
+    .tab-pane {
+        transition: all 0.3s ease;
+    }
+
+    .badge-tab {
+        margin-left: 8px;
+        background-color: #e9ecef;
+        color: #6c757d;
+        font-weight: 500;
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
+
+    .nav-link.active .badge-tab {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .tab-icon {
+        margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .gallery-img,
+        .gallery-item-container {
+            height: 200px;
+        }
+        .nav-tabs .nav-link {
+            padding: 16px 4px;
+        }
+        .modal-img {
+            height: calc(100vh - 100px); /* Adjust for smaller screens */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .gallery-img,
+        .gallery-item-container {
+            height: 150px;
+        }
+        .modal-img {
+            height: calc(100vh - 80px); /* Further adjust for mobile */
+        }
+    }
+
     .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px 0;
     }
+
+    @media (max-width: 768px) {
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .gallery-grid-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        aspect-ratio: 1 / 1;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery-grid-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-grid-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    /* Add these styles to your existing CSS */
+#imageModal .modal-content {
+    width:100%;
+    height:100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: none;
 }
 
-/* Gallery item styling */
-.gallery-grid-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    aspect-ratio: 1 / 1; /* Square aspect ratio */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+#imageModal .modal-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    border: none;
 }
 
-.gallery-grid-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+#imageModal .modal-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: none;
+    background: transparent;
 }
 
-.gallery-grid-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+#imageModal .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+#imageModal .btn-close:hover {
+    opacity: 1;
+}
+
+#modalImage {
+    transition: transform 0.3s;
+    cursor: zoom-in;
+}
+
+#modalImage.zoomed {
+    transform: scale(1.5);
+    cursor: zoom-out;
 }
 </style>
 {% endblock header %}
@@ -328,24 +412,22 @@
 <div class="container-fluid p-0">
     <!-- Hero Section -->
     <section class="hero-section">
-        <div  style="max-width: 800px; margin: auto;display: flex; justify-content: space-between; align-items: center; padding-top: 10px;">
-            <a href=#exclusive-discount 
-        class="btn btn-danger text-white fw-bold btn-sm text-uppercase ">
-         Get Exclusive Discount
-     </a>
-     <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
-     class="btn btn-danger text-white fw-bold btn-sm text-uppercase ">
-      Technical Specs
-  </a>
+        <div style="max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 10px;">
+            <a href="#exclusive-discount" class="btn btn-danger text-white fw-bold btn-sm text-uppercase">
+                Get Exclusive Discount
+            </a>
+            <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal" class="btn btn-danger text-white fw-bold btn-sm text-uppercase">
+                Technical Specs
+            </a>
         </div>
         
         <div class="container">
-            <h1 class="hero-title text-center mb-5 mt-5">A 1960s sports prototype reborn.</h1>
+            <h1 class="hero-title text-center mb-5 mt-5">{{TitleData.heading}}</h1>
             <div class="car-image-container">
                 <img src="{{ Images.0.url }}" alt="Red Shoreline LM Coupe" class="img-fluid">
             </div>
             <div class="logo-container text-center mt-4">
-                <h2 class="shoreline-text">SHORELINE <span class="lm-text">LM<span class="coupe-text">COUPE</span></span></h2>
+                <h2 class="shoreline-text">{{TitleData.subheading}}</h2>
             </div>
         </div>
     </section>
@@ -355,7 +437,7 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                    It's time to take the sports car back to its racing roots. For inspiration, we looked to the last purpose-built racecars that could still be driven on public roads: sports prototypes of the 1960's.
+                    {{CardData.0.details}}
                 </h2>
             </div>
         </div>
@@ -375,7 +457,7 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                    The <span class="lm-inline">LM Coupe</span> is a return to compact dimensions, lightweight construction, and rich sensory feedback that gives you nothing but confidence when operating on the limit, or past it.
+                    {{CardData.1.details}}
                 </h2>
             </div>
         </div>
@@ -395,7 +477,7 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                    A timeless motorsport aesthetic continues inside with a minimalist cockpit designed for high speed operation.
+                    {{CardData.2.details}}
                 </h2>
             </div>
         </div>
@@ -405,9 +487,7 @@
     <section class="car-section">
         <div class="container">
             <div class="car-image-container">
-                <!-- Using a placeholder for the interior image -->
                 <img src="{{ Images.3.url }}" alt="Interior of Shoreline LM Coupe" class="img-fluid">
-                <!-- Note: Replace with actual interior image when available -->
             </div>
         </div>
     </section>
@@ -417,7 +497,7 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                 CHASIS <span class="divider">|</span> A modern car for the classic driver
+                    {{CardData.3.details}}
                 </h2>
             </div>
         </div>
@@ -437,573 +517,367 @@
         <div class="container">
             <div class="description-card">
                 <h2 class="text-center">
-                    At its heart sits the lightest and highest revving naturally aspirated six-cylinder production engine.
+                    {{CardData.4.details}}
                 </h2>
             </div>
         </div>
     </section>
 
-    {% comment %} Gallery Section {% endcomment %}
+     <!-- Comparison Image Section -->
+     <section class="car-section">
+        <div class="container">
+            <div class="car-image-container">
+                <img src="{{ Images.5.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
+            </div>
+        </div>
+    </section>
 
-{% comment %} Gallery Section {% endcomment %}
-<div class="container">
-    <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="interior-tab" data-bs-toggle="tab" data-bs-target="#interior-pane" type="button" role="tab" aria-controls="interior-pane" aria-selected="true">
-                <i class="fas fa-couch tab-icon"></i>Interior
-                <span class="badge rounded-pill badge-tab" id="interior-count">0</span>
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="exterior-tab" data-bs-toggle="tab" data-bs-target="#exterior-pane" type="button" role="tab" aria-controls="exterior-pane" aria-selected="false">
-                <i class="fas fa-car tab-icon"></i>Exterior
-                <span class="badge rounded-pill badge-tab" id="exterior-count">0</span>
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="chasis-tab" data-bs-toggle="tab" data-bs-target="#chasis-pane" type="button" role="tab" aria-controls="chasis-pane" aria-selected="false">
-                <i class="fas fa-cogs tab-icon"></i>Chassis
-                <span class="badge rounded-pill badge-tab" id="chasis-count">0</span>
-            </button>
-        </li>
-    </ul>
-    
-    <!-- Tab Content -->
-    <div class="tab-content" id="galleryTabContent">
-        <div class="tab-pane fade show active" id="interior-pane" role="tabpanel" aria-labelledby="interior-tab">
-            <div class="gallery-grid" id="interior-container"></div>
+    <!-- Sixth Description Section -->
+    <section class="description-section mb-5">
+        <div class="container">
+            <div class="description-card">
+                <h2 class="text-center">
+                    {{CardData.5.details}}
+                </h2>
+            </div>
         </div>
-        <div class="tab-pane fade" id="exterior-pane" role="tabpanel" aria-labelledby="exterior-tab">
-            <div class="gallery-grid" id="exterior-container"></div>
+    </section>
+
+     <!-- Comparison Image Section -->
+     <section class="car-section">
+        <div class="container">
+            <div class="car-image-container">
+                <img src="{{ Images.6.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
+            </div>
         </div>
-        <div class="tab-pane fade" id="chasis-pane" role="tabpanel" aria-labelledby="chasis-tab">
-            <div class="gallery-grid" id="chasis-container"></div>
+    </section>
+
+    <!-- Seventh Description Section -->
+    <section class="description-section mb-5">
+        <div class="container">
+            <div class="description-card">
+                <h2 class="text-center">
+                    {{CardData.6.details}}
+                </h2>
+            </div>
+        </div>
+    </section>
+
+
+     <!-- Comparison Image Section -->
+     <section class="car-section">
+        <div class="container">
+            <div class="car-image-container">
+                <img src="{{ Images.7.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
+            </div>
+        </div>
+    </section>
+
+    <!-- Tenth Description Section -->
+    <section class="description-section mb-5">
+        <div class="container">
+            <div class="description-card">
+                <h2 class="text-center">
+                    {{CardData.7.details}}
+                </h2>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <div class="container">
+        <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="body-tab" data-bs-toggle="tab" data-bs-target="#body-pane" type="button" role="tab" aria-controls="body-pane" aria-selected="true">
+                    <i class="fas fa-couch tab-icon"></i>Body
+                    <span class="badge rounded-pill badge-tab" id="body-count">0</span>
+                </button>
+            </li>
+           
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="chassis-tab" data-bs-toggle="tab" data-bs-target="#chassis-pane" type="button" role="tab" aria-controls="chassis-pane" aria-selected="false">
+                    <i class="fas fa-cogs tab-icon"></i>Chassis
+                    <span class="badge rounded-pill badge-tab" id="chassis-count">0</span>
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="galleryTabContent">
+            <div class="tab-pane fade show active" id="body-pane" role="tabpanel" aria-labelledby="body-tab">
+                <div class="gallery-grid" id="body-container"></div>
+            </div>
+           
+            <div class="tab-pane fade" id="chassis-pane" role="tabpanel" aria-labelledby="chassis-tab">
+                <div class="gallery-grid" id="chassis-container"></div>
+            </div>
         </div>
     </div>
-</div>
-<!-- Image Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:white">
-                <h5 class="modal-title" id="imageModalLabel" >Image Title</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0">
-                <img src="/placeholder.svg" alt="Gallery Image" class="modal-img" id="modalImage">
-            </div>
-            <div class="modal-footer" style="background-color:white">
-                <span class="badge bg-danger me-auto" id="modalCategory">Category</span>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+    <!-- Full-Screen Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Image Title</h5>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+                </div>
+                <div class="modal-body p-0">
+                    <img src="/placeholder.svg" alt="Gallery Image" class="modal-img" id="modalImage">
+                </div>
+                {% comment %} <div class="modal-footer">
+                    <span class="badge bg-danger me-auto" id="modalCategory">Category</span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div> {% endcomment %}
             </div>
         </div>
     </div>
-</div>
 
+    <section id="exclusive-discount" class="bg-half-100 d-table w-100">
+        {% include "public/LockPriceSection.html" %}
+    </section>
 
-
-{% comment %} Gallery Section Ends {% endcomment %}
-
-<section id="exclusive-discount" class="bg-half-100 d-table w-100">
-    {% comment %} <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 d-flex justify-content-between align-items-center">
-                <a href="{% url 'lock_your_price_now' items.slug %}" class="btn btn-success text-light fw-bold btn-sm text-uppercase d-block d-lg-none">
-                    Lock your price now
-                </a>
-                
-                <div class="d-none d-lg-block flex-grow-1"></div>
-    
-               
-            </div>
-        </div>
-    </div> {% endcomment %}
-
-    <!-- lock your price now section -->
-    {% include "public/LockPriceSection.html" %}
-     <!-- lock your price now section end-->
-</section>
-
-<!-- tech specs Modal -->
-<div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-            <div class="modal-header"
-                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
-                <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
-                    {{ items.title }}
-                </h1>
-                <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
-                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
-            </div>
-            <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
-                <div class="row">
-                    <div class="col-md-6 text-dark">
-                        <div class="col-md-12 ">
-                            <h1 class="text-dark mt-4">Technical Specs</h1>
-                            <div class="accordion" id="accordionExample">
-                                <!-- Accordion Item 1 -->
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingDimension">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseDimension"
-                                            aria-expanded="false" aria-controls="collapseDimension">
-                                            Dimensions
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDimension" class="accordion-collapse collapse"
-                                        aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Height: 40.5"</p>
-                                        
-                                            {% if items.title == 'Mark I' %}
-                                                <p>- Length: 163"</p>
-                                                <p>- Width: 71" (Intermediate rear) or 78" (Wide rear) or 80" (Extra Wide rear)</p>
-                                            
-                                            {% elif items.title == 'Mark II' %}
-                                                <p>- Length: 163"</p>
-                                                <p>- Width: 71"</p>
-                                        
-                                            {% elif items.title == 'Mark IV' %}
-                                                <p>- Length: 171"</p>  <!-- Updated Length for Mark IV -->
-                                                <p>- Width: 70.5"</p>
-                                            {% endif %}
-                                        
-                                            <p>- Wheelbase: 95"</p>
-                                            <p>- Front Wheels: Options Available</p>
-                                            <p>- Rear Wheels: Options Available</p>
-                                            <p>- Front Tires: Options Available</p>
-                                            <p>- Rear Tires: Options Available</p>
-                                            <p>- Fuel Tank: Aluminum 22 Gallons</p>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading2">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
-                                            aria-controls="collapse2">
-                                            Body
-                                        </button>
-                                    </h2>
-                                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
-                                            <p>- Fiber Glass / Carbon Fiber Roof</p>
+    <!-- Technical Specs Modal -->
+    <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+                    <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
+                        {{ items.title }}
+                    </h1>
+                    <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end" data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                </div>
+                <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
+                    <div class="row">
+                        <div class="col-md-6 text-dark">
+                            <div class="col-md-12">
+                                <h1 class="text-dark mt-4">Technical Specs</h1>
+                                <div class="accordion" id="accordionExample">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingDimension">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDimension" aria-expanded="false" aria-controls="collapseDimension">
+                                                Dimensions
+                                            </button>
+                                        </h2>
+                                        <div id="collapseDimension" class="accordion-collapse collapse" aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Height: 40.5"</p>
+                                                {% if items.title == 'Mark I' %}
+                                                    <p>- Length: 163"</p>
+                                                    <p>- Width: 71" (Intermediate rear) or 78" (Wide rear) or 80" (Extra Wide rear)</p>
+                                                {% elif items.title == 'Mark II' %}
+                                                    <p>- Length: 163"</p>
+                                                    <p>- Width: 71"</p>
+                                                {% elif items.title == 'Mark IV' %}
+                                                    <p>- Length: 171"</p>
+                                                    <p>- Width: 70.5"</p>
+                                                {% endif %}
+                                                <p>- Wheelbase: 95"</p>
+                                                <p>- Front Wheels: Options Available</p>
+                                                <p>- Rear Wheels: Options Available</p>
+                                                <p>- Front Tires: Options Available</p>
+                                                <p>- Rear Tires: Options Available</p>
+                                                <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading3">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
-                                            aria-controls="collapse3">
-                                            Chassis
-                                        </button>
-                                    </h2>
-                                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
-                                            <p>- Aluminum Skinned</p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading2">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                                Body
+                                            </button>
+                                        </h2>
+                                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Vacuum Infused / Handlaid Fiber Glass or Carbon Fiber</p>
+                                                <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading4">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
-                                            aria-controls="collapse4">
-                                            Suspension
-                                        </button>
-                                    </h2>
-                                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
-                                                lower control arm, adjustable coilover shocks </p>
-                                            <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
-                                            </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading3">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                                Chassis
+                                            </button>
+                                        </h2>
+                                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Mig/Tig-welded Tubular Chassis bespoke designed for GEN-Z40</p>
+                                                <p>- Aluminum Skinned</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading5">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
-                                            aria-controls="collapse5">
-                                            Steering
-                                        </button>
-                                    </h2>
-                                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Rack and pinion with Colapsable Steering Column </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading4">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                                Suspension
+                                            </button>
+                                        </h2>
+                                        <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Ford Production upper control Arm and Spindle, CNC produced lower control arm, adjustable coilover shocks</p>
+                                                <p>- Rear: CNC produced uprights and control arm, adjustable coilover shocks</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading6">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
-                                            aria-controls="collapse6">
-                                            Brakes
-                                        </button>
-                                    </h2>
-                                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Front: Brembo / Wilwood </p>
-                                            <p>- Rear: Brembo / Wilwood </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading5">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                                Steering
+                                            </button>
+                                        </h2>
+                                        <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Rack and pinion with Collapsible Steering Column</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading9">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false"
-                                            aria-controls="collapse9">
-                                            Interior
-                                        </button>
-                                    </h2>
-                                    <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
-                                                Stiched / Carbon Fiber / Alacantara </p>
-                                            <p>- Moto-lita 14" Steering Wheel </p>
-                                            <p>- Original style Seats with Leather or Alcantara </p>
-                                            <p>- Speed Hut Gauges </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading6">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                                Brakes
+                                            </button>
+                                        </h2>
+                                        <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Brembo / Wilwood</p>
+                                                <p>- Rear: Brembo / Wilwood</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading7">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
-                                            aria-controls="collapse7">
-                                            Drivetrain
-                                        </button>
-                                    </h2>
-                                    <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote </p>
-                                            <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading9">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                                Interior
+                                            </button>
+                                        </h2>
+                                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather Stitched / Carbon Fiber / Alcantara</p>
+                                                <p>- Moto-lita 14" Steering Wheel</p>
+                                                <p>- Original style Seats with Leather or Alcantara</p>
+                                                <p>- Speed Hut Gauges</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading8">
-                                        <button class="accordion-button collapsed text-uppercase" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
-                                            aria-controls="collapse8">
-                                            Exhaust System
-                                        </button>
-                                    </h2>
-                                    <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body bg-white text-dark">
-                                            <p>- Bundle of Snakes </p>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading7">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                                Drivetrain
+                                            </button>
+                                        </h2>
+                                        <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote</p>
+                                                <p>- Transmission: Boxter S (up to 04) or Audi 01E/01X</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading8">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                                Exhaust System
+                                            </button>
+                                        </h2>
+                                        <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Bundle of Snakes</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div><!--end col-->
-                        <div class="col-md-12 d-grid">
-                            {% comment %} <a href="{% url 'lock_your_price_now' items.slug %}"
-                                class="btn btn-lg me-2 btn-success text-dark fw-bold text-uppercase mt-4 float-end">
-                                Reserve Now
-                            </a> {% endcomment %}
-                            <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
-                                * Reservation today will save your spot and lock your price for either Package "Roller
-                                or Turnkey Minus"
-                            </small>
+                            <div class="col-md-12 d-grid">
+                                <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
+                                    * Reservation today will save your spot and lock your price for either Package "Roller or Turnkey Minus"
+                                </small>
+                            </div>
+                        </div>
+                        <div class="pt-2 col-md-6 mb-5">
+                            {% if items.title == 'Mark I' %}
+                                <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark II' %}
+                                <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark IV' %}
+                                <img src="{% static 'mk4.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="pt-2 col-md-6 mb-5">
-                        {% if items.title == 'Mark I' %}
-                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
-                            alt="">
-                        {% elif items.title == 'Mark II' %}
-                        <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5"
-                            alt="">
-                        {% elif items.title == 'Mark IV' %}
-                        <img src="{% static 'mk4.jpg' %}" class="img-fluid rounded shadow mb-5"
-                            alt="">
-                        {% endif %}
-
-
-                    </div>
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Full-Screen Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-black">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                <img src="" alt="Full Screen Image" class="img-fluid" id="modalImage" style="max-height: 100vh; object-fit: contain;">
+            </div>
+            <div class="modal-footer border-0 justify-content-center bg-black">
+                <span class="badge bg-light text-dark" id="modalCategory"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ GalleryImages|json_script:"gallery-images" }}
 
 {% endblock content %}
 {% block script %}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const carSelect = document.getElementById("car-select");
 
-        // When the dropdown selection changes, redirect to the new URL
-        carSelect.addEventListener("change", function () {
-            const selectedCarSlug = this.value;
-
-            // Dynamically generate the new URL based on selected car model slug
-            const newUrl = "{% url 'learn_more' 'placeholder_slug' %}".replace('placeholder_slug', selectedCarSlug);
-            window.location.href = newUrl;
-        });
-    });
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Gallery data with only interior, exterior and chassis images
-        const galleryData = {
-            "galleryImages": [
-                {
-                    "id": 1,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (1).jpg' %}",
-                    "description": "Luxury sedan interior with leather seats"
-                },
-                {
-                    "id": 2,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (2).jpg' %}",
-                    "description": "Modern dashboard with digital display"
-                },
-                {
-                    "id": 3,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (3).jpg' %}",
-                    "description": "Sports car cockpit with racing seats"
-                },
-                {
-                    "id": 4,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (4).jpg' %}",
-                    "description": "Red sports car front view"
-                },
-                {
-                    "id": 5,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (5).jpg' %}",
-                    "description": "Luxury SUV side profile"
-                },
-                {
-                    "id": 6,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (6).jpg' %}",
-                    "description": "Classic vintage car rear view"
-                },
-                {
-                    "id": 7,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (7).jpg' %}",
-                    "description": "Performance car chassis with suspension"
-                },
-                {
-                    "id": 8,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (8).jpg' %}",
-                    "description": "Race car chassis with roll cage"
-                },
-                {
-                    "id": 9,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (9).jpg' %}",
-                    "description": "Exposed chassis with engine components"
-                },
-                {
-                    "id": 10,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (10).jpg' %}",
-                    "description": "Ambient lighting in car interior"
-                },
-                {
-                    "id": 11,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (11).jpg' %}",
-                    "description": "Steering wheel with mounted controls"
-                },
-                {
-                    "id": 12,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (12).jpg' %}",
-                    "description": "Infotainment touchscreen system"
-                },
-                {
-                    "id": 13,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (13).jpg' %}",
-                    "description": "Car in sunset lighting"
-                },
-                {
-                    "id": 14,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (14).jpg' %}",
-                    "description": "SUV parked on mountain road"
-                },
-                {
-                    "id": 15,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (15).jpg' %}",
-                    "description": "Convertible car front view"
-                },
-                {
-                    "id": 16,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (16).jpg' %}",
-                    "description": "Detailed suspension system"
-                },
-                {
-                    "id": 17,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (17).jpg' %}",
-                    "description": "Undercarriage with performance exhaust"
-                },
-                {
-                    "id": 18,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (18).jpg' %}",
-                    "description": "Chassis with enhanced brake system"
-                },
-                {
-                    "id": 19,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (19).jpg' %}",
-                    "description": "Digital instrument cluster display"
-                },
-                {
-                    "id": 20,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (20).jpg' %}",
-                    "description": "Electric vehicle exterior design"
-                },
-                {
-                    "id": 21,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (21).jpg' %}",
-                    "description": "Luxury car ambient roof lights"
-                },
-                {
-                    "id": 22,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (22).jpg' %}",
-                    "description": "Passenger view of premium cabin"
-                },
-                {
-                    "id": 23,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (23).jpg' %}",
-                    "description": "Off-road vehicle in action"
-                },
-                {
-                    "id": 24,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (24).jpg' %}",
-                    "description": "High-end sedan with night lights"
-                },
-                {
-                    "id": 25,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (25).jpg' %}",
-                    "description": "Sports coupe with carbon body"
-                },
-                {
-                    "id": 26,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (26).jpg' %}",
-                    "description": "Tubular frame for race cars"
-                },
-                {
-                    "id": 27,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (27).jpg' %}",
-                    "description": "Reinforced engine mounting"
-                },
-                {
-                    "id": 28,
-                    "label": "exterior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (28).jpg' %}",
-                    "description": "Engine bay of performance vehicle"
-                },
-                {
-                    "id": 29,
-                    "label": "interior",
-                    "url": "{% static 'images/car/learn-more/Mark-I (29).jpg' %}",
-                    "description": "Back seat with entertainment system"
-                },
-                {
-                    "id": 30,
-                    "label": "chasis",
-                    "url": "{% static 'images/car/learn-more/Chasis (1).jpg' %}",
-                    "description": "Premium leather finish dashboard"
-                }, {
-                    "id": 31,
-                    "label": "chasis",
-                    "url": "{% static 'images/car/learn-more/Chasis (2).jpg' %}",
-                    "description": "Reinforced engine mounting"
-                },
-                {
-                    "id": 32,
-                    "label": "chasis",
-                    "url": "{% static 'images/car/learn-more/Chasis (3).jpg' %}",
-                    "description": "Engine bay of performance vehicle"
-                },
-                {
-                    "id": 33,
-                    "label": "chasis",
-                    "url": "{% static 'images/car/learn-more/Chasis (4).jpg' %}",
-                    "description": "Back seat with entertainment system"
-                },
-                
-            ]
-        }
+        const images = JSON.parse(document.getElementById('gallery-images').textContent);
+        initGallery(images);
+        updateTabCounts(images);
         
-        // Initialize gallery
-        initGallery(galleryData.galleryImages);
-        
-        // Update tab counts
-        updateTabCounts(galleryData.galleryImages);
-        
-        // Add click events to gallery items for modal
         function addModalEvents() {
-            document.querySelectorAll('.gallery-item').forEach(item => {
+            document.querySelectorAll('.gallery-grid-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const img = this.querySelector('img');
                     const category = this.dataset.category;
                     
-                    document.getElementById('imageModalLabel').textContent = 
-                        `${capitalizeFirstLetter(category)} View`;
+                    // Set modal content
                     document.getElementById('modalImage').src = img.src;
                     document.getElementById('modalCategory').textContent = 
                         capitalizeFirstLetter(category);
                     
-                    new bootstrap.Modal(document.getElementById('imageModal')).show();
+                    // Show the modal
+                    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                    modal.show();
+                    
+                    // Center the image in the modal
+                    centerModalImage();
                 });
             });
+            
+            // Handle window resize to keep image centered
+            window.addEventListener('resize', centerModalImage);
+        }
+        
+        function centerModalImage() {
+            const modalImage = document.getElementById('modalImage');
+            const modalBody = document.querySelector('#imageModal .modal-body');
+            if (modalImage && modalBody) {
+                const bodyHeight = modalBody.clientHeight;
+                const imgHeight = modalImage.naturalHeight;
+                
+                if (imgHeight > bodyHeight) {
+                    modalImage.style.maxHeight = '100vh';
+                } else {
+                    modalImage.style.maxHeight = 'none';
+                }
+            }
         }
         
         function initGallery(images) {
-            // Clear containers
-            document.getElementById('interior-container').innerHTML = '';
-            document.getElementById('exterior-container').innerHTML = '';
-            document.getElementById('chasis-container').innerHTML = '';
+            document.getElementById('body-container').innerHTML = '';
+            document.getElementById('chassis-container').innerHTML = '';
             
-            // Create gallery items for each category
             images.forEach(image => {
                 const galleryItem = createGalleryItem(image);
                 document.getElementById(`${image.label}-container`).appendChild(galleryItem);
@@ -1017,30 +891,29 @@
             item.className = 'gallery-grid-item';
             item.dataset.id = image.id;
             item.dataset.category = image.label;
+            item.style.cursor = 'pointer'; // Add pointer cursor
             
             item.innerHTML = `
-                <img src="${image.url}" class="gallery-grid-img" alt="${image.description}" loading="lazy">
+                <img src="${image.url}" class="gallery-grid-img" alt="${capitalizeFirstLetter(image.label)} Image" loading="lazy">
             `;
             
             return item;
         }
-
         
         function updateTabCounts(images) {
             const counts = {
-                interior: images.filter(img => img.label === 'interior').length,
-                exterior: images.filter(img => img.label === 'exterior').length,
-                chasis: images.filter(img => img.label === 'chasis').length
+                body: images.filter(img => img.label === 'body').length,
+                chassis: images.filter(img => img.label === 'chassis').length
             };
+            console.log("Counts are", counts.body, counts.chassis)
             
-            document.getElementById('interior-count').textContent = counts.interior;
-            document.getElementById('exterior-count').textContent = counts.exterior;
-            document.getElementById('chasis-count').textContent = counts.chasis;
+            document.getElementById('body-count').textContent = counts.body;
+            document.getElementById('chassis-count').textContent = counts.chassis;
         }
         
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
     });
-    </script>
-    {% endblock script %}
+</script>
+{% endblock script %}

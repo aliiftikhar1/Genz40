@@ -147,3 +147,21 @@ def slugify(value):
 @register.filter
 def sum_attr(queryset, attr):
     return queryset.aggregate(total=Sum(attr))['total'] or 0
+
+
+@register.filter
+def map(value, attr):
+    """
+    Extract the specified attribute from each item in the input list or queryset.
+    
+    Args:
+        value: Iterable (list, queryset, etc.) containing objects.
+        attr: String name of the attribute to extract from each object.
+    
+    Returns:
+        List of attribute values.
+    """
+    try:
+        return [getattr(item, attr) for item in value]
+    except (AttributeError, TypeError):
+        return []
