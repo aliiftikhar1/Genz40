@@ -321,8 +321,7 @@ csrf_exempt  # Only if you're having CSRF issues - better to properly handle CSR
 @require_http_methods(["POST"])
 def package_add(request):
     try:
-        data = json.loads(request.body) if request.body else request.POST
-        
+        data = request.POST
         # Validate required fields
         required_fields = ['name', 'package_type', 'car_model', 'description', 
                          'baseAmount', 'discountAmount', 'reserveAmount']
