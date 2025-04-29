@@ -600,7 +600,10 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label>Extra Features</label>
-                            <textarea class="form-control" id="view_extra_features" rows="2" readonly></textarea>
+                            <div id="viewfeaturesContainer" class="d-flex flex-wrap">
+                                <!-- Features will be dynamically inserted here -->
+                            </div>
+                            {% comment %} <textarea class="form-control" id="view_extra_features" rows="2" readonly></textarea> {% endcomment %}
                         </div>
                     </div>
                 </div>
@@ -806,57 +809,132 @@ $(document).ready(function () {
     }
 
     // View button handler
-    $(document).on('click touchstart', '.view-btn', function (e) {
-        e.preventDefault();
-        try {
-            const data = $(this).data();
-            const formattedStatus = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1).replace(/_/g, ' ') : '';
-            const formattedBuildType = data.build_type ? data.build_type.charAt(0).toUpperCase() + data.build_type.slice(1).replace(/_/g, ' ') : '';
-            const formattedBuildStatus = data.build_status ? data.build_status.charAt(0).toUpperCase() + data.build_status.slice(1).replace(/_/g, ' ') : '';
+    // View button handler
+$(document).on('click touchstart', '.view-btn', function (e) {
+    e.preventDefault();
+    try {
+        const data = $(this).data();
+        const formattedStatus = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1).replace(/_/g, ' ') : '';
+        const formattedBuildType = data.build_type ? data.build_type.charAt(0).toUpperCase() + data.build_type.slice(1).replace(/_/g, ' ') : '';
+        const formattedBuildStatus = data.build_status ? data.build_status.charAt(0).toUpperCase() + data.build_status.slice(1).replace(/_/g, ' ') : '';
 
-            $('#view_reservation_number').val(sanitizeInput(data.reservation_number || ''));
-            $('#view_user_name').val(sanitizeInput(data.user || ''));
-            $('#view_car_model').val(sanitizeInput(data.car || ''));
-            $('#view_package_title').val(sanitizeInput(data.title || ''));
-            $('#view_extra_features').val(sanitizeInput(data.features || ''));
-            $('#view_package_price').val(sanitizeInput(data.price || ''));
-            $('#view_reservation_status').val(sanitizeInput(formattedStatus));
-            $('#view_build_type').val(sanitizeInput(formattedBuildType));
-            $('#view_build_status').val(sanitizeInput(formattedBuildStatus));
-            $('#view_build_message').val(sanitizeInput(data.build_message || ''));
-            $('#view_created_at').val(sanitizeInput(data.created_at || ''));
-            $('#view_updated_at').val(sanitizeInput(data.updated_at || ''));
-            $('#view_initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
-            $('#view_midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
-            $('#view_final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
-            $('#view_remaining_price').val(sanitizeInput(data.remaining_price || '0'));
+        $('#view_reservation_number').val(sanitizeInput(data.reservation_number || ''));
+        $('#view_user_name').val(sanitizeInput(data.user || ''));
+        $('#view_car_model').val(sanitizeInput(data.car || ''));
+        $('#view_package_title').val(sanitizeInput(data.title || ''));
+        $('#view_package_price').val(sanitizeInput(data.price || ''));
+        $('#view_reservation_status').val(sanitizeInput(formattedStatus));
+        $('#view_build_type').val(sanitizeInput(formattedBuildType));
+        $('#view_build_status').val(sanitizeInput(formattedBuildStatus));
+        $('#view_build_message').val(sanitizeInput(data.build_message || ''));
+        $('#view_created_at').val(sanitizeInput(data.created_at || ''));
+        $('#view_updated_at').val(sanitizeInput(data.updated_at || ''));
+        $('#view_initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
+        $('#view_midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
+        $('#view_final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
+        $('#view_remaining_price').val(sanitizeInput(data.remaining_price || '0'));
 
-            const price = data.price || 0;
-            const initialPercentage = data.initial_payment_percentage || 40;
-            const midwayPercentage = data.midway_payment_percentage || 40;
-            const finalPercentage = data.final_payment_percentage || 20;
-            
-            const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
-            
-            $('#view_initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
-            $('#view_midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
-            $('#view_final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
-            $('#view_total_payment_display').text(`Total: $${payments.total}`);
+        // Clear previous features
+        $('#viewfeaturesContainer').empty();
 
-            $('#viewDetailsModal').modal('show');
-        } catch (error) {
-            console.error('Error in view button handler:', error);
-            Swal.fire({
-                position: 'top-end',
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to open view details',
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true
-            });
+        // Parse and display selected features
+        const featuresString = data.features || '';
+        const selectedFeatures = parseFeaturesString(featuresString);
+        
+        // Determine which feature set to use based on package type
+        let featureSet = [];
+        if (data.package_type === 'roller') {
+            featureSet = {{ all_roller_features|safe }};
+        } else if (data.package_type === 'builder') {
+            featureSet = {{ all_builder_features|safe }};
+        } else {
+            featureSet = {{ all_roller_plus_features|safe }};
         }
-    });
+
+        // Create a map of selected features for quick lookup
+        const selectedFeaturesMap = {};
+        selectedFeatures.forEach(feature => {
+            selectedFeaturesMap[feature.id] = {
+                option: feature.option || null
+            };
+        });
+
+        // Display only the selected features as disabled chips
+        featureSet.forEach(feature => {
+            if (selectedFeaturesMap.hasOwnProperty(feature.id)) {
+                const isSelected = true;
+                const selectedOption = selectedFeaturesMap[feature.id].option;
+                
+                const chip = $('<div>').addClass('feature-chip d-flex feature-selected')
+                    .attr('data-id', feature.id)
+                    .attr('data-price', feature.price)
+                    .css('pointer-events', 'none'); // Disable interaction
+
+                // Add feature name and base price
+                $('<span>').text(feature.title).appendTo(chip);
+                    if(feature.type !== 'radiobox'){
+                    $('<span>').addClass('feature-price')
+                        .text(` ($${feature.price})`)
+                        .appendTo(chip);
+                }
+
+                
+                // Handle options if they exist and were selected
+                if (feature.options && feature.options.length > 0 && selectedOption) {
+                    const optionsWrapper = $('<div>').addClass('feature-options-wrapper ');
+                    
+                    feature.options.forEach((opt, index) => {
+                        if (opt.value === selectedOption) {
+                            const radioId = `view_feature_${feature.id}_option_${index}`;
+                            const radio = $('<input>')
+                                .attr('type', 'radio')
+                                .attr('name', `view_feature_${feature.id}_options`)
+                                .attr('id', radioId)
+                                .attr('value', opt.value)
+                                .attr('data-option-price', opt.price)
+                                .prop('checked', true)
+                                .prop('disabled', true); // Disable the radio button
+
+                            const label = $('<label>')
+                                .attr('for', radioId)
+                                .text(`: ${opt.label} ($${opt.price})`)
+                                .css({ 'margin-left': '5px', 'font-size': '0.8rem' });
+
+                            optionsWrapper.append(
+                                $('<span>')
+                                    .append(label)
+                            );
+                        }
+                    });
+                    
+                    chip.append(optionsWrapper);
+                }
+                
+                $('#viewfeaturesContainer').append(chip);
+            }
+        });
+
+        const price = data.price || 0;
+        const initialPercentage = data.initial_payment_percentage || 40;
+        const midwayPercentage = data.midway_payment_percentage || 40;
+        const finalPercentage = data.final_payment_percentage || 20;
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#viewDetailsModal').modal('show');
+    } catch (error) {
+        console.error('Error in view button handler:', error);
+        Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to open view details',
+            showConfirmButton: false,
+            timer: 3000,
+            toast: true
+        });
+    }
+});
 
     // Edit button handler
     $(document).on('click touchstart', '.edit-btn', function (e) {

@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
 
 from . import views
-from .views import register, CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordChangeView, custom_logout, package_list, package_add, package_edit, package_activate, package_deactivate
+from .views import register, CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordChangeView, custom_logout, package_list, package_add, package_edit
 
 from frontend.views import car_configurator
 # app_name = 'auth'
@@ -41,10 +41,9 @@ urlpatterns = [
 
     
     path('packages/', package_list, name='package_list'),
-    path('packages/add/', package_add, name='package_add'),
-    path('packages/edit/<uuid:pk>/', package_edit, name='package_edit'),
-    path('packages/activate/<uuid:pk>/', package_activate, name='package_activate'),
-    path('packages/deactivate/<uuid:pk>/', package_deactivate, name='package_deactivate'),
+    path('package/add/', package_add, name='package_add'),
+    path('package/edit/<str:pk>/', package_edit, name='package_edit'),
+    path('package/delete/<str:pk>/', views.package_delete, name='package_delete'),
 
     path('post-package-detail/add/', views.create_or_edit_post_package_detail, name='add_post_package_detail'),
     path('post-package-detail/edit/<int:pk>/', views.create_or_edit_post_package_detail, name='edit_post_package_detail'),

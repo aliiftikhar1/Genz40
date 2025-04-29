@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordChangeView
@@ -248,8 +249,13 @@ def customer_list(request):
 
 @login_required
 def package_list(request):
-    all_package_list = PostPackage.objects.all()
-    return render(request, 'admin/package/list.html', {'packages': all_package_list})
+    all_package_list = DynamicPackages.objects.all().order_by('created_at')
+    context = {
+    'packages': all_package_list,
+    'package_types': DynamicPackages.PACKAGE_TYPES,
+    'car_models': PostNavItem.objects.all()  # Or your car model queryset
+}
+    return render(request, 'admin/package/list.html', context)
 
 # views.py
 @login_required
@@ -298,49 +304,122 @@ def booked_package_list(request):
         'all_builder_features': all_builder_features,
     })
 
-@login_required
+# @login_required
+# def package_add(request):
+#     if request.method == 'POST':
+#         form = PostPackageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Package added successfully')
+#             return redirect('package_list')
+#     else:
+#         form = PostPackageForm()
+#     return render(request, 'admin/package/form.html', {'form': form})
+
+
+csrf_exempt  # Only if you're having CSRF issues - better to properly handle CSRF
+@require_http_methods(["POST"])
 def package_add(request):
-    if request.method == 'POST':
-        form = PostPackageForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Package added successfully')
-            return redirect('package_list')
-    else:
-        form = PostPackageForm()
-    return render(request, 'admin/package/form.html', {'form': form})
+    try:
+        data = json.loads(request.body) if request.body else request.POST
+        
+        # Validate required fields
+        required_fields = ['name', 'package_type', 'car_model', 'description', 
+                         'baseAmount', 'discountAmount', 'reserveAmount']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return JsonResponse({'success': False, 'message': f'{field} is required'}, status=400)
+        
+        # Create new package
+        package = DynamicPackages(
+            name=data['name'],
+            package_type=data['package_type'],
+            car_model_id=data['car_model'],
+            description=data['description'],
+            baseAmount=data['baseAmount'],
+            discountAmount=data['discountAmount'],
+            reserveAmount=data['reserveAmount']
+        )
+        package.save()
+        
+        return JsonResponse({'success': True, 'message': 'Package created successfully'})
+    
+    except PostNavItem.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Invalid car model'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
-
-@login_required
+@csrf_exempt  # Only if you're having CSRF issues - better to properly handle CSRF
+@require_http_methods(["POST"])
 def package_edit(request, pk):
-    package = get_object_or_404(PostPackage, pk=pk)
-    if request.method == 'POST':
-        form = PostPackageForm(request.POST, request.FILES, instance=package)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Package updated successfully')
-            return redirect('package_list')
-    else:
-        form = PostPackageForm(instance=package)
-    return render(request, 'admin/package/form.html', {'form': form, 'description': package.description})
+    try:
+        package = get_object_or_404(DynamicPackages, pk=pk)
+        data = request.POST
+        
+        # Validate required fields
+        required_fields = ['name', 'package_type', 'car_model', 'description', 
+                         'baseAmount', 'discountAmount', 'reserveAmount']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return JsonResponse({'success': False, 'message': f'{field} is required'}, status=400)
+        
+        # Update package
+        package.name = data['name']
+        package.package_type = data['package_type']
+        package.car_model_id = data['car_model']
+        package.description = data['description']
+        package.baseAmount = data['baseAmount']
+        package.discountAmount = data['discountAmount']
+        package.reserveAmount = data['reserveAmount']
+        package.save()
+        
+        return JsonResponse({'success': True, 'message': 'Package updated successfully'})
+    
+    except PostNavItem.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Invalid car model'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+@csrf_exempt  # Only if you're having CSRF issues - better to properly handle CSRF
+@require_http_methods(["POST"])
+def package_delete(request, pk):
+    try:
+        package = get_object_or_404(DynamicPackages, pk=pk)
+        package.delete()
+        return JsonResponse({'success': True, 'message': 'Package deleted successfully'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+# @login_required
+# def package_edit(request, pk):
+#     package = get_object_or_404(PostPackage, pk=pk)
+#     if request.method == 'POST':
+#         form = PostPackageForm(request.POST, request.FILES, instance=package)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Package updated successfully')
+#             return redirect('package_list')
+#     else:
+#         form = PostPackageForm(instance=package)
+#     return render(request, 'admin/package/form.html', {'form': form, 'description': package.description})
 
 
-@login_required
-def package_activate(request, pk):
-    package = get_object_or_404(PostPackage, pk=pk)
-    package.is_active = True
-    package.save()
-    messages.success(request, 'Activated successfully')
-    return redirect('package_list')
+# @login_required
+# def package_activate(request, pk):
+#     package = get_object_or_404(PostPackage, pk=pk)
+#     package.is_active = True
+#     package.save()
+#     messages.success(request, 'Activated successfully')
+#     return redirect('package_list')
 
 
-@login_required
-def package_deactivate(request, pk):
-    package = get_object_or_404(PostPackage, pk=pk)
-    package.is_active = False
-    package.save()
-    messages.success(request, 'Deactivated successfully')
-    return redirect('package_list')
+# @login_required
+# def package_deactivate(request, pk):
+#     package = get_object_or_404(PostPackage, pk=pk)
+#     package.is_active = False
+#     package.save()
+#     messages.success(request, 'Deactivated successfully')
+#     return redirect('package_list')
 
 
 @login_required

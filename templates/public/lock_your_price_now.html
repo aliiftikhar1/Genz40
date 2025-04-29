@@ -27,11 +27,23 @@
     .eye-icon{
         position: absolute;
         right: 20px;
-        top: 70%;
+        top: 50px;
     }
     .disabled-field {
         background-color: #e9ecef !important;
         opacity: 1 !important;
+    }
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .requirement {
+        color: #dc3545;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
     }
 </style>
 {% endblock header %}
@@ -121,6 +133,13 @@
                                     <label for="password1" class="form-label">Password<span class="text-danger"> *</span></label>
                                     <input type="password" class="form-control" name="password1" id="password1" required />
                                     <i class="uil uil-eye password-toggle eye-icon" onclick="togglePassword('password1', this)"></i>
+                                    <div class="password-requirements text-light mt-2">
+                                        <p class="mb-1">Password must contain:</p>
+                                        <div id="length" class="requirement">✓ At least 8 characters</div>
+                                        <div id="uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                        <div id="number" class="requirement">✓ At least 1 number</div>
+                                        <div id="special" class="requirement">✓ At least 1 special character</div>
+                                    </div>
                                 </div>
 
                                 <div class="col-sm-6 password-input-group">
