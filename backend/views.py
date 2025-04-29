@@ -852,6 +852,7 @@ def save_booked_package(request):
     """
     data = request.data.copy() 
     data['user'] = request.user.id
+    print("The data for saving package is :",data)
     serializer = BookedPackageSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
@@ -1087,14 +1088,12 @@ def upload_package_images(request, package_id):
     """Upload multiple images for a booked package"""
     package = get_object_or_404(BookedPackage, id=package_id)
     
-    # Check if user has permission to upload images
     if request.user != package.user and not request.user.is_staff:
         messages.error(request, "You don't have permission to upload images to this package.")
         return redirect('dashboard')
     
     if request.method == 'POST':
         form = PackageImageUploadForm(request.POST, request.FILES)
-        # Handle multiple files
         files = request.FILES.getlist('images')
         
         if form.is_valid() and files:
@@ -1186,10 +1185,6 @@ def update_image_build_type(request, image_id):
 
 
 
-
-
-
-
 # For mobile application views
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -1211,10 +1206,8 @@ from .serializers import (
     LandingPageImageSerializer,
     NavItemSerializer,
     CarDetailSerializer,
-    # PackageSerializer,
     DynamicPackageSerializer,
     FeatureSectionSerializer,
-    FeatureSerializer,
     BookedPackageSerializer,
     PackageFeatureBuilderSerializer,
     PackageFeatureRollerSerializer,
@@ -1222,7 +1215,6 @@ from .serializers import (
 
 )
 
-# Existing API Views (keeping your previous APIs intact)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_landing_images(request):
