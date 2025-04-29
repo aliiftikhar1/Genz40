@@ -497,7 +497,7 @@ def reservation_new_features(request):
     all_rn_numbers = BookedPackage.objects.values_list('reservation_number', flat=True).distinct()
     
     # Start with all pending features
-    all_features = ReservationNewFeatures.objects.filter(status='pending').order_by('-created_at')
+    all_features = ReservationNewFeatures.objects.all().order_by('-status')
     
     # Apply reservation number filter if provided
     rn_filter = request.GET.get('rn_filter')

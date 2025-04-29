@@ -488,7 +488,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         selectedFeatures.forEach(checkbox => {
                             checkbox.checked = false;
                         });
-                        window.location.reload();
+                        {% comment %} window.location.reload(); {% endcomment %}
+                        window.location.href = `${window.location.pathname}?feature=added`;
                     } else {
                         alert(data.message || 'Failed to add features');
                     }
@@ -694,6 +695,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+
+
+    {% comment %} opening of features section on the base of params of url {% endcomment %}
+    const urlParams = new URLSearchParams(window.location.search);
+    const featureAction = urlParams.get('feature');
+    
+    if (featureAction === 'added' || featureAction === 'deleted') {
+        toggleFeaturesBtn.click()
+    }
 });
 
 // JavaScript to handle deletion
@@ -722,13 +733,16 @@ document.querySelectorAll('.btn-delete-feature').forEach(button => {
             
             if (data.success) {
                 // Remove the feature card from UI
-                this.closest('.feature-card').remove();
+                window.location.href = `${window.location.pathname}?feature=deleted`;
+                {% comment %} this.closest('.feature-card').remove(); {% endcomment %}
                 
-                // Show success message
-                showToast('Feature deleted successfully', 'success');
+                
+                //Show success message
+                {% comment %} showToast('Feature deleted successfully', 'success'); {% endcomment %}
                 
                 // Update any totals or counters if needed
-                updateSelectedFeaturesTotal();
+                {% comment %} window.location.reload();
+                updateSelectedFeaturesTotal(); {% endcomment %}
             } else {
                 throw new Error(data.message);
             }

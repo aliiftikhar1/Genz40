@@ -1,15 +1,13 @@
 from django.contrib import admin
 from backend.models import CustomUser, PostCommunity, PostReview, PostBlog, PostMeta, PostNavItem, PostPackage, PostPackageDetail, \
     PostPackageFeature, PostPart, PostCharging, PostAccessories, PostPaint, PostImage, PostSubscribers, PostWheels, PostLandingPageImages, PostPayment, PostOrderStatus, PostSubStatus,\
-    CarConfiguration,BookedPackage,BookedPackageImage, DynamicPackages, FeaturesSection,PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder 
-# , RollerPackageFeatures
+    CarConfiguration,BookedPackage,BookedPackageImage, DynamicPackages, FeaturesSection,PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder, \
+    PostCommunityJoiners,PostContactUs, ReservationFeaturesPayment, ReservationNewFeatures 
+
+
 from django.contrib import messages
 
-# from .models import (
-#     RollerPlusPackageFeatures,
-#     BuilderPackageFeatures,
-# )
-# Register your models here.
+
 admin.site.register(CustomUser)
 admin.site.register(PostReview)
 admin.site.register(PostBlog)
@@ -28,6 +26,10 @@ admin.site.register(DynamicPackages)
 admin.site.register(FeaturesSection)
 admin.site.register(PackageFeatureRollerPlus)
 admin.site.register(PackageFeatureBuilder)
+admin.site.register(PostCommunityJoiners)
+admin.site.register(PostContactUs)
+admin.site.register(ReservationNewFeatures)
+admin.site.register(ReservationFeaturesPayment)
 @admin.register(PackageFeatureRoller)
 class PackageFeatureRollerAdmin(admin.ModelAdmin):
     list_display = ('name', 'section', 'type', 'price', 'checked', 'disabled')
