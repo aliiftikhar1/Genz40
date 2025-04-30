@@ -126,34 +126,34 @@ def learn_more(request, slug):
     
     # Existing image lists
     markI_images = [
-        {"id": 1, "url": static('learn_more_images/Mark I/Turntable.34.png')},
+        {"id": 1, "url": static('learn_more_images/Mark I/Turntable.41.png')},
         {"id": 2, "url": static('learn_more_images/Mark I/Turntable.35.png')},
         {"id": 3, "url": static('learn_more_images/Mark I/Turntable.36.png')},
         {"id": 4, "url": static('learn_more_images/Mark I/Turntable.37.png')},
         {"id": 5, "url": static('learn_more_images/Mark I/Turntable.38.png')},
         {"id": 6, "url": static('learn_more_images/Mark I/Turntable.39.png')},
         {"id": 7, "url": static('learn_more_images/Mark I/Turntable.40.png')},
-        {"id": 8, "url": static('learn_more_images/Mark I/Turntable.41.png')},
+        {"id": 8, "url": static('learn_more_images/Mark I/Turntable.34.png')},
     ]
     markII_images = [
-        {"id": 1, "url": static('learn_more_images/Mark II/1.1.png')},
+        {"id": 1, "url": static('learn_more_images/Mark II/1.8.png')},
         {"id": 2, "url": static('learn_more_images/Mark II/1.2.png')},
         {"id": 3, "url": static('learn_more_images/Mark II/1.3.png')},
         {"id": 4, "url": static('learn_more_images/Mark II/1.4.png')},
         {"id": 5, "url": static('learn_more_images/Mark II/1.5.png')},
         {"id": 6, "url": static('learn_more_images/Mark II/1.6.png')},
         {"id": 7, "url": static('learn_more_images/Mark II/1.7.png')},
-        {"id": 8, "url": static('learn_more_images/Mark II/1.8.png')},
+        {"id": 8, "url": static('learn_more_images/Mark II/1.1.png')},
     ]
     markIV_images = [
-        {"id": 1, "url": static('learn_more_images/Mark IV/1.9.png')},
+        {"id": 1, "url": static('learn_more_images/Mark IV/1.16.png')},
         {"id": 2, "url": static('learn_more_images/Mark IV/1.10.png')},
         {"id": 3, "url": static('learn_more_images/Mark IV/1.11.png')},
         {"id": 4, "url": static('learn_more_images/Mark IV/1.12.png')},
         {"id": 5, "url": static('learn_more_images/Mark IV/1.13.png')},
         {"id": 6, "url": static('learn_more_images/Mark IV/1.14.png')},
         {"id": 7, "url": static('learn_more_images/Mark IV/1.15.png')},
-        {"id": 8, "url": static('learn_more_images/Mark IV/1.16.png')},
+        {"id": 8, "url": static('learn_more_images/Mark IV/1.9.png')},
     ]
     
     markI_gallery = [
