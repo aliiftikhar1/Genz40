@@ -21,22 +21,22 @@
     </a>
   </div>
   <div class="h-full w-full relative pt-12 md:pt-0">
-    <div class="flex md:flex-row flex-col w-full sticky top-0 md:relative h-full items-center gap-8">
-      <div class="relative w-full">
-        <div class="w-full h-full">
+    <div class="flex md:flex-row flex-col w-full  h-auto md:h-full  items-start gap-8 md:overflow-y-auto">
+      <div class="w-full h-auto md:h-full  md:sticky top-0">
+        <div class="w-full h-auto md:h-full flex justify-center items-center">
           {% if car_model.title == 'Mark I' %}
-          <img id="carImage" src="{% static 'mk1.gif' %}" class="w-full h-full" alt="Car Configuration" />
+          <img id="carImage" src="{% static 'mk1.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
           {% elif car_model.title == 'Mark II' %}
-          <img id="carImage" src="{% static 'mk2.gif' %}" class="w-full h-full" alt="Car Configuration" />
+          <img id="carImage" src="{% static 'mk2.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
           {% elif car_model.title == 'Mark IV' %}
-          <img id="carImage" src="{% static 'mk4.gif' %}" class="w-full h-full" alt="Car Configuration" />
+          <img id="carImage" src="{% static 'mk4.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
           {% else %}
-          <img id="carImage" src="{% static 'images/car/blue-car.png' %}" class="w-full h-full" alt="Car Configuration" />
+          <img id="carImage" src="{% static 'images/car/blue-car.png' %}" class="w-full h-full object-contain" alt="Car Configuration" />
           {% endif %}
         </div>
       </div>
 
-      <div class="bg-black md:w-[65%] shadow-lg p-2 md:p-6 h-full md:overflow-y-auto">
+      <div class="bg-black md:w-[65%] shadow-lg p-2 md:p-6 h-[100%]  ">
         <div class="sticky top-0 md:-top-[25px] bg-black p-2 z-10">
           <h2 class="text-3xl font-bold text-center text-white mb-3 md:mb-0">
             Configure Your {{car_model.title}}

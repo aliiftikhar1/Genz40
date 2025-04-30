@@ -9,15 +9,16 @@
     <!-- Header Section -->
     <div class="reservation-header">
         <div class="reservation-info">
-            <h1>Reservation #{{ booked_package.reservation_number }}</h1>
-            <div class="status-badge {% if booked_package.status == 'confirmed' %}confirmed
-                {% elif booked_package.status == 'cancelled' %}cancelled
-                {% else %}pending{% endif %}">
-                {{ booked_package.get_status_display }}
-            </div>
+            <h1 >Reservation No. {{ booked_package.reservation_number }}</h1>
+           
         </div>
         
         <div class="reservation-meta">
+            <div class="status-badge {% if booked_package.status == 'confirmed' %}confirmed
+            {% elif booked_package.status == 'cancelled' %}cancelled
+            {% else %}pending{% endif %}">
+            {{ booked_package.get_status_display }}
+        </div>
             <div class="meta-item">
                 <span class="meta-label">Car:</span>
                 <span class="meta-value">{{ booked_package.car_model.title }}</span>
@@ -26,13 +27,15 @@
                 <span class="meta-label">Package:</span>
                 <span class="meta-value">{{ booked_package.package.name }}</span>
             </div>
+        </div>
+        <div class="reservation-meta">
             <div class="meta-item highlight">
-                <span class="meta-label">Total Price:</span>
-                <span class="meta-value">${{ booked_package.price|intcomma }}</span>
+                <span class="meta-label">Total:</span>
+                <span class="meta-value">${{ booked_package.price|floatformat:0|intcomma  }}</span>
             </div>
             <div class="meta-item highlight">
                 <span class="meta-label">Remaining:</span>
-                <span class="meta-value">${{ booked_package.remaining_price|intcomma }}</span>
+                <span class="meta-value">${{ booked_package.remaining_price|floatformat:0|intcomma }}</span>
             </div>
         </div>
     </div>
@@ -55,7 +58,7 @@
             <!-- Features Section -->
             <div class="features-section card-style">
                 <div class="section-header">
-                    <h2>Selected Features</h2>
+                    <h2>Features</h2>
                     <button class="toggle-btn" id="toggleFeatures">
                         <span class="toggle-text">Show</span>
                         <i class="fas fa-chevron-down"></i>
@@ -63,13 +66,39 @@
                 </div>
                 
                 <div class="features-content" id="featuresContent">
-                    {% if extra_features_names %}
-                        <ul>
-                            {% for feature in extra_features_names %}
-                                <li>{{ feature }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if included_features %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Included Features</h1>
+                            <ul>
+                                {% for feature in included_features %}
+                                    <li>{{ feature.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {% if extra_features_names %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
+                            <ul>
+                                {% for feature in extra_features_names %}
+                                    <li>{{ feature }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        
+                            {% if newly_added_features %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Newly Added Features</h1>
+                            <ul>
+                                {% for feature in newly_added_features %}
+                                    <li>{{ feature.features }} </li>
+
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div>
+                    </div>
+                   
                     
                     {% if pending_features.exists %}
                     <div class="pay-all-container mb-4">
@@ -110,7 +139,7 @@
                     <div class="added-features">
                         <h3>Added Features</h3>
                         <div id="added-features-container">
-                            {% for new_feature in booked_package.new_features.all %}
+                            {% for new_feature in new_pending_features %}
                                 <div style="position: relative;" class="feature-card {% if new_feature.status == 'approved' %}approved
                                     {% elif new_feature.status == 'rejected' %}rejected
                                     {% elif new_feature.status == 'completed' %}completed
@@ -128,7 +157,7 @@
                                         {% endif %}
                                     </div>
                                     
-                                    {% if new_feature.status == 'completed' %}
+                                    {% comment %} {% if new_feature.status == 'completed' %}
                                         <div class="payment-details">
                                             {% for payment in new_feature.payments.all %}
                                                 {% if payment.is_completed %}
@@ -147,7 +176,7 @@
                                                 </div>
                                             {% endfor %}
                                         </div>
-                                    {% endif %}
+                                    {% endif %} {% endcomment %}
                                 </div>
                             {% empty %}
                                 <div class="no-features-added">

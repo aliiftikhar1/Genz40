@@ -1,483 +1,345 @@
 {% extends "public/layout/base.html" %}
 {% load static %}
 {% load frontend_custom_filters %}
-
 {% block header %}
 <style>
-    /* Custom CSS */
+    /* Global Styles */
     body {
-        background-color: white;
-        color: #212529;
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
     }
-    .herosection{
+
+    /* Utility Classes */
+    .z-index-1 { position: relative; z-index: 1; }
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    /* Hero Section */
+    .herosection {
         padding: 2rem 1rem;
     }
-    
     .hero-container {
-        height: 100%;
+        margin-top: 4rem;
         position: relative;
-        margin-top: 4.8rem; /* Replace mt-100 with standard value */
     }
-    
-    .z-index-1 {
-        position: relative;
-        z-index: 1;
+    .hero-image-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
     }
-    
     .car-image-container {
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    
     .car-image {
-        max-width: 120%;
+        max-width: 100%;
+        width: 120%;
         transform: translateX(10%);
     }
-    
+    .custom-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.5);
+        color: #000;
+    }
+    .custom-input::placeholder { color: #ccc; }
+
+    /* Specs Section */
     .specs-container {
-        margin-top: auto;
-        position: relative;
-        bottom: 0;
+        padding: 2rem 0;
     }
-    
-    /* Responsive adjustments */
-    @media (max-width: 992px) {
-        .car-image {
-            max-width: 100%;
-            transform: none;
-        }
-        
-        .hero-container {
-            min-height: auto;
-            padding-bottom: 2rem;
-        }
+    .progress {
+        height: 8px;
+        background-color: #333;
     }
-    
-    @media (max-width: 768px) {
-        .specs-container .col-6 {
-            margin-bottom: 1.5rem;
-        }
+    .progress-bar {
+        background-color: #28a745;
+    }
+
+    /* Services Section */
+    .services-section {
+        padding: 4rem 0;
     }
     .service-card {
-            border-radius: 16px;
-            padding: 40px;
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .looking-card {
-            background-color: #b8cff9;
-        }
-        
-        .buying-card {
-            background-color: #fec4d8;
-        }
-        
-        .btn-get-started-blue {
-            background-color: #4F6AF6;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-        
-        .btn-get-started-dark {
-            background-color: #0F172A;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-        
-        .icon-container {
-            position: absolute;
-            bottom: 40px;
-            right: 40px;
-        }
-        
-        .icon-blue {
-            color: #4F6AF6;
-        }
-        
-        .icon-pink {
-            color: #F472B6;
-        }
-        
-        h2 {
-            font-weight: 700;
-            font-size: 28px;
-            margin-bottom: 16px;
-        }
-        
-        .service-description {
-            color: #4B5563;
-            margin-bottom: 30px;
-            max-width: 80%;
-        }
-        
-        .services-section {
-            padding: 80px 0;
-        }
-        /* .community-section {
-            padding: 3rem 1rem;
-        } */
-        
-        .section-title {
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: #212529;
-        }
-        
-        .car-card {
-            background-color: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
-            height: 100%;
-            transition: transform 0.2s ease-in-out;
-            border: 1px solid #666666;
-            padding-top: 1.2rem;
-            padding-left: 1.2rem;
-            padding-right: 1.2rem;
-        }
+        border-radius: 16px;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+        border: 1px solid #fff;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+    .looking-card { background: rgba(255, 255, 255, 0.1); }
+    .buying-card { background: rgba(255, 255, 255, 0.15); }
+    .btn-get-started {
+        background: #004cff6b;
+        border: 1px solid #fff;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .icon-container {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+    }
+    .icon-blue, .icon-pink { color: #fff; }
+    .service-description {
+        color: #fff;
+        margin-bottom: 1.5rem;
+        max-width: 80%;
+    }
 
-        
-        .car-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-car-image-container {
-            background-color: #d2d1d1;
-            /* padding-left: 1rem;
-            padding-right: 1rem;
-            padding-top: 1rem;
-            padding-bottom: 1rem; */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            height: 17rem;
-            overflow:hidden;
-        }
-        .card-car-image-container-mark-IV {
-            background-color: #d2d1d1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            height: 30rem;
-            overflow:hidden;
-        }
-        
-        .card-car-image {
-            /* border: 2px solid #00ff26; */
-            object-fit: contain;
+    /* Community Section */
+    .community-section {
+        padding: 3rem 1rem;
+    }
+    .car-card {
+        background: #000;
+        border: 1px solid #666;
+        border-radius: 12px;
+        padding: 1.2rem;
+        transition: transform 0.2s ease;
+    }
+    .car-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-car-image-container {
+        background: #000;
+        border-radius: 12px;
+        height: 35rem;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .card-car-image{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0 -6rem;
+    }
+    .card-content {
+        padding: 1rem 0;
+        text-align: center;
+    }
+    .card-text {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    .link-container {
+        background: rgba(255, 255, 255, 0.67);
+        padding: 0.3rem;
+        border-radius: 25px;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 30rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .link-primary {
+        color: #0d6efd;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+    .form-control {
+        border-radius: 6px;
+        padding: 0.75rem;
+        border: 1px solid #fff;
+        background: rgba(255, 255, 255, 0.4);
+        color: #fff;
+    }
+    .form-control::placeholder { color: #fff; }
+    .btn-primary {
+        background: #0d6efd;
+        border: none;
+        border-radius: 6px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+    .btn-primary:hover { background: #0b5ed7; }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 3rem 0;
+    }
+    .faq-title {
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+    .custom-faq-item {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 0.5rem;
+    }
+    .custom-faq-question {
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 0;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        border: none;
+    }
+    .custom-faq-question:hover { color: #0d6efd; }
+    .custom-faq-answer {
+        padding: 0 0 1rem;
+        color: #87ef75;
+        display: none;
+    }
+    .custom-faq-answer.active { display: block; }
+    .custom-faq-icon { transition: transform 0.3s ease; }
+    .custom-faq-question.active .custom-faq-icon { transform: rotate(180deg); }
+    .side-car-image-container {
+        position: relative;
+        max-height: 400px;
+        overflow: hidden;
+    }
+    .side-car-image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    .show-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .show-text {
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.25);
+        letter-spacing: 0.3rem;
+    }
+    .car-section {
+        border-top: 1px solid white;
+        padding-top: 3rem;
+        margin-bottom: 3rem;
+    }
+    .car-tag {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #28a745;
+        text-transform: uppercase;
+    }
+    .car-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        text-transform: uppercase;
+        margin: 0.5rem 0 1.5rem;
+    }
+    .car-btn {
+        border-radius: 30px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+    .btn-learn-more {
+        background-color: #e90e0e;
+    }
+    .btn-order-now {
+        background-color: #0d6efd;
+    }
+
+    /* Community Form Section */
+    .section.bg-black { padding: 3rem 0; }
+    .form-label { color: #fff; text-transform: uppercase; }
+    .form-icon { position: relative; }
+    .form-icon i, .form-icon img {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+    }
+    .form-control.ps-5 {
+        padding-left: 3rem;
+        background: transparent;
+        border: 1px solid #ccc;
+        color: #fff;
+    }
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991.98px) {
+        .hero-image-container { flex-direction: column; }
+        .car-image {
             width: 100%;
-            max-width: 100%;
+            transform: none;
+        }
+        .car-image-container { margin-top: 2rem; }
+        .side-car-image-container { max-height: 300px; }
+        .show-text { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 767.98px) {
+        .hero-container { margin-top: 2rem; }
+        .specs-container .col-6 { margin-bottom: 1.5rem; }
+        .card-car-image-container { height: 20rem; }
+        {% comment %} .card-car-image, .card-car-image-1 { object-fit: contain; } {% endcomment %}
+        .card-car-image{
+            width: 100%;
             height: 100%;
+            object-fit: cover;
+            object-position: 0 -2rem;
         }
-        .card-car-image-1 {
-            /* border: 2px solid #00ff26; */
-            object-fit: contain;
-            width: 100%;
-            max-width: 100%;
-            height: 100%;
-        }
-        
-        .card-content {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-            
-        }
-        
-        .card-text {
-            color: #212529;
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        
-        .link-container {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .link-primary {
-            color: #0d6efd;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .link-secondary {
-            color: #0d6efd;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            border-radius: 6px;
-            padding: 0.75rem 1rem;
-            border: 1px solid #ced4da;
-            background-color: white;
-            color: #212529;
-        }
-        .form-control:focus {
-            background-color: white;
-            color: #212529;
-        }
-        .form-control::placeholder {
-            color: #414141; /* Replace with your desired color */
-            opacity: 1;     /* Optional: ensures the color is fully visible */
-        }
-        
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            border-radius: 6px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-        }
-        
-        @media (max-width: 768px) {
-            .card-car-image-container-mark-IV {
-            background-color: #d2d1d1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            height: 17rem;
-            overflow:hidden;
-        }
-            .card-car-image {
-            max-width: 100%;
-            height: 12rem;
-            object-fit: contain;
-        }
-            .car-card {
-                padding-top: 1.2rem;
-            padding-left: 1.2rem;
-            padding-right: 1.2rem;
-            }
-            .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            border-radius: 6px;
-            padding: 0.7rem ;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        }
-        @media (max-width: 1024px) {
-            .card-car-image {
-            max-width: 100%;
-            height: 12rem;
-            object-fit: contain;
-        }}
-        
-        /* FAQ section css */
-        .faq-section {
-            background-color: white;
-            padding: 5rem 0;
-        }
-        
-        .faq-title {
-            color: #212529;
-            font-weight: 800;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-        
-        /* Custom FAQ Accordion Styles */
-        .custom-faq-item {
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 0.5rem;
-        }
-        
-        .custom-faq-question {
-            color: #212529;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 1.25rem 0;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            text-align: left;
-            border: none;
-        }
-        
-        .custom-faq-question:hover {
-            color: #0d6efd;
-        }
-        
-        .custom-faq-answer {
-            padding: 0 0 1.25rem 0;
-            color: #495057;
-            display: none;
-        }
-        
-        .custom-faq-answer.active {
-            display: block;
-        }
-        
-        .custom-faq-icon {
-            transition: transform 0.3s ease;
-        }
-        
-        .custom-faq-question.active .custom-faq-icon {
-            transform: rotate(180deg);
-        }
-        
-        .side-car-image-container {
-            position: relative;
-            height: auto; /* Changed from 100% to auto */
-            max-height: 600px; /* Added max-height to limit the image height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .side-car-image {
-            width: 100%;
-            height: auto;
-            max-height: 600px; /* Added max-height to limit the image height */
-            object-fit: cover; /* Ensures the image covers the area properly */
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .show-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        
-        }
-        
-        .show-text {
-            font-size: 4rem;
-            font-weight: 800;
-            color: #ffffff;
-            writing-mode: vertical-lr;
-            text-orientation: mixed;
-            letter-spacing: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+        .faq-title { font-size: 1.75rem; }
+        .custom-faq-question { font-size: 1rem; }
+        .link-container { width: 100%; }
+        .btn-primary { padding: 0.5rem 1rem; }
+        #description { font-size: 0.9rem; }
+        .car-tag { font-size: 1.2rem; }
+        .car-title { font-size: 1.3rem; }
+    }
 
-        #description{
-                font-size: 1.2rem;
-            }
-        
-        @media (max-width: 991.98px) {
-            .car-image-container {
-                margin-top: 3rem;
-            }
-            
-            .faq-title {
-                margin-bottom: 2rem;
-            }
-        }
-        
-        @media (max-width: 767.98px) {
-            #description{
-                font-size: 0.8rem;
-            }
-            .show-text {
-                font-size: 3rem;
-            }
-        }
-        
-        .hero-image-container{
-            display: flex;
-            flex-direction: row;
-        }
-        @media (max-width: 575.98px) {
-            .hero-image-container{
-                flex-direction: column-reverse;
-            }
-            .side-car-image-container {
-            display: none;
-        }
-            .faq-section {
-                padding: 3rem 0;
-            }
-            
-            .faq-title {
-                font-size: 2rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .custom-faq-question {
-                font-size: 1rem;
-                padding: 1rem 0;
-            }
-            
-            .show-text {
-                font-size: 2.5rem;
-            }
-
-            .car-image-container {
-                margin-top: -3rem;
-                margin-bottom: 1.5rem;
-            }
-        }
-
-
-        .custom-input {
-  width: 250px;
-  height: 50px;
-  padding: 10px 15px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
-  color: #000;
-  background-color: #fff;
-  box-shadow: none;
-}
-.custom-input::placeholder {
-  color: #ccc;
-  font-size: 16px;
-}
+    @media (max-width: 575.98px) {
+        .hero-image-container { flex-direction: column-reverse; }
+        .side-car-image-container { display: none; }
+        .car-image-container { margin-top: -2rem; margin-bottom: 1rem; }
+        .show-text { font-size: 2rem; }
+        .faq-section { padding: 2rem 0; }
+        .card-car-image-container { height: 12rem; }
+    }
 </style>
 {% endblock header %}
 
 {% block content %}
-<div class="position-relative text-white overflow-hidden rounded hero-container" style="background: linear-gradient(0deg, rgba(39,47,49,1) 0%, rgba(119,145,151,1) 100%);">
+<div class="position-relative text-white overflow-hidden rounded hero-container" style="background:black;"
+{% comment %} style="background: linear-gradient(0deg, rgba(39,47,49,1) 0%, rgba(119,145,151,1) 100%);"> {% endcomment %}
     <!-- Hero Section -->
     <div class="container  herosection">
         <div class=" hero-image-container align-items-center position-relative">
             <!-- Left content -->
             <div class="col-lg-6 mb-4 mb-lg-0 z-index-1">
-                <h1 class="display-4 fw-bold mb-3 ">
+                <h1 class="display-3 fw-bold mb-3 " >
                     Stay true to your<br>essence.
                 </h1>
                 <p class="mb-4" id="description" >
@@ -552,7 +414,7 @@
 </div>
 
 <!-- Second Section -->
-<section class="services-section text-black bg-white">
+{% comment %} <section class="services-section text-white bg-black">
     <div class="container">
         <div class="row g-4">
             <!-- Looking for a Car Card -->
@@ -597,16 +459,16 @@
             </div>
         </div>
     </div>
-</section>
+</section> {% endcomment %}
 
 <!-- Join Genz Section -->
-<section class="community-section bg-white">
+<section class="community-section bg-black">
     <div class="container">
-        <h2 class="section-title">JOIN GEN-Z COMMUNITY</h2>
+        {% comment %} <h2 class="section-title">JOIN GEN-Z COMMUNITY</h2> {% endcomment %}
         
         <div class="row g-4">
             <!-- Car Card 1 -->
-            <div class="col-12 col-md-6">
+            {% comment %} <div class="col-12 col-md-6">
                 <div class="car-card">
                     <div class="card-car-image-container">
                         <img src="{% static 'images/car/red-car.png' %}" alt="Red Racing Car #1" class="card-car-image-1">
@@ -643,111 +505,65 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
             <!-- Car Card 3 -->
-            <div class="col-12 col-md-6">
-                <div class="car-card">
+            <div class="col-12 car-section">
+                <div class="card-content">
+                    <h5 class="car-tag">{{ section_1.tag }}</h5>
+                    <h4 class="car-title">{{ section_1.title }}</h4>
                     <div class="card-car-image-container">
-                        <img  src="{{ section_1.image.url }}"  alt="Blue Racing Car #6" class="card-car-image">
+                        <img src="{{ section_1.image.url }}" alt="{{ section_1.title }}" class="card-car-image">
                     </div>
-                    <div class="card-content">
-                        <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
-                        <h4 class="heading heading-lg mb-1 fw-bold text-black text-uppercase">{{ section_1.title }}</h4>
-                        <!-- <p class="card-text">Lock your exclusive discount by signing up today.</p> -->
-                        {% for item in nav_items %}
-                        {% if forloop.first %}
-                        <div class="link-container" style="display: flex; justify-content: space-between;">
-                            <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                            <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
-                                Order Now
-                              </a>
-                              
-                        </div>
-                        <!-- <div class="input-group">
-                            <input id="email-desktop-first" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
-                            <button id="getStartedBtnFirst" class="btn btn-primary" type="button">GET STARTED</button>
-                        </div> -->
-                        {% endif %}
-                        {% endfor %}
-                        <!-- <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Email" aria-label="Email">
-                            <button class="btn btn-primary" type="button">GET STARTED</button>
-                        </div> -->
+                    {% for item in nav_items %}
+                    {% if forloop.counter == 1 %}
+                    <div class="link-container">
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
             
             <!-- Car Card 4 -->
-            <div class="col-12 col-md-6">
-                <div class="car-card">
+            <div class="col-12 car-section">
+                <div class="card-content">
+                    <h5 class="car-tag">{{ section_2.tag }}</h5>
+                    <h4 class="car-title">{{ section_2.title }}</h4>
                     <div class="card-car-image-container">
-                        <img src="{{ section_2.image.url }}"  alt="Red Racing Car #1" class="card-car-image">
+                        <img src="{{ section_2.image.url }}" alt="{{ section_2.title }}" class="card-car-image">
                     </div>
-                    <div class="card-content">
-                        <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
-                        <h4 class="heading heading-lg mb-1 fw-bold text-black text-uppercase">{{ section_2.title }}</h4>
-                        
-                        {% for item in nav_items %}
-                            {% if forloop.counter == 2 %}
-                            <div class="link-container" style="display: flex; justify-content: space-between; ;">
-                                <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                                <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
-                                    Order Now
-                                  </a>
-                                  
-                            </div>
-                        <!-- <div class="input-group">
-                            <input id="email-desktop-second" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
-                            <button id="getStartedBtnSecond" class="btn btn-primary" type="button">GET STARTED</button>
-                        </div> -->
-                        {% endif %}
-                        {% endfor %}
-                        <!-- <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Email" aria-label="Email">
-                            <button class="btn btn-primary" type="button">GET STARTED</button>
-                        </div> -->
+                    {% for item in nav_items %}
+                    {% if forloop.counter == 2 %}
+                    <div class="link-container">
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
-                
             </div>
 
            
 
-        </div>
-
           <!-- Mark 4 card -->
-          <div class="col-12 " style="margin: auto; margin-top: 20px;">
-            <div class="car-card">
-                <div class="card-car-image-container-mark-IV" >
-                    <img src="{{ section_3.image.url }}"  alt="Red Racing Car #1" class="card-car-image">
+          <div class="col-12 car-section">
+            <div class="card-content">
+                <h5 class="car-tag">{{ section_3.tag }}</h5>
+                <h4 class="car-title">{{ section_3.title }}</h4>
+                <div class="card-car-image-container">
+                    <img src="{{ section_3.image.url }}" alt="{{ section_3.title }}" class="card-car-image">
                 </div>
-                <div class="card-content">
-                    <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
-                    <h4 class="heading heading-lg mb-1 fw-bold text-black text-uppercase">{{ section_3.title }}</h4>
-                    
-                    {% for item in nav_items %}
-                        {% if forloop.counter == 3 %}
-                        <div class="link-container" style="display: flex; justify-content: space-between;">
-                            <a href="{% url 'learn_more' item.slug %}"  class="btn btn-primary" style="border-radius: 30px;background-color: #e90e0e; ">Learn More</a>
-                            <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary" style="border-radius: 30px;">
-                                Order Now
-                              </a>
-                              
-                        </div>
-                    <!-- <div class="input-group">
-                        <input id="email-desktop-second" type="email" class="custom-input" style="color: black;" placeholder="Email" aria-label="Email">
-                        <button id="getStartedBtnSecond" class="btn btn-primary" type="button">GET STARTED</button>
-                    </div> -->
-                    {% endif %}
-                    {% endfor %}
-                    <!-- <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Email" aria-label="Email">
-                        <button class="btn btn-primary" type="button">GET STARTED</button>
-                    </div> -->
+                {% for item in nav_items %}
+                {% if forloop.counter == 3 %}
+                <div class="link-container">
+                    <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
+                    <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
                 </div>
+                {% endif %}
+                {% endfor %}
             </div>
-            
         </div>
         <!-- mark 4 card end -->
         </div>
@@ -823,7 +639,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                 <div class="side-car-image-container">
                     <img src="{% static 'images/car/side-car-image.jfif' %}" alt="Car Showroom" class="side-car-image">
                     <div class="show-overlay">
-                        <div class="show-text">show</div>
+                        <div class="show-text logo-font"></div>
                     </div>
                 </div>
             </div>
@@ -871,7 +687,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
             </div>
             <div class="col-md-2"></div>
             <div class="col-md-4">
-                <div class="card rounded shadow  bg-white" style="border: 1px solid black; padding-top: 1rem;">
+                <div class="card rounded shadow  bg-black" style="border: 1px solid black; padding-top: 1rem;">
                     <div class="card-body pt-0">
                         <div class="section-title">
                             <h4 class="title title-light text-center">BECOME A MEMBER</h4>
@@ -884,21 +700,21 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label text-light text-uppercase">
+                                            <label class="form-label text-dark text-uppercase">
                                                 First Name <span class="text-danger">*</span>
                                             </label>
                                             <div class="form-icon position-relative">
                                                 <i data-feather="user"
-                                                   class="fea icon-sm icons text-light"></i>
+                                                   class="fea icon-sm icons text-dark"></i>
                                                 <input name="first_name" id="first_name" type="text"
-                                                       class="form-control ps-5 bg-transparent text-light"
+                                                       class="form-control ps-5 bg-transparent text-dark"
                                                        placeholder="First Name" required>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label text-light text-uppercase">
+                                            <label class="form-label text-dark text-uppercase">
                                                 Last Name <span class="text-danger">*</span>
                                             </label>
                                             <div class="form-icon position-relative">
@@ -910,7 +726,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label text-light text-uppercase">
+                                            <label class="form-label text-dark text-uppercase">
                                                 Email <span class="text-danger">*</span>
                                             </label>
                                             <div class="form-icon position-relative">
@@ -922,7 +738,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label text-light text-uppercase">
+                                            <label class="form-label text-dark text-uppercase">
                                                 Phone Number
                                             </label>
                                             <div class="form-icon position-relative">
@@ -936,7 +752,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                         </div>
                                     </div>
                                     <div class="col-md-12 mb-2">
-                                        <label class="form-check-label text-light">
+                                        <label class="form-check-label text-dark">
                                             By continuing, you agree to our
                                             <a href="{% url 'privacy_policy' %}" target="_blank"
                                                class="text-primary">
@@ -965,14 +781,14 @@ GENZCars supply every single part required to complete the car. Buy online or em
 </section>
 
 <!-- Community Form (Mobile) -->
-<section class="section bg-white d-lg-none">
+<section class="section bg-black d-lg-none">
     <div class="container">
         <div class="row align-items-start">
             <div class="col-md-6">
                 <div class="section-title me-lg-4">
                     <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
                     <h4 class="title title-dark mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
-                    <p class="text-light para-dark para-desc mb-0">
+                    <p class="text-dark para-light para-desc mb-0">
                         Interested in GEN-Z 40? Join the most sort out community of
                         Builders & Enthusiats. Ask questions, and share your experience.
                     </p>
@@ -1002,7 +818,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                 </div>
             </div>
             <div class="col-md-6 mt-4">
-                <div class="card rounded shadow border-0 bg-white">
+                <div class="card rounded shadow border-0 bg-black">
                     <div class="card-body p-0">
                         <form method="post" id="community-form-mobile" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -1013,13 +829,13 @@ GENZCars supply every single part required to complete the car. Buy online or em
                             <div class="row mt-4">
                                 <div class="col-md-12 ">
                                     <div class="mb-3">
-                                        <label class="form-label text-light text-uppercase">
+                                        <label class="form-label text-dark text-uppercase">
                                             First Name <span class="text-danger">*</span>
                                         </label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons text-light"></i>
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
                                             <input name="first_name" id="first_name" type="text"
-                                                   class="ps-5 bg-transparent text-light"
+                                                   class="ps-5 bg-transparent text-dark"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
                                                           outline: none; margin-bottom: 10px;"
@@ -1029,13 +845,13 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label text-light text-uppercase">
+                                        <label class="form-label text-dark text-uppercase">
                                             Last Name <span class="text-danger">*</span>
                                         </label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="user" class="fea icon-sm icons text-light"></i>
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
                                             <input name="last_name" id="last_name" type="text"
-                                                   class="ps-5 text-light"
+                                                   class="ps-5 text-dark"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
                                                           outline: none; margin-bottom: 10px;
@@ -1046,12 +862,12 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label text-light text-uppercase">
+                                        <label class="form-label text-dark text-uppercase">
                                             Email <span class="text-danger">*</span>
                                         </label>
                                         <div class="form-icon position-relative">
-                                            <i data-feather="mail" class="fea icon-sm icons text-light"></i>
-                                            <input type="email" id="email" class="ps-5 text-light"
+                                            <i data-feather="mail" class="fea icon-sm icons text-dark"></i>
+                                            <input type="email" id="email" class="ps-5 text-dark"
                                                    placeholder="Email"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
@@ -1063,7 +879,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="form-label text-light text-uppercase">
+                                        <label class="form-label text-dark text-uppercase">
                                             Phone Number
                                         </label>
                                         <div class="form-icon position-relative">
@@ -1072,7 +888,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                                  alt="Country Flag"
                                                  style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
                                             <input name="phone_number" id="phone_number_mobile" type="text"
-                                                   class="ps-5 text-light"
+                                                   class="ps-5 text-dark"
                                                    placeholder="Phone Number"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
@@ -1082,7 +898,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-check-label text-light">
+                                    <label class="form-check-label text-dark">
                                         By continuing, you agree to our
                                         <a href="{% url 'privacy_policy' %}" target="_blank"
                                            class="text-primary">

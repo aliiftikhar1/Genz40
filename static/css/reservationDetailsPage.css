@@ -45,11 +45,11 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .reservation-info h1 {
-    font-size: 1.8rem;
+    font-size: 1rem;
     margin: 0;
     color: var(--light-color);
 }
@@ -79,7 +79,8 @@ body {
 
 .reservation-meta {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    justify-content: space-between;
     gap: 15px 25px;
     align-items: center;
 }
@@ -821,13 +822,15 @@ body {
     }
     
     .reservation-info {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
         gap: 10px;
     }
     
     .reservation-meta {
-        flex-direction: column;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
         align-items: flex-start;
         gap: 10px;
     }
@@ -849,7 +852,7 @@ body {
     }
     
     .reservation-info h1 {
-        font-size: 1.5rem;
+        font-size: 1rem;
     }
     
     .gallery-items {

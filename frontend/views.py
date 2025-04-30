@@ -66,15 +66,15 @@ def index(request):
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
-    ip = get_country_info(request)
-    response = requests.get(f'https://ipinfo.io/{ip}/json')
-    data = response.json()
-    country_code = data.get('country')
+    # ip = get_country_info(request)
+    # response = requests.get(f'https://ipinfo.io/{ip}/json')
+    # data = response.json()
+    # country_code = data.get('country')
     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
     context = {
-        'country_code': country_code,
-        'country_flag_url': country_flag_url,
+        # 'country_code': country_code,
+        # 'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
@@ -90,15 +90,15 @@ def home(request):
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
-    ip = get_country_info(request)
-    response = requests.get(f'https://ipinfo.io/{ip}/json')
-    data = response.json()
-    country_code = data.get('country')
-    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    # ip = get_country_info(request)
+    # response = requests.get(f'https://ipinfo.io/{ip}/json')
+    # data = response.json()
+    # country_code = data.get('country')
+    # # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
     context = {
-        'country_code': country_code,
-        'country_flag_url': country_flag_url,
+        # 'country_code': country_code,
+        # 'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
@@ -1335,11 +1335,11 @@ def reservation_details(request, id):
 
     payments = PostPayment.objects.filter(rn_number=id)
 
-    ip = get_country_info(request)
-    response = requests.get(f'https://ipinfo.io/{ip}/json')
-    data = response.json()
-    country_code = data.get('country')
-    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    # ip = get_country_info(request)
+    # response = requests.get(f'https://ipinfo.io/{ip}/json')
+    # data = response.json()
+    # country_code = data.get('country')
+    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
 
     car_image = None
     if booked_package.car_model.images.exists():
@@ -1405,6 +1405,12 @@ def reservation_details(request, id):
     # Get IDs of new_features
     new_feature_ids = [str(f.feature_id) for f in booked_package.new_features.all()]
 
+    newly_added_features = booked_package.new_features.filter(status='completed')
+
+    included_features = FeatureModel.objects.filter(
+            included=True
+        )
+    
     if car == 'Mark-I':
         unselected_features = FeatureModel.objects.filter(
             disabled=False,
@@ -1463,15 +1469,15 @@ def reservation_details(request, id):
 
 
     has_pending_features = booked_package.new_features.filter(status='pending').exists()
-    
+    new_pending_features = booked_package.new_features.filter(status='pending')
     pending_features_total = booked_package.new_features.filter(status='pending').aggregate(total=Sum('amount'))['total'] or 0
     
     context = {
         'user_details': request.user,
         'booked_package': booked_package,
         'payments': payments,
-        'country_code': country_code,
-        'country_flag_url': country_flag_url,
+        # 'country_code': country_code,
+        # 'country_flag_url': country_flag_url,
         'car_image': car_image,
         'remaining_payment_after_reserve': remaining_payment_after_reserve,
         'initial_payment': initial_payment,
@@ -1479,6 +1485,9 @@ def reservation_details(request, id):
         'balance_payment': balance_payment,
         'reservation_features': unselected_features,
         'has_pending_features': has_pending_features,
+        'included_features': included_features,
+        'newly_added_features':newly_added_features,
+        'new_pending_features': new_pending_features,
         'pending_features_total': pending_features_total,
         'extra_features_names': extra_features_list,
         'pending_features': pending_features,
