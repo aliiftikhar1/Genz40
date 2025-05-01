@@ -589,8 +589,15 @@
         <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="body-tab" data-bs-toggle="tab" data-bs-target="#body-pane" type="button" role="tab" aria-controls="body-pane" aria-selected="true">
-                    <i class="fas fa-couch tab-icon"></i>Body
+                    <i class="fas fa-car tab-icon"></i>Body
                     <span class="badge rounded-pill badge-tab" id="body-count">0</span>
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link " id="body-tab" data-bs-toggle="tab" data-bs-target="#intermediate-pane" type="button" role="tab" aria-controls="intermediate-pane" aria-selected="true">
+                    <i class="fas fa-car tab-icon"></i>Intemediate
+                    <span class="badge rounded-pill badge-tab" id="intermediate-count">0</span>
                 </button>
             </li>
            
@@ -609,6 +616,10 @@
            
             <div class="tab-pane fade" id="chassis-pane" role="tabpanel" aria-labelledby="chassis-tab">
                 <div class="gallery-grid" id="chassis-container"></div>
+            </div>
+
+            <div class="tab-pane fade" id="intermediate-pane" role="tabpanel" aria-labelledby="intermediate-tab">
+                <div class="gallery-grid" id="intermediate-container"></div>
             </div>
         </div>
     </div>
@@ -877,6 +888,7 @@
         function initGallery(images) {
             document.getElementById('body-container').innerHTML = '';
             document.getElementById('chassis-container').innerHTML = '';
+            document.getElementById('intermediate-container').innerHTML = '';
             
             images.forEach(image => {
                 const galleryItem = createGalleryItem(image);
@@ -903,12 +915,15 @@
         function updateTabCounts(images) {
             const counts = {
                 body: images.filter(img => img.label === 'body').length,
+                intermediate: images.filter(img => img.label === 'intermediate').length,
                 chassis: images.filter(img => img.label === 'chassis').length
             };
-            console.log("Counts are", counts.body, counts.chassis)
+            console.log("Counts are", counts.body, counts.chassis,counts.intermediate)
             
             document.getElementById('body-count').textContent = counts.body;
             document.getElementById('chassis-count').textContent = counts.chassis;
+            document.getElementById('intermediate-count').textContent = counts.intermediate;
+            
         }
         
         function capitalizeFirstLetter(string) {
