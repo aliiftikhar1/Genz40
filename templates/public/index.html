@@ -16,7 +16,7 @@
         font-weight: 700;
         margin-bottom: 2rem;
         color: #fff;
-        text-align: center;
+        text-align:start;
     }
 
     /* Hero Section */
@@ -120,7 +120,9 @@
     .card-car-image-container {
         background: #000;
         border-radius: 12px;
-        height: 35rem;
+        width:80%;
+        margin:auto;
+        height: 28rem;
         overflow: hidden;
         display: flex;
         justify-content: center;
@@ -141,8 +143,6 @@
         margin-bottom: 1rem;
     }
     .link-container {
-        background: rgba(255, 255, 255, 0.67);
-        padding: 0.3rem;
         border-radius: 25px;
         display: flex;
         justify-content: space-between;
@@ -152,7 +152,7 @@
         max-width: 30rem;
         margin-left: auto;
         margin-right: auto;
-    }
+    } 
     .link-primary {
         color: #0d6efd;
         text-decoration: none;
@@ -259,10 +259,14 @@
         font-weight: 600;
     }
     .btn-learn-more {
-        background-color: #e90e0e;
+        border: 2px solid white;
+        width:50%;
+        background-color: black;
     }
     .btn-order-now {
-        background-color: #0d6efd;
+        border: 2px solid white;
+        width:50%;
+        background-color: black;
     }
 
     /* Community Form Section */
@@ -303,7 +307,7 @@
     @media (max-width: 767.98px) {
         .hero-container { margin-top: 2rem; }
         .specs-container .col-6 { margin-bottom: 1.5rem; }
-        .card-car-image-container { height: 20rem; }
+        .card-car-image-container { height: 20rem; width:100%; }
         {% comment %} .card-car-image, .card-car-image-1 { object-fit: contain; } {% endcomment %}
         .card-car-image{
             width: 100%;
@@ -311,9 +315,19 @@
             object-fit: cover;
             object-position: 0 -2rem;
         }
+        .btn-learn-more {
+            border: 2px solid white;
+            width:100%;
+            background-color: black;
+        }
+        .btn-order-now {
+            border: 2px solid white;
+            width:100%;
+            background-color: black;
+        }
         .faq-title { font-size: 1.75rem; }
         .custom-faq-question { font-size: 1rem; }
-        .link-container { width: 100%; }
+        .link-container { width: 100%; display: flex; flex-direction: column; }
         .btn-primary { padding: 0.5rem 1rem; }
         #description { font-size: 0.9rem; }
         .car-tag { font-size: 1.2rem; }
@@ -518,8 +532,8 @@
                     {% for item in nav_items %}
                     {% if forloop.counter == 1 %}
                     <div class="link-container">
-                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
-                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
                     </div>
                     {% endif %}
                     {% endfor %}
@@ -537,8 +551,8 @@
                     {% for item in nav_items %}
                     {% if forloop.counter == 2 %}
                     <div class="link-container">
-                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
-                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
                     </div>
                     {% endif %}
                     {% endfor %}
@@ -558,8 +572,8 @@
                 {% for item in nav_items %}
                 {% if forloop.counter == 3 %}
                 <div class="link-container">
-                    <a href="{% url 'learn_more' item.slug %}" class="btn btn-primary car-btn btn-learn-more">Learn More</a>
-                    <a href="{% url 'car_configurator' item.slug %}" class="btn btn-primary car-btn btn-order-now">Order Now</a>
+                    <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                    <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
                 </div>
                 {% endif %}
                 {% endfor %}
@@ -655,7 +669,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
             <div class="col-md-4">
                 <div class="section-title me-lg-4">
                     <h4 class="title text-white mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
-                    <h4 class="title text-white mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title text-white mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
                     <p class="text-white para-dark para-desc mb-0">
                         Interested in GEN-Z 40? Join the most sort out community of
                         Builders & Enthusiats. Ask questions, and share your experience.
@@ -787,7 +801,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
             <div class="col-md-6">
                 <div class="section-title me-lg-4">
                     <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
-                    <h4 class="title title-dark mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
                     <p class="text-dark para-light para-desc mb-0">
                         Interested in GEN-Z 40? Join the most sort out community of
                         Builders & Enthusiats. Ask questions, and share your experience.
@@ -851,7 +865,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                         <div class="form-icon position-relative">
                                             <i data-feather="user" class="fea icon-sm icons text-dark"></i>
                                             <input name="last_name" id="last_name" type="text"
-                                                   class="ps-5 text-dark"
+                                                   class="ps-5 bg-transparent text-dark"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
                                                           outline: none; margin-bottom: 10px;
@@ -867,7 +881,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                         </label>
                                         <div class="form-icon position-relative">
                                             <i data-feather="mail" class="fea icon-sm icons text-dark"></i>
-                                            <input type="email" id="email" class="ps-5 text-dark"
+                                            <input type="email" id="email" class="ps-5 bg-transparent text-dark"
                                                    placeholder="Email"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
@@ -888,7 +902,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                                  alt="Country Flag"
                                                  style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
                                             <input name="phone_number" id="phone_number_mobile" type="text"
-                                                   class="ps-5 text-dark"
+                                                   class="ps-5 bg-transparent text-dark"
                                                    placeholder="Phone Number"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;

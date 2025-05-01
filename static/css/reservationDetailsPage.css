@@ -49,7 +49,7 @@ body {
 }
 
 .reservation-info h1 {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin: 0;
     color: var(--light-color);
 }
@@ -80,14 +80,23 @@ body {
 .reservation-meta {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: center;
     gap: 15px 25px;
     align-items: center;
 }
 
-.meta-item {
+.car-meta-item{
+    height: 100%;
+    width: 1px;
+    background-color: white;
+    padding-top: 20px;
     display: flex;
+    border-right: 2px solid white;
+}
+
+.meta-item {
     gap: 8px;
+    /* width: 100%; */
     align-items: center;
 }
 
@@ -157,14 +166,15 @@ body {
     margin-bottom: 25px;
     border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: var(--box-shadow);
+    /* box-shadow: var(--box-shadow); */
 }
 
 .car-image {
     width: 100%;
     height: auto;
     max-height: 500px;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: 0 -2rem;
     display: block;
 }
 
@@ -815,10 +825,12 @@ body {
 }
 
 @media (max-width: 768px) {
+
     .reservation-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 10px;
+        padding: 10px;
     }
     
     .reservation-info {
@@ -831,7 +843,7 @@ body {
         width: 100%;
         flex-direction: row;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         gap: 10px;
     }
     
@@ -846,13 +858,14 @@ body {
 }
 
 @media (max-width: 576px) {
+    
     .reservation-details-container {
         padding: 0 15px;
         margin-top: 70px;
     }
     
     .reservation-info h1 {
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
     
     .gallery-items {

@@ -531,6 +531,7 @@ def navitem_detail(request, slug):
 def car_configurator(request,slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     package_details = PostPackage.objects.filter(is_active=True, nav_item=items.id).order_by('position')
+
     # configure_vehicles = CarConfiguration.objects.filter(user_id=str(request.user.id),car_model_id=items.id)
     amount_due = package_details[0].amount_due
     # print("**********----*****Existing Configurations are : ",configure_vehicles)
@@ -1389,7 +1390,7 @@ def reservation_details(request, id):
                     if option_name:
                         feature_name = f"{feature_name} ({option_name})"
                 
-                extra_features_list.append(feature_name)
+                extra_features_list.append(feature)
                 extra_features_ids.append(feature_id)
             except (PackageFeatureRoller.DoesNotExist, ValueError):
                 continue

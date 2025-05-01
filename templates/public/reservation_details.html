@@ -10,21 +10,22 @@
     <div class="reservation-header">
         <div class="reservation-info">
             <h1 >Reservation No. {{ booked_package.reservation_number }}</h1>
-           
-        </div>
-        
-        <div class="reservation-meta">
-            <div class="status-badge {% if booked_package.status == 'confirmed' %}confirmed
+            <div class="status-badge d-none d-lg-flex {% if booked_package.status == 'confirmed' %}confirmed
             {% elif booked_package.status == 'cancelled' %}cancelled
             {% else %}pending{% endif %}">
             {{ booked_package.get_status_display }}
         </div>
-            <div class="meta-item">
-                <span class="meta-label">Car:</span>
+        </div>
+        
+        <div class="reservation-meta">
+            
+            <div class="meta-item ">
+                {% comment %} <span class="meta-label">Car:</span> {% endcomment %}
                 <span class="meta-value">{{ booked_package.car_model.title }}</span>
             </div>
+            <div class="car-meta-item"></div>
             <div class="meta-item">
-                <span class="meta-label">Package:</span>
+                {% comment %} <span class="meta-label">Package:</span> {% endcomment %}
                 <span class="meta-value">{{ booked_package.package.name }}</span>
             </div>
         </div>
@@ -56,7 +57,7 @@
             </div>
 
             <!-- Features Section -->
-            <div class="features-section card-style">
+            <div class="features-section ">
                 <div class="section-header">
                     <h2>Features</h2>
                     <button class="toggle-btn" id="toggleFeatures">
@@ -82,7 +83,7 @@
                             <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
                             <ul>
                                 {% for feature in extra_features_names %}
-                                    <li>{{ feature }}</li>
+                                    <li>{{ feature.name }} - {{feature.price|floatformat:0|intcomma}} $</li>
                                 {% endfor %}
                             </ul>
                         {% endif %}
@@ -91,7 +92,7 @@
                             <h1 style="font-size: 1.5rem;color:lime;">Newly Added Features</h1>
                             <ul>
                                 {% for feature in newly_added_features %}
-                                    <li>{{ feature.features }} </li>
+                                    <li>{{ feature.features }} - {{feature.amount|floatformat:0|intcomma}} $</li>
 
                                 {% endfor %}
                             </ul>
