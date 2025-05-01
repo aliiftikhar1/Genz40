@@ -122,7 +122,7 @@ def tech_specs(request, slug):
 def learn_more(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
     allitems = PostNavItem.objects.all()  
-    package_details = DynamicPackages.objects.filter(car_model=items).order_by('created_at')
+    package_details = DynamicPackages.objects.filter(car_model=items).order_by('position')
     
     # Existing image lists
     markI_images = [
@@ -608,7 +608,7 @@ def lock_your_price_now(request, slug, packageId):
     email = request.user.email if request.user.is_authenticated else request.GET.get('email', '')
     
     items = get_object_or_404(PostNavItem, slug=slug)
-    package_details = DynamicPackages.objects.filter(id=packageId).order_by('created_at')
+    package_details = DynamicPackages.objects.filter(id=packageId).order_by('position')
     
     amount_due = package_details[0].reserveAmount
     random_password = generate_random_password()
@@ -2141,7 +2141,7 @@ from decimal import Decimal
 def dynamic_configurator(request, car_model_slug):
     car_model = get_object_or_404(PostNavItem, slug=car_model_slug)
     
-    packages = DynamicPackages.objects.filter(car_model=car_model).order_by('created_at')
+    packages = DynamicPackages.objects.filter(car_model=car_model).order_by('position')
     
     sections = FeaturesSection.objects.all().order_by('created_at')
     

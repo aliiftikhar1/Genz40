@@ -249,7 +249,7 @@ def customer_list(request):
 
 @login_required
 def package_list(request):
-    all_package_list = DynamicPackages.objects.all().order_by('created_at')
+    all_package_list = DynamicPackages.objects.all().order_by('position')
     context = {
     'packages': all_package_list,
     'package_types': DynamicPackages.PACKAGE_TYPES,
@@ -1343,7 +1343,7 @@ def get_dynamic_packages(request, car_model_slug):
     """API endpoint to get dynamic packages for a car model"""
     try:
         car_model = PostNavItem.objects.get(slug=car_model_slug)
-        packages = DynamicPackages.objects.filter(car_model=car_model).order_by('created_at')
+        packages = DynamicPackages.objects.filter(car_model=car_model).order_by('position')
         
         serializer = DynamicPackageSerializer(packages, many=True)
         return Response({
