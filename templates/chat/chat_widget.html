@@ -320,6 +320,23 @@
         background: #000000;
         color: #ffffff;
     }
+    @media (max-width: 767px) {
+        #chat-widget {
+            background-color: #000000;
+            position: fixed;
+            bottom: 5rem;
+            right: 1rem;
+            z-index: 1000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        #chat-container {
+            width: 100%;
+            height: 70vh;
+            border-radius: 0;
+            bottom: 0;
+            right: 0;
+        }
+    }
 
     @media (max-width: 576px) {
         #chat-widget {
@@ -534,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             <div class="text-white text-end" style="font-size: 0.75rem; min-width: 50px;">
-                ${chatroom.last_message ? formatTimeShort(chatroom.last_message.timestamp) : ''}
+                ${chatroom.last_message ? (chatroom.last_message.timestamp) : ''}
             </div>
         `;
 
