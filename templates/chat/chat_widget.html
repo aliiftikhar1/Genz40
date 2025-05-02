@@ -814,14 +814,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showErrorMessage(message) {
         const errorElement = document.createElement('div');
-        errorElement.className = 'text-center p-2 text-danger bg-danger bg-opacity-10 rounded';
+        errorElement.className = 'text-center p-2 text-white bg-danger bg-opacity-10 rounded';
         errorElement.textContent = message;
         chatMessages.appendChild(errorElement);
     }
 
     function updateConnectionStatus(status, isError = false) {
         connectionStatus.textContent = status;
-        connectionStatus.className = isError ? 'bg-danger bg-opacity-25 text-danger px-2 py-1 rounded-pill' : 'px-2 py-1 rounded-pill';
+        connectionStatus.className = isError ? 'bg-danger bg-opacity-25 text-white px-2 py-1 rounded-pill' : 'px-2 py-1 rounded-pill';
     }
 
     function openModal() {
