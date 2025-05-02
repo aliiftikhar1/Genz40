@@ -358,10 +358,12 @@
 </style>
 
 <div id="chat-widget">
+    {% if  user_data.is_authenticated == 'True' or user_data.is_authenticated %}
     <div id="chat-button" class="shadow">
         <i class="fas fa-comment"></i>
         <span id="unread-count" style="display: none;">0</span>
     </div>
+    {% endif %}
     
     <div id="chat-container" style="display: none;">
         <div class="chat-header">
@@ -519,6 +521,8 @@ document.addEventListener('DOMContentLoaded', function() {
         chatroomElement.className = `chatroom-item ${chatroom.unread_count > 0 ? 'unread' : ''}`;
         let name = '';
         let avatarContent = '';
+        const userData = `{{user_data}}`
+        console.log("User Data Is : ",userData)
         const userRole = `{{user_data.role}}`;
 
         // Determine name and avatar based on user role
