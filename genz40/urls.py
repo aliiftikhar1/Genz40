@@ -18,7 +18,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from django.core.asgi import get_asgi_application
 from genz40 import custom_sortable_urls
+from django.urls import path, re_path
+from chat import views
+from chat.consumers import ChatConsumer
+from chat.urls import websocket_urlpatterns
 
 
 urlpatterns = [
@@ -26,5 +33,17 @@ urlpatterns = [
     # path('admin/backend/postnavitem/', include(custom_sortable_urls)),
     path('', include('frontend.urls')),
     path('auth/', include('backend.urls')),
+    path('api/chat/', include('chat.urls')),
+    
+   
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})

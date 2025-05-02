@@ -371,3 +371,28 @@ class ReservationFeaturesPaymentAdmin(admin.ModelAdmin):
     search_fields = ('reservation_feature__booked_package__reservation_number', 'transaction_id')
     readonly_fields = ('payment_date', 'created_at', 'updated_at')
     date_hierarchy = 'payment_date'
+
+
+
+
+from chat.models import ChatRoom, Message, ChatNotification
+
+@admin.register(ChatRoom)
+class ChatRoomAdmin(admin.ModelAdmin):
+    list_display = ('room_name', 'customer', 'admin', 'created_at', 'is_active')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('room_name', 'customer__email', 'admin__email')
+    raw_id_fields = ('customer', 'admin')
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('chat_room', 'sender', 'timestamp', 'is_read')
+    list_filter = ('is_read', 'timestamp')
+    search_fields = ('content', 'sender__email')
+    raw_id_fields = ('chat_room', 'sender')
+
+@admin.register(ChatNotification)
+class ChatNotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'chat_room', 'count', 'last_updated')
+    list_filter = ('last_updated',)
+    raw_id_fields = ('user', 'chat_room')

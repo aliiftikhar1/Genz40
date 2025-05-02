@@ -72,6 +72,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+    def get_full_name(self):
+        # Return full name or a fallback (e.g., username)
+        return f"{self.first_name} {self.last_name}".strip() or self.username
 
     class Meta:
         db_table = 'custom_users'
@@ -1024,6 +1028,8 @@ class ReservationFeaturesPayment(models.Model):
         """Shortcut to access the booked package associated with this payment"""
         return self.reservation_feature.booked_package
     
+
+
 
 
 

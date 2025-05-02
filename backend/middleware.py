@@ -38,3 +38,5 @@ class SetLastVisitMiddleware(MiddlewareMixin):
             # Update last visit time after request finished processing.
             CustomUser.objects.filter(pk=request.user.pk).update(last_login=now())
         return response
+    
+

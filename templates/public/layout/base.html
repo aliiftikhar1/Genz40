@@ -8,8 +8,10 @@
     {% include 'public/layout/navbar.html' %}
     {% block content %}
     {% endblock content %}
+    
+    {% include 'chat/chat_widget.html' %}
     {% if is_footer_required != False %}
-      {% include 'public/layout/footer.html' %}
+    {% include 'public/layout/footer.html' %}
     {% endif %}
     {% block script %}
     {% endblock script %}
