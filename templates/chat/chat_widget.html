@@ -728,6 +728,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function playnotification(){
+        if (window.Audio) {
+            try {
+                const notificationSound = new Audio('/static/sounds/notification.mp3');
+                notificationSound.play().catch(e => console.log('Could not play notification sound:', e));
+            } catch (e) {
+                console.log('Audio notification error:', e);
+            }
+        }
+    }
+
     function connectGlobalWebSocket() {
         if (globalSocket) {
             globalSocket.close();
@@ -792,14 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             showToast(notificationText);
 
                             // Play notification sound
-                            if (window.Audio) {
-                                try {
-                                    const notificationSound = new Audio('/static/sounds/notification.wav');
-                                    notificationSound.play().catch(e => console.log('Could not play notification sound:', e));
-                                } catch (e) {
-                                    console.log('Audio notification error:', e);
-                                }
-                            }
+                            playnotification()
                         }
 
                         // Update unread counts
