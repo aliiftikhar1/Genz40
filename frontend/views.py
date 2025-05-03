@@ -43,7 +43,10 @@ from common.utils import send_otp, verify_otp
 from django.core.cache import cache
 from decimal import Decimal
 from django.db.models import Sum
-
+# Assuming these are your chat models (adjust based on your actual models)
+from chat.models import ChatRoom, Message, ChatNotification  # Import your chat models
+import channels.layers
+from asgiref.sync import async_to_sync
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -408,7 +411,6 @@ def get_register_community(request):
                 return JsonResponse({"message": 'Successfully added.', 'is_success': True})
             else:
                 return JsonResponse({"message": 'Already joined.', 'is_success': False})
-
 def get_register(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -443,7 +445,49 @@ def get_register(request):
                 try:
                     print("User data before saving:", user.__dict__)
                     user.save()
+
+                    admin_user= User.objects.filter(is_staff=True).first()
                     
+                    # chatroom creation functionality
+                    chatroom = ChatRoom.objects.create(
+                        customer=user,
+                        admin=admin_user,
+                        room_name = f"chat_{user}_{admin_user if admin_user else '0'}_{timezone.now().timestamp()}",
+                        subject="Genz40-Chat Support",
+                        created_at=timezone.now()
+                    )
+                    
+                    
+                    # Create the welcome message
+                    welcome_message = Message.objects.create(
+                        chat_room=chatroom,
+                        sender=admin_user,
+                        content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
+                        timestamp=timezone.now(),
+                        is_read=False
+                    )
+                    notification = ChatNotification.objects.create(
+                        user = user,
+                        chat_room = chatroom,
+                        count = 1,
+                    )
+                    
+                    channel_layer = channels.layers.get_channel_layer()
+                    async_to_sync(channel_layer.group_send)(
+                        f"chat_{chatroom.id}",
+                        {
+                            "type": "chat_message",
+                            "message": {
+                                "room_id": chatroom.id,
+                                "sender_id": admin_user.id,
+                                "sender_name": "Support Team",
+                                "sender_role": "admin",
+                                "message": welcome_message.content,
+                                "timestamp": welcome_message.timestamp.isoformat(),
+                                "is_read": welcome_message.is_read,
+                            }
+                        }
+                    )
                     # Email sending logic
                     subject = "Welcome to Our Platform - www.genz40.com"
                     recipient_list = [user.email]
@@ -467,6 +511,7 @@ def get_register(request):
     # If not POST method
     else:
         register_page(request)
+
 
 def activate(request, uidb64, token):
     try:
@@ -1143,19 +1188,23 @@ def reservation_checkout(request, id):
 
 @csrf_exempt
 def process_reservation_payment(request):
+    print("Process reservation function called")
     if request.method == 'POST':
         try:
-            user_id = request.user.id
-            first_name = request.user.first_name
-            last_name = request.user.last_name
-            email = request.user.email
-            phone_number = request.user.phone_number
+            user_id = request.user.id or request.POST.get('user_id')
+            print("User id is : ",user_id)
+            custom_user = CustomUser.objects.get(id=user_id)
+            first_name = custom_user.first_name
+            last_name = custom_user.last_name
+            email = custom_user.email
+            phone_number = custom_user.phone_number
             package_id = request.POST.get('package_id')
 
             print("User Id is : ",str(user_id))
 
             try:
                 custom_user = CustomUser.objects.get(id=user_id)
+                print("CUstomer user found",custom_user)
                 custom_user.first_name = first_name
                 custom_user.last_name = last_name
                 custom_user.save()

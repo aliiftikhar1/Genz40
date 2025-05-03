@@ -1,3 +1,4 @@
+# urls.py
 from django.urls import path
 from . import views
 from chat import consumers
@@ -19,4 +20,5 @@ urlpatterns = [
 # WebSocket URL patterns (for Channels)
 websocket_urlpatterns = [
     path('ws/chat/<int:room_id>/', consumers.ChatConsumer.as_asgi()),
+    path('ws/chat/global/', consumers.GlobalChatConsumer.as_asgi()),  # Make sure this is registered
 ]

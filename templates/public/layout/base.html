@@ -8,7 +8,7 @@
     {% include 'public/layout/navbar.html' %}
     {% block content %}
     {% endblock content %}
-    
+    {% include 'chat/unregister_chat_widget.html' %}
     {% include 'chat/chat_widget.html' %}
     {% if is_footer_required != False %}
     {% include 'public/layout/footer.html' %}

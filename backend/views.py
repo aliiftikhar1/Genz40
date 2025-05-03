@@ -257,6 +257,10 @@ def package_list(request):
 }
     return render(request, 'admin/package/list.html', context)
 
+@login_required
+def all_chats(request):
+    return render(request, 'admin/chat/index.html')
+
 # views.py
 @login_required
 def booked_package_list(request):

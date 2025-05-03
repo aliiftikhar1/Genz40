@@ -8,7 +8,6 @@ from frontend.views import car_configurator
 # app_name = 'auth'
 
 urlpatterns = [
-    # Admin urls
     path('register/', register, name='register'),
 #     path('login/', custom_login, name='login'),
     path('logout/', custom_logout, name='logout'),
@@ -39,7 +38,7 @@ urlpatterns = [
     path('community-member-list', views.community_member_list, name='community_member_list'),
     path('subscriber-list', views.subscriber_list, name='subscriber_list'),
 
-    
+    path('chats/', views.all_chats, name='all_chats'),
     path('packages/', package_list, name='package_list'),
     path('package/add/', package_add, name='package_add'),
     path('package/edit/<str:pk>/', package_edit, name='package_edit'),
@@ -94,7 +93,7 @@ urlpatterns = [
 path('reservations/', views.booked_package_list, name='booked_package_list'),
 
 # new configurations system
- path('booked-packages/', views.get_all_booked_packages, name='get-all-booked-packages'),
+    path('booked-packages/', views.get_all_booked_packages, name='get-all-booked-packages'),
     path('booked-packages/<uuid:pk>/', views.get_booked_package_by_id, name='get-booked-package-by-id'),
     path('booked-packages/user/<uuid:user_id>/', views.get_booked_packages_by_user_id, name='get-booked-packages-by-user-id'),
     path('booked-packages/create/', views.save_booked_package, name='save-booked-package'),
