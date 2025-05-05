@@ -11,7 +11,10 @@ from common.utils import validate_file_extension
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.crypto import get_random_string
-
+from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.apps import apps
 
 
 # Create your models here.
@@ -434,21 +437,55 @@ class PostCommunity(models.Model):
     class Meta:
         db_table = 'community'
 
-
 class PostCommunityJoiners(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='community_joiners')
+    user = models.ForeignKey('backend.CustomUser', on_delete=models.CASCADE, related_name='new_community_joiners')
+    community = models.ForeignKey('backend.PostCommunity', on_delete=models.CASCADE, related_name='joiners')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.id)
+        community_name = self.community.name if self.community.name else "Unnamed Community"
+        return f"{self.user.email} in {community_name}"
 
     class Meta:
         db_table = 'community_joiners'
+        unique_together = ('user', 'community')
+        indexes = [
+            models.Index(fields=['user', 'community']),
+            models.Index(fields=['is_active']),
+        ]
 
+    def clean(self):
+        """Validate that the user hasn't already joined this community."""
+        if self.pk is None:  # Only check for new instances
+            if PostCommunityJoiners.objects.filter(user=self.user, community=self.community).exists():
+                raise ValidationError(
+                    f"User {self.user.email} is already a member of {self.community.name or 'this community'}"
+                )
+
+    def save(self, *args, **kwargs):
+        """Update timestamp and sync with chatroom membership."""
+        # Validate the instance
+        self.clean()
+
+        # Update timestamp for existing instances
+        if self.pk:
+            self.updated_at = timezone.now()
+
+        super().save(*args, **kwargs)
+
+        # Sync with community chatroom membership
+        ChatRoom = apps.get_model('chat', 'ChatRoom')  # Lazy load ChatRoom
+        chatrooms = ChatRoom.objects.filter(community=self.community, chat_type='community')
+        for chatroom in chatrooms:
+            if self.is_active:
+                if not chatroom.members.filter(id=self.user.id).exists():
+                    chatroom.members.add(self.user)
+            else:
+                if chatroom.members.filter(id=self.user.id).exists():
+                    chatroom.members.remove(self.user)
 
 class PostContactUs(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

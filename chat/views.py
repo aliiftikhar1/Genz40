@@ -9,16 +9,13 @@ from backend.models import PostCommunity, PostCommunityJoiners
 import uuid
 import logging
 from rest_framework.parsers import MultiPartParser
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from rest_framework.views import APIView
 from datetime import datetime
 import os
-import uuid
+from backend.models import CustomUser
 
-User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -35,24 +32,10 @@ class CommunityChatRoomListView(generics.ListAPIView):
                 logger.warning("User is not authenticated")
                 return ChatRoom.objects.none()
                 
-            # Since there's only one community, fetch it directly
-            community = PostCommunity.objects.first()
-            if not community:
-                logger.warning("No community found")
-                return ChatRoom.objects.none()
-                
-            # Verify user is an active member of the community
-            if not PostCommunityJoiners.objects.filter(
-                user=user,
-                is_active=True
-            ).exists():
-                logger.info(f"User {user.email} is not an active member of the community")
-                return ChatRoom.objects.none()
-            
-            # Fetch community chat rooms
+            # Fetch rooms where user is a member
             queryset = ChatRoom.objects.filter(
                 chat_type=ChatRoom.COMMUNITY,
-                # community=community
+                members=user
             ).order_by('-updated_at')
             logger.info(f"Chat rooms found: {queryset.count()}")
             
@@ -71,7 +54,6 @@ class CommunityChatRoomCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         try:
             user = request.user
-            # Fetch the single community
             community = PostCommunity.objects.first()
             if not community:
                 return Response(
@@ -79,7 +61,6 @@ class CommunityChatRoomCreateView(generics.CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
                 
-            # Verify user is an active member
             if not PostCommunityJoiners.objects.filter(
                 user=user,
                 is_active=True
@@ -89,7 +70,6 @@ class CommunityChatRoomCreateView(generics.CreateAPIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
                 
-            # Create chatroom
             room_name = f"community_chat_{uuid.uuid4().hex}"
             chat_room = ChatRoom.objects.create(
                 room_name=room_name,
@@ -97,6 +77,13 @@ class CommunityChatRoomCreateView(generics.CreateAPIView):
                 community=community,
                 is_active=True
             )
+            
+            # Add all community members to the chat room
+            community_members = PostCommunityJoiners.objects.filter(
+                community=community,
+                is_active=True
+            ).values_list('user', flat=True)
+            chat_room.members.add(*community_members)
             
             serializer = self.get_serializer(chat_room)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -106,7 +93,7 @@ class CommunityChatRoomCreateView(generics.CreateAPIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
 class ChatRoomListCreateView(generics.ListCreateAPIView):
     serializer_class = ChatRoomSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -114,7 +101,7 @@ class ChatRoomListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         return ChatRoom.objects.filter(
-            Q(customer=user) | Q(admin=user)
+            Q(customer=user) | Q(admin=user) | Q(members=user)
         ).annotate(
             last_message_time=Max('messages__timestamp')
         ).order_by('-last_message_time', '-updated_at')
@@ -122,7 +109,7 @@ class ChatRoomListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         try:
             customer = request.user
-            admin = User.objects.filter(is_staff=True).first()
+            admin = CustomUser.objects.filter(is_staff=True).first()
             subject = request.data.get('subject', 'General Inquiry')
             
             room_name = f"chat_{uuid.uuid4().hex}"
@@ -142,7 +129,6 @@ class ChatRoomListCreateView(generics.ListCreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
 class ImageUploadView(APIView):
     parser_classes = [MultiPartParser]
     permission_classes = [permissions.IsAuthenticated]
@@ -158,17 +144,20 @@ class ImageUploadView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Generate unique filename
+            chat_room = ChatRoom.objects.get(id=room_id)
+            if chat_room.chat_type == ChatRoom.COMMUNITY:
+                if not chat_room.members.filter(id=request.user.id).exists():
+                    return Response(
+                        {'error': 'User is not a member of this community'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+
             ext = os.path.splitext(image_file.name)[1]
             filename = f"chat_images/{uuid.uuid4()}{ext}"
             
-            # Save file
             file_path = default_storage.save(filename, ContentFile(image_file.read()))
+            file_url = f"/{file_path}"
             
-            file_url = f"/{file_path}" 
-            
-            # Create message record
-            chat_room = ChatRoom.objects.get(id=room_id)
             message = Message.objects.create(
                 sender=request.user,
                 chat_room=chat_room,
@@ -178,6 +167,26 @@ class ImageUploadView(APIView):
             )
             
             chat_room.update_timestamp()
+            
+            if chat_room.chat_type == ChatRoom.COMMUNITY:
+                for member in chat_room.members.exclude(id=request.user.id):
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=member,
+                        chat_room=chat_room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
+            else:
+                recipient = chat_room.admin if request.user == chat_room.customer else chat_room.customer
+                if recipient:
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=recipient,
+                        chat_room=chat_room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
             
             return Response({
                 'image_url': file_url,
@@ -189,13 +198,17 @@ class ImageUploadView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
 class MessageListCreateView(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         room_id = self.kwargs['room_id']
+        chat_room = ChatRoom.objects.get(id=room_id)
+        if chat_room.chat_type == ChatRoom.COMMUNITY:
+            if not chat_room.members.filter(id=self.request.user.id).exists():
+                return Message.objects.none()
         return Message.objects.filter(
             chat_room_id=room_id
         ).select_related('sender').order_by('timestamp')
@@ -203,6 +216,9 @@ class MessageListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         room_id = self.kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
+        if chat_room.chat_type == ChatRoom.COMMUNITY:
+            if not chat_room.members.filter(id=self.request.user.id).exists():
+                raise ValueError("User is not a member of this community")
         message = serializer.save(
             sender=self.request.user, 
             chat_room=chat_room
@@ -210,15 +226,25 @@ class MessageListCreateView(generics.ListCreateAPIView):
         
         chat_room.update_timestamp()
         
-        recipient = chat_room.admin if self.request.user == chat_room.customer else chat_room.customer
-        if recipient and chat_room.chat_type != ChatRoom.COMMUNITY:
-            notification, created = ChatNotification.objects.get_or_create(
-                user=recipient,
-                chat_room=chat_room,
-                defaults={'count': 1}
-            )
-            if not created:
-                notification.increment()
+        if chat_room.chat_type == ChatRoom.COMMUNITY:
+            for member in chat_room.members.exclude(id=self.request.user.id):
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=member,
+                    chat_room=chat_room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        else:
+            recipient = chat_room.admin if self.request.user == chat_room.customer else chat_room.customer
+            if recipient:
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=recipient,
+                    chat_room=chat_room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
 
 class UnreadMessagesView(generics.ListAPIView):
     serializer_class = MessageSerializer
@@ -226,6 +252,10 @@ class UnreadMessagesView(generics.ListAPIView):
 
     def get_queryset(self):
         room_id = self.kwargs['room_id']
+        chat_room = ChatRoom.objects.get(id=room_id)
+        if chat_room.chat_type == ChatRoom.COMMUNITY:
+            if not chat_room.members.filter(id=self.request.user.id).exists():
+                return Message.objects.none()
         return Message.objects.filter(
             chat_room_id=room_id,
             is_read=False
@@ -236,6 +266,14 @@ class MarkMessagesAsReadView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         room_id = kwargs['room_id']
+        chat_room = ChatRoom.objects.get(id=room_id)
+        if chat_room.chat_type == ChatRoom.COMMUNITY:
+            if not chat_room.members.filter(id=request.user.id).exists():
+                return Response(
+                    {'error': 'User is not a member of this community'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        
         messages = Message.objects.filter(
             chat_room_id=room_id,
             is_read=False

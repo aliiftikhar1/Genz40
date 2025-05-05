@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils import timezone
-from backend.models import CustomUser
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.files.images import get_image_dimensions
+from backend.models import CustomUser
 
 def validate_image_size(image):
     """Validate image dimensions and size."""
@@ -29,6 +30,7 @@ class ChatRoom(models.Model):
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='customer_chatrooms', null=True, blank=True)
     admin = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin_chatrooms')
     community = models.ForeignKey('backend.PostCommunity', on_delete=models.CASCADE, null=True, blank=True, related_name='chat_rooms')
+    members = models.ManyToManyField(CustomUser, related_name='community_chatrooms', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)

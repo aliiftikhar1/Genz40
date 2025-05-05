@@ -12,9 +12,9 @@ from django.core.files.images import ImageFile
 from django.conf import settings
 import logging
 from datetime import datetime
+from backend.models import CustomUser
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -40,6 +40,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'connection_established',
                 'message': 'Connected to chat room'
             }))
+            
+            # Send all historical messages for community chat
+            if await self.is_community_room():
+                messages = await self.get_all_messages()
+                for message in messages:
+                    await self.send(text_data=json.dumps(message))
+                    
         except Exception as e:
             logger.error(f"Connection error: {str(e)}")
             await self.close(code=4000)
@@ -76,23 +83,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     }
                 )
+            elif data.get('type') == 'message':
+                message = data.get('message', '').strip()
+                room_id = data.get('room_id')
+                if message and room_id:
+                    message_obj = await self.save_message(message, room_id)
+                    await self.broadcast_message(message_obj)
+                    
         except Exception as e:
             logger.error(f"WebSocket error: {str(e)}")
-
-
-    async def diagnoistics(self, data):
-        try:
-            print(f"Diagnostics: {data}")
-            if data.get('type') == 'ping':
-                print(f"Ping received from {self.user}")
-        except Exception as e:
-            logger.error(f"Diagnostics error: {str(e)}")
 
     @database_sync_to_async
     def save_image_message(self, image_data, room_id, filename):
         room = ChatRoom.objects.get(id=room_id)
         if room.chat_type == ChatRoom.COMMUNITY:
-            if not PostCommunityJoiners.objects.filter(user=self.user, is_active=True).exists():
+            if not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
         
         img = Image.open(BytesIO(image_data))
@@ -115,7 +120,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         room.update_timestamp()
         
-        if room.chat_type != ChatRoom.COMMUNITY:
+        if room.chat_type == ChatRoom.COMMUNITY:
+            for member in room.members.exclude(id=self.user.id):
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=member,
+                    chat_room=room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        else:
             recipient = room.admin if self.user == room.customer else room.customer
             if recipient:
                 notification, created = ChatNotification.objects.get_or_create(
@@ -174,10 +188,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             room = ChatRoom.objects.get(id=self.room_id)
             if room.chat_type == ChatRoom.COMMUNITY:
-                return PostCommunityJoiners.objects.filter(
-                    user=self.user,
-                    is_active=True
-                ).exists()
+                return room.members.filter(id=self.user.id).exists()
             return ChatRoom.objects.filter(
                 id=self.room_id
             ).filter(
@@ -187,10 +198,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return False
 
     @database_sync_to_async
+    def is_community_room(self):
+        try:
+            room = ChatRoom.objects.get(id=self.room_id)
+            return room.chat_type == ChatRoom.COMMUNITY
+        except ChatRoom.DoesNotExist:
+            return False
+
+    @database_sync_to_async
+    def get_all_messages(self):
+        messages = Message.objects.filter(chat_room_id=self.room_id).select_related('sender').order_by('timestamp')
+        return [{
+            'type': 'chat',
+            'id': str(msg.id),
+            'message': msg.content,
+            'sender_id': str(msg.sender.id) if msg.sender else None,
+            'sender_name': msg.sender.get_full_name() or msg.sender.email if msg.sender else "System",
+            'sender_role': 'admin' if msg.sender and msg.sender.is_staff else 'customer',
+            'timestamp': msg.timestamp.isoformat(),
+            'is_read': msg.is_read,
+            'room_id': str(msg.chat_room.id),
+            'room_name': msg.chat_room.community.name if msg.chat_room.chat_type == ChatRoom.COMMUNITY else msg.chat_room.subject,
+            'message_type': msg.message_type,
+            'image_url': f"{settings.MEDIA_URL}{msg.image.name}" if msg.message_type == Message.IMAGE and msg.image else None
+        } for msg in messages]
+
+    @database_sync_to_async
     def save_message(self, message, room_id):
         room = ChatRoom.objects.get(id=room_id)
         if room.chat_type == ChatRoom.COMMUNITY:
-            if not PostCommunityJoiners.objects.filter(user=self.user, is_active=True).exists():
+            if not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
         message_obj = Message.objects.create(
             chat_room=room,
@@ -199,7 +236,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         room.update_timestamp()
         
-        if room.chat_type != ChatRoom.COMMUNITY:
+        if room.chat_type == ChatRoom.COMMUNITY:
+            for member in room.members.exclude(id=self.user.id):
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=member,
+                    chat_room=room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        else:
             recipient = room.admin if self.user == room.customer else room.customer
             if recipient:
                 notification, created = ChatNotification.objects.get_or_create(
@@ -238,14 +284,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'room_name': event['room_name'],
             'message_type': event['message_type'],
             'image_url': event.get('image_url')
-        }))
-
-    async def typing_message(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'typing',
-            'is_typing': event['is_typing'],
-            'sender_id': event['sender_id'],
-            'room_id': event['room_id']
         }))
 
 class GlobalChatConsumer(AsyncWebsocketConsumer):
@@ -370,7 +408,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def join_room_groups(self):
         rooms = ChatRoom.objects.filter(
-            Q(customer=self.user) | Q(admin=self.user)
+            Q(customer=self.user) | Q(admin=self.user) | Q(members=self.user)
         )
         for room in rooms:
             self.channel_layer.group_add(
@@ -381,7 +419,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def leave_room_groups(self):
         rooms = ChatRoom.objects.filter(
-            Q(customer=self.user) | Q(admin=self.user)
+            Q(customer=self.user) | Q(admin=self.user) | Q(members=self.user)
         )
         for room in rooms:
             self.channel_layer.group_discard(
@@ -392,6 +430,9 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, message, room_id):
         room = ChatRoom.objects.get(id=room_id)
+        if room.chat_type == ChatRoom.COMMUNITY:
+            if not room.members.filter(id=self.user.id).exists():
+                raise ValueError("User is not a member of this community")
         message_obj = Message.objects.create(
             chat_room=room,
             sender=self.user,
@@ -399,7 +440,16 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         )
         room.update_timestamp()
         
-        if room.chat_type != ChatRoom.COMMUNITY:
+        if room.chat_type == ChatRoom.COMMUNITY:
+            for member in room.members.exclude(id=self.user.id):
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=member,
+                    chat_room=room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        else:
             recipient = room.admin if self.user == room.customer else room.customer
             if recipient:
                 notification, created = ChatNotification.objects.get_or_create(

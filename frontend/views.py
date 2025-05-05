@@ -52,7 +52,6 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
 
-User = get_user_model()
 
 def get_country_info(request):
     ip = get_client_ip(request)
@@ -398,94 +397,153 @@ from backend.models import PostCommunityJoiners
 from chat.models import ChatRoom  # Import ChatRoom model
 from django.db import transaction
 
-CustomUser = get_user_model()
+
+from backend.models import CustomUser
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_register_community(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        user_exists = CustomUser.objects.filter(email=email).exists()
+        try:
+            email = request.POST.get('email')
+            user_exists = CustomUser.objects.filter(email=email).exists()
 
-        with transaction.atomic():
-            if not user_exists:
-                form = RegisterForm(request.POST)
-                if form.is_valid():
-                    user = form.save(commit=False)
-                    user.set_password(request.POST['password1'])
-                    user.is_active = True
-                    user.save()
+            with transaction.atomic():
+                if not user_exists:
+                    form = RegisterForm(request.POST)
+                    if form.is_valid():
+                        user = form.save(commit=False)
+                        user.set_password(request.POST['password1'])
+                        user.is_active = True
+                        user.save()
 
-                    # Add user to community
-                    PostCommunityJoiners.objects.create(user=user)
+                        # Add user to community
+                        community = PostCommunity.objects.first()
+                        if not community:
+                            return JsonResponse({
+                                "message": "No community exists.",
+                                "is_success": False
+                            }, status=400)
 
-                    # Add user to community chatroom
-                    add_user_to_community_chatroom(user)
+                        PostCommunityJoiners.objects.create(
+                            user=user,
+                            community=community,
+                            is_active=True
+                        )
 
-                    return JsonResponse({
-                        "message": "Thank You for Joining. You have been added to the community chatroom!",
-                        "is_success": True
-                    })
+                        # Add user to community chatroom
+                        add_user_to_community_chatroom(user, community)
+
+                        return JsonResponse({
+                            "message": "Thank You for Joining. You have been added to the community chatroom!",
+                            "is_success": True
+                        })
+                    else:
+                        return JsonResponse({
+                            "message": "Registration failed. Please check the form data.",
+                            "is_success": False,
+                            "errors": form.errors
+                        }, status=400)
                 else:
-                    return JsonResponse({
-                        "message": "Registration failed. Please check the form data.",
-                        "is_success": False,
-                        "errors": form.errors
-                    }, status=400)
-            else:
-                # Handle existing user
-                user = CustomUser.objects.get(email=email)
-                if not PostCommunityJoiners.objects.filter(user=user).exists():
-                    PostCommunityJoiners.objects.create(user=user)
+                    # Handle existing user
+                    user = CustomUser.objects.get(email=email)
+                    community = PostCommunity.objects.first()
+                    if not community:
+                        return JsonResponse({
+                            "message": "No community exists.",
+                            "is_success": False
+                        }, status=400)
 
-                    # Add user to community chatroom
-                    add_user_to_community_chatroom(user)
+                    if not PostCommunityJoiners.objects.filter(user=user, community=community).exists():
+                        PostCommunityJoiners.objects.create(
+                            user=user,
+                            community=community,
+                            is_active=True
+                        )
 
-                    return JsonResponse({
-                        "message": "Successfully added to the community and chatroom.",
-                        "is_success": True
-                    })
-                else:
-                    return JsonResponse({
-                        "message": "Already joined the community.",
-                        "is_success": False
-                    })
+                        # Add user to community chatroom
+                        add_user_to_community_chatroom(user, community)
+
+                        return JsonResponse({
+                            "message": "Successfully added to the community and chatroom.",
+                            "is_success": True
+                        })
+                    else:
+                        return JsonResponse({
+                            "message": "Already joined the community.",
+                            "is_success": False
+                        })
+
+        except Exception as e:
+            logger.error(f"Error in community registration: {str(e)}", exc_info=True)
+            return JsonResponse({
+                "message": f"Registration failed: {str(e)}",
+                "is_success": False
+            }, status=400)
 
     return JsonResponse({"message": "Invalid request method.", "is_success": False}, status=400)
 
-def add_user_to_community_chatroom(user):
+def add_user_to_community_chatroom(user, community):
     """
     Add a user to the community chatroom, creating one if it doesn't exist.
     """
-    community_name = "General Community"
-    chatroom_subject = f"{community_name} Chat"
-    community = PostCommunity.objects.filter().first()
-    chatroom = ChatRoom.objects.filter(community=community, chat_type='community', subject=chatroom_subject).first()
-    admin_user = CustomUser.objects.filter(is_staff=True).first()
-
-    if not chatroom:
-        chatroom = ChatRoom.objects.create(
-            chat_type='community',
-            subject=chatroom_subject,
-            customer=user,
-            admin=admin_user,
+    try:
+        community_name = community.name if community else "General Community"
+        chatroom_subject = f"{community_name} Chat"
+        
+        # Try to find existing community chatroom
+        chatroom = ChatRoom.objects.filter(
             community=community,
-            room_name=str(uuid.uuid4())  # Generate unique room_name
-        )
+            chat_type='community'
+        ).first()
 
-    send_welcome_message(chatroom, user)
+        admin_user = CustomUser.objects.filter(is_staff=True).first()
+
+        if not chatroom:
+            # Create new chatroom if none exists
+            chatroom = ChatRoom.objects.create(
+                chat_type='community',
+                subject=chatroom_subject,
+                admin=admin_user,
+                community=community,
+                room_name=f"community_chat_{uuid.uuid4().hex}",
+                is_active=True
+            )
+            
+            # Add all existing community members to the new chatroom
+            community_members = PostCommunityJoiners.objects.filter(
+                community=community,
+                is_active=True
+            ).values_list('user', flat=True)
+            chatroom.members.add(*community_members)
+
+        # Add the user to the chatroom members if not already present
+        if not chatroom.members.filter(id=user.id).exists():
+            chatroom.members.add(user)
+            
+        send_welcome_message(chatroom, user)
+
+    except Exception as e:
+        logger.error(f"Error adding user to community chatroom: {str(e)}", exc_info=True)
+        raise
 
 def send_welcome_message(chatroom, user):
     """
     Send a welcome message to the community chatroom.
     """
-    from chat.models import Message
-    admin_user = CustomUser.objects.filter(is_staff=True).first()
+    try:
+        admin_user = CustomUser.objects.filter(is_staff=True).first()
 
-    Message.objects.create(
-        chat_room=chatroom,
-        sender=admin_user,
-        content=f"Welcome {user.get_full_name() or user.email} to the community!",
-        message_type='text'
-    )
+        Message.objects.create(
+            chat_room=chatroom,
+            sender=admin_user,
+            content=f"Welcome {user.get_full_name() or user.email} to the {chatroom.community.name} community!",
+            message_type='text'
+        )
+    except Exception as e:
+        logger.error(f"Error sending welcome message: {str(e)}", exc_info=True)
+        raise
 
 def get_register(request):
     if request.method == 'POST':
@@ -522,7 +580,7 @@ def get_register(request):
                     print("User data before saving:", user.__dict__)
                     user.save()
 
-                    admin_user= User.objects.filter(is_staff=True).first()
+                    admin_user= CustomUser.objects.filter(is_staff=True).first()
                     
                     # chatroom creation functionality
                     chatroom = ChatRoom.objects.create(
@@ -1147,7 +1205,7 @@ def clean_phone_number(phone_number):
 @login_required
 def send_otp_view(request):
     """Send OTP to the phone number"""
-    user = get_object_or_404(User, id=request.user.id)
+    user = get_object_or_404(CustomUser, id=request.user.id)
     phone_number = user.phone_number
     if not phone_number:
         return JsonResponse({"message": "Phone number is required", "is_success": False})
@@ -1181,7 +1239,7 @@ def otp_verify_page(request):
 @login_required
 def verify_otp_view(request):
     """Verify the OTP entered by the user"""
-    user = get_object_or_404(User, id=request.user.id)
+    user = get_object_or_404(CustomUser, id=request.user.id)
     phone_number = user.phone_number
     if not phone_number:
         return JsonResponse({"message": "Phone number is required", "is_success": False})
@@ -1201,7 +1259,7 @@ def verify_otp_view(request):
         # Verify OTP
         status_otp = verify_otp(cleaned_number, otp_code)
         if status_otp == "approved":
-            user = get_object_or_404(User, phone_number=phone_number)
+            user = get_object_or_404(CustomUser, phone_number=phone_number)
             user.is_phone_number_verified = True
             user.save()
             return JsonResponse({"message": "Phone number verified", "is_success": True})
