@@ -432,7 +432,7 @@ class PostCommunity(models.Model):
 
 
     def __str__(self):
-        return self.id
+        return self.name
 
     class Meta:
         db_table = 'community'
@@ -440,7 +440,7 @@ class PostCommunity(models.Model):
 class PostCommunityJoiners(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey('backend.CustomUser', on_delete=models.CASCADE, related_name='new_community_joiners')
-    community = models.ForeignKey('backend.PostCommunity', on_delete=models.CASCADE, related_name='joiners')
+    community = models.ForeignKey('backend.PostCommunity', on_delete=models.CASCADE, related_name='joiners' )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
