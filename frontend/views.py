@@ -391,26 +391,102 @@ def send_activation_email(request, user, random_password):
 #         html_message=html_message  # HTML version
     # )
 
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+from .forms import RegisterForm
+from backend.models import PostCommunityJoiners
+from chat.models import ChatRoom  # Import ChatRoom model
+from django.db import transaction
+
+CustomUser = get_user_model()
+
 def get_register_community(request):
     if request.method == 'POST':
-        user = CustomUser.objects.filter(email=request.POST['email']).exists()
-        if not user:
-            form = RegisterForm(request.POST)
-            if form.is_valid():
-                user = form.save(commit=False)
-                # random_password = generate_random_password()
-                user.set_password(request.POST['password1'])
-                user.is_active = True
-                user.save()
-                PostCommunityJoiners.objects.create(user=user)
-                return JsonResponse({"message": "Thank You for Joining. This Feature is currently under progress and you will be automatically added in our community once it's developed.", 'is_success': True})       
-        else:
-            user = CustomUser.objects.get(email=request.POST['email'])
-            if not PostCommunityJoiners.objects.filter(user=user.id).exists():
-                PostCommunityJoiners.objects.create(user=user)
-                return JsonResponse({"message": 'Successfully added.', 'is_success': True})
+        email = request.POST.get('email')
+        user_exists = CustomUser.objects.filter(email=email).exists()
+
+        with transaction.atomic():
+            if not user_exists:
+                form = RegisterForm(request.POST)
+                if form.is_valid():
+                    user = form.save(commit=False)
+                    user.set_password(request.POST['password1'])
+                    user.is_active = True
+                    user.save()
+
+                    # Add user to community
+                    PostCommunityJoiners.objects.create(user=user)
+
+                    # Add user to community chatroom
+                    add_user_to_community_chatroom(user)
+
+                    return JsonResponse({
+                        "message": "Thank You for Joining. You have been added to the community chatroom!",
+                        "is_success": True
+                    })
+                else:
+                    return JsonResponse({
+                        "message": "Registration failed. Please check the form data.",
+                        "is_success": False,
+                        "errors": form.errors
+                    }, status=400)
             else:
-                return JsonResponse({"message": 'Already joined.', 'is_success': False})
+                # Handle existing user
+                user = CustomUser.objects.get(email=email)
+                if not PostCommunityJoiners.objects.filter(user=user).exists():
+                    PostCommunityJoiners.objects.create(user=user)
+
+                    # Add user to community chatroom
+                    add_user_to_community_chatroom(user)
+
+                    return JsonResponse({
+                        "message": "Successfully added to the community and chatroom.",
+                        "is_success": True
+                    })
+                else:
+                    return JsonResponse({
+                        "message": "Already joined the community.",
+                        "is_success": False
+                    })
+
+    return JsonResponse({"message": "Invalid request method.", "is_success": False}, status=400)
+
+def add_user_to_community_chatroom(user):
+    """
+    Add a user to the community chatroom, creating one if it doesn't exist.
+    """
+    community_name = "General Community"
+    chatroom_subject = f"{community_name} Chat"
+    community = PostCommunity.objects.filter().first()
+    chatroom = ChatRoom.objects.filter(community=community, chat_type='community', subject=chatroom_subject).first()
+    admin_user = CustomUser.objects.filter(is_staff=True).first()
+
+    if not chatroom:
+        chatroom = ChatRoom.objects.create(
+            chat_type='community',
+            subject=chatroom_subject,
+            customer=user,
+            admin=admin_user,
+            community=community,
+            room_name=str(uuid.uuid4())  # Generate unique room_name
+        )
+
+    send_welcome_message(chatroom, user)
+
+def send_welcome_message(chatroom, user):
+    """
+    Send a welcome message to the community chatroom.
+    """
+    from chat.models import Message
+    admin_user = CustomUser.objects.filter(is_staff=True).first()
+
+    Message.objects.create(
+        chat_room=chatroom,
+        sender=admin_user,
+        content=f"Welcome {user.get_full_name() or user.email} to the community!",
+        message_type='text'
+    )
+
 def get_register(request):
     if request.method == 'POST':
         email = request.POST['email']

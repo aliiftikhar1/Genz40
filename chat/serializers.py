@@ -7,12 +7,14 @@ class MessageSerializer(serializers.ModelSerializer):
     sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
     timestamp = serializers.SerializerMethodField()
     is_own = serializers.SerializerMethodField()
-    
+    image_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Message
-        fields = '__all__'
-        read_only_fields = ['id', 'timestamp', 'is_read', 'sender']
+        fields = ['id', 'chat_room', 'sender', 'sender_email', 'sender_name', 
+                 'content', 'message_type', 'image', 'image_url', 'timestamp', 
+                 'is_read', 'is_own']
+        read_only_fields = ['id', 'timestamp', 'is_read', 'sender', 'message_type']
     
     def get_timestamp(self, obj):
         return timesince(obj.timestamp) + ' ago'
@@ -20,7 +22,17 @@ class MessageSerializer(serializers.ModelSerializer):
     def get_is_own(self, obj):
         request = self.context.get('request')
         return request and request.user == obj.sender
-
+    
+    def get_image_url(self, obj):
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
+    
+    def validate(self, data):
+        if self.context['request'].FILES.get('image'):
+            data['message_type'] = Message.IMAGE
+        return data
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True, read_only=True)
@@ -47,13 +59,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     def get_last_message(self, obj):
         last_message = obj.messages.last()
         if last_message:
-            return {
-                'content': last_message.content,
-                'timestamp': timesince(last_message.timestamp) + ' ago',
-                'sender': last_message.sender.get_full_name()
-            }
+            return MessageSerializer(last_message, context=self.context).data
         return None
-
 
 class ChatNotificationSerializer(serializers.ModelSerializer):
     chat_room = ChatRoomSerializer(read_only=True)
