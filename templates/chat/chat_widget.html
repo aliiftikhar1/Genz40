@@ -1,4 +1,3 @@
-{% comment %} chat-widget.html {% endcomment %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
@@ -350,7 +349,7 @@
     }
 
     #toast-notification.show {
-        display: block;
+        display: block !important;
     }
 
     #chat-tooltip {
@@ -590,8 +589,6 @@
 
 <input type="file" id="file-input" accept="image/*" style="display: none;" aria-hidden="true">
 
-
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chatWidget = document.getElementById('chat-widget');
@@ -650,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentUserId: chatWidget.dataset.userId || '',
         isAuthenticated: chatWidget.dataset.isAuthenticated === 'true'
     };
-    console.log("Data is: ",chatWidget.dataset)
+    console.log("Data is: ", chatWidget.dataset);
 
     if (!state.isAuthenticated) {
         console.log('User not authenticated');
@@ -697,10 +694,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'X-CSRFToken': getCSRFToken(),
                 },
-                onUploadProgress: (progressEvent) => {
-                    const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                    progressBar.style.width = `${percent}%`;
-                }
             });
     
             if (!response.ok) {
@@ -720,6 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
     
             progressBar.style.width = '100%';
+            await loadMessages(state.currentRoomId);
             setTimeout(() => uploadProgress.style.display = 'none', 500);
         } catch (error) {
             console.error('Image upload failed:', error);
@@ -810,6 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const bTime = new Date(b.last_message?.timestamp || b.created_at);
                 return bTime - aTime;
             });
+            console.log("All rooms are: ", allRooms);
 
             renderChatrooms(allRooms);
         } catch (error) {
@@ -837,10 +832,27 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.chatHeader.textContent = 'Chat Support';
 
         try {
-            const response = await fetch('/api/chat/rooms/list/', { credentials: 'include' });
-            if (!response.ok) throw new Error('Failed to load chatrooms');
-            const chatrooms = await response.json();
-            renderChatrooms(chatrooms);
+            const [privateResponse, communityResponse] = await Promise.all([
+                fetch('/api/chat/rooms/list/', { credentials: 'include' }),
+                fetch('/api/chat/community/rooms/', { credentials: 'include' })
+            ]);
+
+            if (!privateResponse.ok || !communityResponse.ok) {
+                throw new Error('Failed to load chatrooms');
+            }
+
+            const [privateRooms, communityRooms] = await Promise.all([
+                privateResponse.json(),
+                communityResponse.json()
+            ]);
+            console.log("Private chatrooms are: ", privateRooms, "Community Chat rooms are: ", communityRooms);
+
+            const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                const aTime = new Date(a.last_message?.timestamp || a.created_at);
+                const bTime = new Date(b.last_message?.timestamp || b.created_at);
+                return bTime - aTime;
+            });
+            renderChatrooms(allRooms);
         } catch (error) {
             console.error('Error loading chatrooms:', error);
             showToast('Failed to load conversations');
@@ -867,6 +879,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderChatrooms(chatrooms) {
         elements.chatroomsContainer.innerHTML = '';
+        console.log("Chatrooms are: ", chatrooms);
 
         if (!chatrooms || !chatrooms.length) {
             const emptyMsg = document.createElement('div');
@@ -1051,6 +1064,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.globalSocket.onmessage = async (e) => {
             try {
                 const data = JSON.parse(e.data);
+                console.log("On message returned data is: ", data);
                 if (data.type === 'pong') return;
                 if (data.type === 'error') {
                     showToast(data.error);
@@ -1082,7 +1096,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     if (state.isChatOpen && inCurrentRoom) {
-                        await loadMessages(state.currentRoomId);
+                        const message = {
+                            sender: data.sender_id,
+                            sender_name: data.sender_name || 'Support',
+                            content: data.message,
+                            timestamp: data.timestamp || new Date().toLocaleTimeString(),
+                            is_read: isCurrentUser
+                        };
+                        addMessageToChat(message);
                         if (!isCurrentUser) readMessages(state.currentRoomId);
                         scrollToBottom();
                     } else if (!inCurrentRoom && !isCurrentUser) {
@@ -1091,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('WebSocket message error:', error);
+                showToast('Error processing message');
             }
         };
 
@@ -1121,6 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.globalSocket.onerror = (error) => {
             console.error('WebSocket error:', error);
             updateConnectionStatus('Connection error', true);
+            showToast('WebSocket connection error');
         };
     }
 
@@ -1128,7 +1151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (message.message_type === 'image') {
             elements.chatMessages.appendChild(renderImageMessage(message));
         } else {
-            const isCurrentUser = String(message.sender) ===  state.currentUserId;
+            const isCurrentUser = String(message.sender) === state.currentUserId;
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isCurrentUser ? 'sent' : 'received'}`;
 
@@ -1175,12 +1198,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             elements.chatInput.value = '';
-            scrollToBottom();
-
             state.globalSocket.send(JSON.stringify({
+                type: 'chat',
                 message,
                 room_id: state.currentRoomId
             }));
+            await loadMessages(state.currentRoomId);
+            scrollToBottom();
         } catch (error) {
             console.error('Failed to send message:', error);
             showToast('Failed to send message');
@@ -1236,9 +1260,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message) {
+        console.log('Showing toast:', message);
+        if (!elements.toastNotification) {
+            console.error('Toast notification element not found');
+            return;
+        }
         elements.toastNotification.textContent = message;
         elements.toastNotification.classList.add('show');
-        setTimeout(() => elements.toastNotification.classList.remove('show'), 3000);
+        setTimeout(() => {
+            elements.toastNotification.classList.remove('show');
+        }, 3000);
     }
 
     function updateConnectionStatus(status, isError = false) {

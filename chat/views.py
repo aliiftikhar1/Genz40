@@ -101,8 +101,8 @@ class ChatRoomListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         return ChatRoom.objects.filter(
-            Q(customer=user) | Q(admin=user) | Q(members=user)
-        ).annotate(
+            (
+                Q(customer=user) | Q(admin=user) | Q(members=user)) & ~Q(customer=None)  ).annotate(
             last_message_time=Max('messages__timestamp')
         ).order_by('-last_message_time', '-updated_at')
 
