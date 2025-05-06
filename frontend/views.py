@@ -600,7 +600,7 @@ def get_register(request):
                     user.zip_code = user.zip_code[:5]
                 
                 try:
-                    print("User data before saving:", user.__dict__)
+                    print("User ID before saving:", str(user.id))
                     user.save()
 
                     admin_user= CustomUser.objects.filter(is_staff=True).first()
@@ -608,7 +608,7 @@ def get_register(request):
                     chatroom = ChatRoom.objects.create(
                         customer=user,
                         admin=admin_user,
-                        room_name = f"chat_{user}_{admin_user if admin_user else '0'}_{timezone.now().timestamp()}",
+                        room_name = f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
                         subject="Genz40-Chat Support",
                         created_at=timezone.now()
                     )
