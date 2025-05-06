@@ -47,7 +47,7 @@ from django.db.models import Sum
 from chat.models import ChatRoom, Message, ChatNotification  # Import your chat models
 import channels.layers
 from asgiref.sync import async_to_sync
-
+import traceback
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 MAILCHIMP_API_URL = f"https://{settings.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0"
@@ -569,120 +569,127 @@ def send_welcome_message(chatroom, user):
         raise
 
 def get_register(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        phone_number = request.POST['phone_number']
+    if request.method != 'POST':
+        return register_page(request)
 
-        # Check if a user already exists with the same email or phone number
-        if CustomUser.objects.filter(email=email).exists():
-            return JsonResponse({"message": "This email is already registered!", 'is_success': False})
+    email = request.POST.get('email')
+    phone_number = request.POST.get('phone_number')
 
-        if CustomUser.objects.filter(phone_number=phone_number).exists():
-            return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
-
-        if not CustomUser.objects.filter(email=request.POST['email'], phone_number=request.POST['phone_number']).exists():
-            form = RegisterForm(request.POST)
-            if form.is_valid():
-                user = form.save(commit=False)
-                user.set_password(request.POST['password1'])
-                user.is_active = True
-                # user.is_email_verified = True
-                
-                # Format phone number to match the expected format (removing non-digit characters)
-                if user.phone_number:
-                    # Extract only digits from the phone number
-                    digits_only = ''.join(filter(str.isdigit, user.phone_number))
-                    # Ensure it's no longer than 14 digits as per your model validation
-                    user.phone_number = digits_only[:14]
-                
-                # Check if zip_code is present and ensure it's within the 5-character limit
-                if hasattr(user, 'zip_code') and user.zip_code and len(user.zip_code) > 5:
-                    user.zip_code = user.zip_code[:5]
-                
-                try:
-                    print("User ID before saving:", str(user.id))
-                    user.save()
-
-                    admin_user= CustomUser.objects.filter(is_staff=True).first()
-                    
-                    chatroom = ChatRoom.objects.create(
-                        customer=user,
-                        admin=admin_user,
-                        room_name = f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
-                        subject="Genz40-Chat Support",
-                        created_at=timezone.now()
-                    )
-                    
-                    
-                    welcome_message = Message.objects.create(
-                        chat_room=chatroom,
-                        sender=admin_user,
-                        content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
-                        timestamp=timezone.now(),
-                        is_read=False
-                    )
-                    notification = ChatNotification.objects.create(
-                        user = user,
-                        chat_room = chatroom,
-                        count = 1,
-                    )
-                    
-                    channel_layer = channels.layers.get_channel_layer()
-                    async_to_sync(channel_layer.group_send)(
-                        f"chat_{chatroom.id}",
-                        {
-                            "type": "chat_message",
-                            "message": {
-                                "room_id": str(chatroom.id),
-                                "sender_id": str(admin_user.id),
-                                "sender_name": "Support Team",
-                                "sender_role": "admin",
-                                "message": welcome_message.content,
-                                "timestamp": welcome_message.timestamp.isoformat(),
-                                "is_read": welcome_message.is_read,
-                            }
-                        }
-                    )
-                    # Email sending logic
-                    subject = "Welcome to Our Platform - www.genz40.com"
-                    recipient_list = [user.email]
-                    sender = settings.EMAIL_FROM
-                    html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
-                    send_activation_email(request, user, request.POST['password1'])
-                    # EmailThread(subject, html_content, recipient_list, sender).start()
-                    add_user_to_community(user)
-                    
-                    return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
-                except Exception as e:
-                    # Log the error for debugging
-                    print(f"Error saving user: {str(e)}")
-                    return JsonResponse({"message": f'Registration failed: {str(e)}', 'is_success': False})
-            else:
-                # Form validation errors
-                errors = form.errors.as_json()
-                return JsonResponse({"message": f'Invalid form data: {errors}', 'is_success': False})
-        else:
-            return JsonResponse({"message": 'Already joined.', 'is_success': False})
+    # Check existing email and phone number
+    if CustomUser.objects.filter(email=email).exists():
+        return JsonResponse({"message": "This email is already registered!", 'is_success': False})
     
-    # If not POST method
-    else:
-        register_page(request)
+    if CustomUser.objects.filter(phone_number=phone_number).exists():
+        return JsonResponse({"message": "This phone number is already registered!", 'is_success': False})
 
+    if CustomUser.objects.filter(email=email, phone_number=phone_number).exists():
+        return JsonResponse({"message": "Already joined.", 'is_success': False})
+
+    form = RegisterForm(request.POST)
+    if not form.is_valid():
+        errors = form.errors.as_json()
+        return JsonResponse({"message": f"Invalid form data: {errors}", 'is_success': False})
+
+    try:
+        user = form.save(commit=False)
+        user.set_password(request.POST['password1'])
+        user.is_active = True
+
+        # Format phone number
+        if user.phone_number:
+            user.phone_number = ''.join(filter(str.isdigit, user.phone_number))[:14]
+
+        # Truncate zip_code if needed
+        if hasattr(user, 'zip_code') and user.zip_code:
+            user.zip_code = user.zip_code[:5]
+
+        user.save()
+
+        # Find admin user (fallback to None)
+        admin_user = CustomUser.objects.filter(is_staff=True).first()
+
+        # Create chatroom
+        chatroom = ChatRoom.objects.create(
+            customer=user,
+            admin=admin_user,
+            room_name=f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
+            subject="Genz40-Chat Support",
+            created_at=timezone.now()
+        )
+
+        # Create welcome message
+        welcome_message = Message.objects.create(
+            chat_room=chatroom,
+            sender=admin_user,
+            content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
+            timestamp=timezone.now(),
+            is_read=False
+        )
+
+        # Create notification
+        ChatNotification.objects.create(
+            user=user,
+            chat_room=chatroom,
+            count=1,
+        )
+
+        # Send WebSocket welcome message
+        channel_layer = channels.layers.get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"chat_{str(chatroom.id)}",
+            {
+                "type": "chat_message",
+                "message": {
+                    "room_id": str(chatroom.id),
+                    "sender_id": str(admin_user.id) if admin_user else None,
+                    "sender_name": "Support Team",
+                    "sender_role": "admin",
+                    "message": welcome_message.content,
+                    "timestamp": welcome_message.timestamp.isoformat(),
+                    "is_read": welcome_message.is_read,
+                }
+            }
+        )
+
+        # Send activation email
+        html_content = render_to_string("email/welcome_email.html", {
+            'user': user,
+            'password': request.POST['password1']
+        })
+        send_activation_email(request, user, request.POST['password1'])
+
+        # Add to community
+        add_user_to_community(user)
+
+        return JsonResponse({
+            "message": "Successfully added. Please check mailbox for password.",
+            "is_success": True
+        })
+
+    except Exception as e:
+        # Print full traceback for debug in dev
+        print("Traceback:", traceback.format_exc())
+        return JsonResponse({
+            "message": f"Registration failed: {str(e)}",
+            "is_success": False
+        })
+    
 def add_user_to_community(user):
+    try:
         community = PostCommunity.objects.first()
         if not community:
-            return JsonResponse({
-                            "message": "No community exists.",
-                            "is_success": False
-                        }, status=400)
-        PostCommunityJoiners.objects.create(
-                                user=user,
-                                community=community,
-                                is_active=True
-                            )
+            print("No community found")
+            return
 
-                            
+        PostCommunityJoiners.objects.create(
+            user=user,
+            community=community,
+            is_active=True
+        )
+
         add_user_to_community_chatroom(user, community)
+    except Exception as e:
+        print("Error in add_user_to_community:", str(e))
 
 
 def activate(request, uidb64, token):
