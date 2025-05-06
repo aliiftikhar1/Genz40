@@ -64,7 +64,7 @@
         background: #000000;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        display: flex;
+        display: none;
         flex-direction: column;
         overflow: hidden;
         animation: slideIn 0.3s ease;
@@ -151,7 +151,7 @@
         padding: 16px;
         overflow-y: auto;
         background: #111111;
-        display: flex;
+        display: none;
         flex-direction: column;
         gap: 12px;
     }
@@ -524,11 +524,11 @@
         <span id="unread-count" style="display: none;">0</span>
     </div>
     {% if user_data.role == 'customer' %}
-    <div id="chat-tooltip">Chat with our admin team in real-time for instant support!</div>
+    <div id="chat-tooltip">Chat with our admin team in real-time26 for instant support!</div>
     {% endif %}
     {% endif %}
 
-    <div id="chat-container" style="display: none;">
+    <div id="chat-container">
         <div class="chat-header">
             <button id="back-button" class="btn-icon" style="display: none;" aria-label="Back to chatroom list">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i>
@@ -549,7 +549,7 @@
             <div id="chatrooms-container"></div>
         </div>
 
-        <div id="chat-messages" style="display: none;"></div>
+        <div id="chat-messages"></div>
 
         <div id="message-input">
             <div id="chat-input-container">
@@ -589,780 +589,816 @@
 
 <input type="file" id="file-input" accept="image/*" style="display: none;" aria-hidden="true">
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const chatWidget = document.getElementById('chat-widget');
-    if (!chatWidget) {
-        console.error('Chat widget not found');
-        return;
-    }
-
-    const elements = {
-        chatButton: document.getElementById('chat-button'),
-        chatContainer: document.getElementById('chat-container'),
-        closeChat: document.getElementById('close-chat'),
-        chatMessages: document.getElementById('chat-messages'),
-        chatroomList: document.getElementById('chatroom-list'),
-        chatroomsContainer: document.getElementById('chatrooms-container'),
-        chatInput: document.getElementById('chat-input'),
-        sendButton: document.getElementById('send-button'),
-        connectionStatus: document.getElementById('connection-status'),
-        unreadCount: document.getElementById('unread-count'),
-        typingIndicator: document.getElementById('typing-indicator'),
-        backButton: document.getElementById('back-button'),
-        chatHeader: document.getElementById('chat-header'),
-        newChatButton: document.getElementById('new-chat-button'),
-        newChatModal: document.getElementById('new-chat-modal'),
-        chatSubjectInput: document.getElementById('chat-subject'),
-        modalCancelButton: document.querySelector('#new-chat-modal .cancel'),
-        modalCreateButton: document.querySelector('#new-chat-modal .create'),
-        toastNotification: document.getElementById('toast-notification'),
-        chatTooltip: document.getElementById('chat-tooltip'),
-        imageUploadBtn: document.getElementById('image-upload-btn'),
-        fileInput: document.getElementById('file-input'),
-        imagePreviewModal: document.getElementById('image-preview-modal'),
-        closePreview: document.getElementById('close-preview'),
-        messageInput: document.getElementById('message-input'),
-    };
-
-    // Log missing elements
-    Object.entries(elements).forEach(([key, value]) => {
-        if (!value) {
-            console.warn(`Element ${key} not found`);
-        }
-    });
-
-    const state = {
-        globalSocket: null,
-        currentRoomId: null,
-        currentRoomName: null,
-        pingInterval: null,
-        reconnectAttempts: 0,
-        maxReconnectAttempts: 5,
-        isChatOpen: false,
-        typingTimer: null,
-        typingDelay: 1000,
-        currentView: 'chatrooms',
-        userRole: chatWidget.dataset.userRole || '',
-        currentUserId: chatWidget.dataset.userId || '',
-        isAuthenticated: chatWidget.dataset.isAuthenticated === 'true'
-    };
-    console.log("Data is: ", chatWidget.dataset);
-
-    if (!state.isAuthenticated) {
-        console.log('User not authenticated');
-        return;
-    }
-
-    // Initialize tooltip
-    if (elements.chatTooltip) {
-        elements.chatTooltip.classList.add('show');
-        setTimeout(() => elements.chatTooltip.classList.remove('show'), 5000);
-    }
-
-    async function handleImageUpload(file) {
-        if (!file || !file.type.match('image.*')) {
-            showToast('Please select a valid image');
+<script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatWidget = document.getElementById('chat-widget');
+        if (!chatWidget) {
+            console.error('Chat widget not found');
             return;
         }
     
-        if (file.size > 5 * 1024 * 1024) {
-            showToast('Image size should be less than 5MB');
-            return;
-        }
+        const elements = {
+            chatButton: document.getElementById('chat-button'),
+            chatContainer: document.getElementById('chat-container'),
+            closeChat: document.getElementById('close-chat'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatroomList: document.getElementById('chatroom-list'),
+            chatroomsContainer: document.getElementById('chatrooms-container'),
+            chatInput: document.getElementById('chat-input'),
+            sendButton: document.getElementById('send-button'),
+            connectionStatus: document.getElementById('connection-status'),
+            unreadCount: document.getElementById('unread-count'),
+            typingIndicator: document.getElementById('typing-indicator'),
+            backButton: document.getElementById('back-button'),
+            chatHeader: document.getElementById('chat-header'),
+            newChatButton: document.getElementById('new-chat-button'),
+            newChatModal: document.getElementById('new-chat-modal'),
+            chatSubjectInput: document.getElementById('chat-subject'),
+            modalCancelButton: document.querySelector('#new-chat-modal .cancel'),
+            modalCreateButton: document.querySelector('#new-chat-modal .create'),
+            toastNotification: document.getElementById('toast-notification'),
+            chatTooltip: document.getElementById('chat-tooltip'),
+            imageUploadBtn: document.getElementById('image-upload-btn'),
+            fileInput: document.getElementById('file-input'),
+            imagePreviewModal: document.getElementById('image-preview-modal'),
+            closePreview: document.getElementById('close-preview'),
+            messageInput: document.getElementById('message-input'),
+        };
     
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('room_id', state.currentRoomId);
-    
-        const progressBar = document.querySelector('.upload-progress-bar');
-        const uploadProgress = document.querySelector('.upload-progress');
-    
-        if (!progressBar || !uploadProgress) {
-            console.warn('Progress bar elements not found');
-            return;
-        }
-    
-        uploadProgress.style.display = 'block';
-        progressBar.style.width = '0%';
-    
-        try {
-            const response = await fetch('/api/chat/upload-image/', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                },
-            });
-    
-            if (!response.ok) {
-                throw new Error('Upload failed');
+        // Log missing elements
+        Object.entries(elements).forEach(([key, value]) => {
+            if (!value) {
+                console.warn(`Element ${key} not found`);
             }
-    
-            const data = await response.json();
-            
-            // Send message with image URL through WebSocket
-            if (state.globalSocket?.readyState === WebSocket.OPEN) {
-                state.globalSocket.send(JSON.stringify({
-                    type: 'image',
-                    room_id: state.currentRoomId,
-                    image_url: data.image_url,
-                    content: 'Image shared'
-                }));
-            }
-    
-            progressBar.style.width = '100%';
-            await loadMessages(state.currentRoomId);
-            setTimeout(() => uploadProgress.style.display = 'none', 500);
-        } catch (error) {
-            console.error('Image upload failed:', error);
-            showToast('Failed to upload image');
-            uploadProgress.style.display = 'none';
-        }
-    }
-
-    function renderImageMessage(message) {
-        const isCurrentUser = String(message.sender) === state.currentUserId;
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${isCurrentUser ? 'sent' : 'received'}`;
-
-        const senderDiv = document.createElement('div');
-        senderDiv.className = 'message-sender';
-        senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Support');
-
-        const contentDiv = document.createElement('div');
-        contentDiv.textContent = message.content || '';
-
-        const timeDiv = document.createElement('div');
-        timeDiv.className = 'message-time';
-        timeDiv.textContent = message.timestamp;
-
-        messageElement.appendChild(senderDiv);
-        messageElement.appendChild(contentDiv);
-
-        if (message.image_url) {
-            const img = document.createElement('img');
-            img.src = message.image_url;
-            img.className = 'message-image';
-            img.alt = 'Uploaded image';
-            img.addEventListener('click', () => {
-                if (elements.imagePreviewModal) {
-                    elements.imagePreviewModal.querySelector('img').src = img.src;
-                    elements.imagePreviewModal.style.display = 'flex';
-                }
-            });
-            messageElement.appendChild(img);
-        }
-
-        messageElement.appendChild(timeDiv);
-
-        if (isCurrentUser) {
-            const statusDiv = document.createElement('div');
-            statusDiv.className = `message-status ${message.is_read ? 'text-success' : 'text-white'}`;
-            statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
-            messageElement.appendChild(statusDiv);
-        }
-
-        return messageElement;
-    }
-
-    function showCommunityBadge(chatroom) {
-        if (chatroom.chat_type === 'community') {
-            const badge = document.createElement('span');
-            badge.className = 'community-badge';
-            badge.textContent = 'Community';
-            return badge.outerHTML;
-        }
-        return '';
-    }
-
-    async function initChat() {
-        try {
-            toggleChat(state.isChatOpen);
-            fetchUnreadCounts();
-            setInterval(fetchUnreadCounts, 30000);
-            connectGlobalWebSocket();
-
-            const [privateResponse, communityResponse] = await Promise.all([
-                fetch('/api/chat/rooms/list/', { credentials: 'include' }),
-                fetch('/api/chat/community/rooms/', { credentials: 'include' })
-            ]);
-
-            if (!privateResponse.ok || !communityResponse.ok) {
-                throw new Error('Failed to load chatrooms');
-            }
-
-            const [privateRooms, communityRooms] = await Promise.all([
-                privateResponse.json(),
-                communityResponse.json()
-            ]);
-            console.log("Private chatrooms are: ", privateRooms, "Community Chat rooms are: ", communityRooms);
-
-            const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
-                const aTime = new Date(a.last_message?.timestamp || a.created_at);
-                const bTime = new Date(b.last_message?.timestamp || b.created_at);
-                return bTime - aTime;
-            });
-            console.log("All rooms are: ", allRooms);
-
-            renderChatrooms(allRooms);
-        } catch (error) {
-            console.error('Error initializing chat:', error);
-            showToast('Failed to load conversations');
-        }
-    }
-
-    function toggleChat(open) {
-        state.isChatOpen = open;
-        elements.chatContainer.style.display = open ? 'flex' : 'none';
-        if (open) {
-            showChatroomList();
-        } else {
-            closeModal();
-        }
-    }
-
-    async function showChatroomList() {
-        state.currentView = 'chatrooms';
-        elements.chatroomList.style.display = 'block';
-        elements.chatMessages.style.display = 'none';
-        elements.messageInput.style.display = 'none';
-        elements.backButton.style.display = 'none';
-        elements.chatHeader.textContent = 'Chat Support';
-
-        try {
-            const [privateResponse, communityResponse] = await Promise.all([
-                fetch('/api/chat/rooms/list/', { credentials: 'include' }),
-                fetch('/api/chat/community/rooms/', { credentials: 'include' })
-            ]);
-
-            if (!privateResponse.ok || !communityResponse.ok) {
-                throw new Error('Failed to load chatrooms');
-            }
-
-            const [privateRooms, communityRooms] = await Promise.all([
-                privateResponse.json(),
-                communityResponse.json()
-            ]);
-            console.log("Private chatrooms are: ", privateRooms, "Community Chat rooms are: ", communityRooms);
-
-            const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
-                const aTime = new Date(a.last_message?.timestamp || a.created_at);
-                const bTime = new Date(b.last_message?.timestamp || b.created_at);
-                return bTime - aTime;
-            });
-            renderChatrooms(allRooms);
-        } catch (error) {
-            console.error('Error loading chatrooms:', error);
-            showToast('Failed to load conversations');
-        }
-    }
-
-    async function readMessages(roomId) {
-        try {
-            const csrfToken = getCSRFToken();
-            const response = await fetch(`/api/chat/rooms/${roomId}/read/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                },
-                credentials: 'include'
-            });
-            if (!response.ok) throw new Error('Failed to mark messages as read');
-            fetchUnreadCounts();
-        } catch (error) {
-            console.warn('Failed to mark messages as read:', error);
-        }
-    }
-
-    function renderChatrooms(chatrooms) {
-        elements.chatroomsContainer.innerHTML = '';
-        console.log("Chatrooms are: ", chatrooms);
-
-        if (!chatrooms || !chatrooms.length) {
-            const emptyMsg = document.createElement('div');
-            emptyMsg.className = 'p-3 text-center text-white';
-            emptyMsg.textContent = 'No conversations yet';
-            elements.chatroomsContainer.appendChild(emptyMsg);
-            return;
-        }
-
-        chatrooms.forEach(chatroom => {
-            const chatroomElement = document.createElement('div');
-            chatroomElement.className = `chatroom-item ${chatroom.unread_count > 0 ? 'unread' : ''}`;
-            let name = '';
-            let avatarContent = '';
-
-            if (chatroom.chat_type === 'community') {
-                name = chatroom.community?.name || 'Community Chat';
-                avatarContent = 'C';
-            } else if (state.userRole === 'customer') {
-                name = chatroom.subject;
-                avatarContent = 'A';
-            } else {
-                name = `${chatroom.customer_name} - ${chatroom.subject}`;
-                avatarContent = chatroom.customer_name ? chatroom.customer_name.charAt(0).toUpperCase() : 'S';
-            }
-
-            const avatarDiv = document.createElement('div');
-            avatarDiv.style.cssText = 'width:30px; height:30px; border-radius:50%; background-color:white; color:black; justify-content:center; display:grid; align-items:center; text-align:center;';
-            avatarDiv.textContent = avatarContent;
-
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'chatroom-title';
-            titleDiv.textContent = name || 'Support Team';
-
-            const badge = showCommunityBadge(chatroom);
-            if (badge) titleDiv.insertAdjacentHTML('beforeend', badge);
-
-            if (chatroom.unread_count > 0) {
-                const unreadSpan = document.createElement('span');
-                unreadSpan.className = 'chatroom-unread-count';
-                unreadSpan.textContent = chatroom.unread_count;
-                titleDiv.appendChild(unreadSpan);
-            }
-
-            const lastMessageDiv = document.createElement('div');
-            lastMessageDiv.className = 'text-white';
-            lastMessageDiv.style.cssText = 'font-size: 0.8rem; margin-top: 4px;';
-            if (chatroom.last_message) {
-                const lastMessageSpan = document.createElement('span');
-                lastMessageSpan.className = chatroom.unread_count > 0 ? 'fw-semibold' : '';
-                lastMessageSpan.textContent = `${chatroom.last_message.sender_name || 'System'}: ${
-                    chatroom.last_message.message_type === 'image' ? '[Image]' : 
-                    chatroom.last_message.content.substring(0, 40) + (chatroom.last_message.content.length > 40 ? '...' : '')
-                }`;
-                lastMessageDiv.appendChild(lastMessageSpan);
-            } else {
-                lastMessageDiv.textContent = 'No messages yet';
-            }
-
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'text-white text-end';
-            timeDiv.style.cssText = 'font-size: 0.75rem; min-width: 50px;';
-            timeDiv.textContent = chatroom.last_message ? chatroom.last_message.timestamp : '';
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'd-flex flex-column flex-grow-1';
-            contentDiv.appendChild(titleDiv);
-            contentDiv.appendChild(lastMessageDiv);
-
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'd-flex flex-row';
-            rowDiv.style.gap = '20px';
-            rowDiv.appendChild(avatarDiv);
-            rowDiv.appendChild(contentDiv);
-
-            chatroomElement.appendChild(rowDiv);
-            chatroomElement.appendChild(timeDiv);
-
-            chatroomElement.addEventListener('click', () => {
-                const roomName = chatroom.chat_type === 'community' ? 
-                    (chatroom.community?.name || 'Community Chat') :
-                    (state.userRole === 'customer' ? 
-                        chatroom.subject : 
-                        `${chatroom.customer_name} - ${chatroom.subject}`) || 'Support';
-                openChatroom(chatroom.id, roomName);
-            });
-
-            elements.chatroomsContainer.appendChild(chatroomElement);
         });
-    }
-
-    async function openChatroom(roomId, roomName) {
-        state.currentView = 'messages';
-        state.currentRoomId = roomId;
-        state.currentRoomName = roomName;
-
-        elements.chatroomList.style.display = 'none';
-        elements.chatMessages.style.display = 'flex';
-        elements.messageInput.style.display = 'block';
-        elements.backButton.style.display = 'block';
-        elements.chatHeader.textContent = roomName;
-
-        await loadMessages(roomId);
-        readMessages(roomId);
-    }
-
-    async function loadMessages(roomId) {
-        if (!roomId) return;
-
-        try {
-            const response = await fetch(`/api/chat/rooms/${roomId}/messages/`, { credentials: 'include' });
-            if (!response.ok) throw new Error('Failed to load messages');
-            const messages = await response.json();
-            elements.chatMessages.innerHTML = '';
-
-            if (!messages.length) {
-                showNoMessagesPlaceholder();
-            } else {
-                messages.forEach(addMessageToChat);
-                scrollToBottom();
-            }
-        } catch (error) {
-            console.error('Failed to load messages:', error);
-            showToast('Failed to load messages');
-        }
-    }
-
-    async function createNewChatRoom(subject) {
-        try {
-            const csrfToken = getCSRFToken();
-            const response = await fetch('/api/chat/rooms/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                },
-                credentials: 'include',
-                body: JSON.stringify({ subject })
-            });
-
-            if (!response.ok) throw new Error('Failed to create chat room');
-            const newChatRoom = await response.json();
-            closeModal();
-            showChatroomList();
-            openChatroom(newChatRoom.id, subject);
-        } catch (error) {
-            console.error('Error creating chat room:', error);
-            showToast('Failed to create chat room');
-        }
-    }
-
-    function playNotification() {
-        try {
-            const sound = new Audio('/static/sounds/notification.mp3');
-            sound.play().catch(e => console.log('Notification sound error:', e));
-        } catch (e) {
-            console.log('Audio error:', e);
-        }
-    }
-
-    function connectGlobalWebSocket() {
-        if (state.globalSocket) {
-            state.globalSocket.close();
-            clearInterval(state.pingInterval);
-        }
-
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const wsUrl = `${protocol}${window.location.host}/ws/chat/global/`;
-        state.globalSocket = new WebSocket(wsUrl);
-
-        state.globalSocket.onopen = () => {
-            console.log('Global WebSocket connected');
-            state.reconnectAttempts = 0;
-            updateConnectionStatus('Online');
-            state.pingInterval = setInterval(() => {
-                if (state.globalSocket.readyState === WebSocket.OPEN) {
-                    state.globalSocket.send(JSON.stringify({ type: 'ping' }));
-                }
-            }, 25000);
+    
+        const state = {
+            globalSocket: null,
+            currentRoomId: null,
+            currentRoomName: null,
+            pingInterval: null,
+            reconnectAttempts: 0,
+            maxReconnectAttempts: 5,
+            isChatOpen: false,
+            typingTimer: null,
+            typingDelay: 1000,
+            currentView: 'chatrooms',
+            userRole: chatWidget.dataset.userRole || '',
+            currentUserId: chatWidget.dataset.userId || '',
+            isAuthenticated: chatWidget.dataset.isAuthenticated === 'true',
+            renderedMessageIds: new Set() // Track rendered message IDs to prevent duplicates
         };
-
-        state.globalSocket.onmessage = async (e) => {
+        console.log("Data is: ", chatWidget.dataset);
+    
+        if (!state.isAuthenticated) {
+            console.log('User not authenticated');
+            return;
+        }
+    
+        // Initialize tooltip
+        if (elements.chatTooltip) {
+            elements.chatTooltip.classList.add('show');
+            setTimeout(() => elements.chatTooltip.classList.remove('show'), 5000);
+        }
+    
+        async function handleImageUpload(file) {
+            if (!file || !file.type.match('image.*')) {
+                showToast('Please select a valid image');
+                return;
+            }
+        
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image size should be less than 5MB');
+                return;
+            }
+        
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('room_id', state.currentRoomId);
+        
+            const progressBar = document.querySelector('.upload-progress-bar');
+            const uploadProgress = document.querySelector('.upload-progress');
+        
+            if (!progressBar || !uploadProgress) {
+                console.warn('Progress bar elements not found');
+                return;
+            }
+        
+            uploadProgress.style.display = 'block';
+            progressBar.style.width = '0%';
+        
             try {
-                const data = JSON.parse(e.data);
-                console.log("On message returned data is: ", data);
-                if (data.type === 'pong') return;
-                if (data.type === 'error') {
-                    showToast(data.error);
-                    return;
+                console.log("Going to upload image: ",formData)
+                const response = await fetch('/api/chat/upload-image/', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Upload failed');
                 }
-
-                if (data.type === 'typing') {
-                    if (data.sender_id !== state.currentUserId && state.currentRoomId === data.room_id) {
-                        elements.typingIndicator.textContent = 'Someone is typing...';
-                        setTimeout(() => elements.typingIndicator.textContent = '', 3000);
-                    }
-                    return;
+        
+                const data = await response.json();
+                
+                // Send message with image URL through WebSocket
+                if (state.globalSocket?.readyState === WebSocket.OPEN) {
+                    state.globalSocket.send(JSON.stringify({
+                        type: 'image',
+                        room_id: state.currentRoomId,
+                        image_url: data.image_url,
+                        content: 'Image shared'
+                    }));
                 }
-
-                if (data.type === 'chat') {
-                    const isCurrentUser = data.sender_id === state.currentUserId;
-                    const inCurrentRoom = state.currentRoomId === data.room_id;
-                    const roomName = data.room_name || 'Support';
-                    const senderName = data.sender_name || 'Unknown';
-                    const messageText = data.message || '';
-
-                    if (!isCurrentUser) {
-                        const notificationText = `${senderName}: ${messageText.substring(0, 50)}${messageText.length > 50 ? '...' : ''}`;
-                        if (!state.isChatOpen || !inCurrentRoom) {
-                            showToast(notificationText);
-                            playNotification();
-                        }
-                        fetchUnreadCounts();
-                    }
-
-                    if (state.isChatOpen && inCurrentRoom) {
-                        const message = {
-                            sender: data.sender_id,
-                            sender_name: data.sender_name || 'Support',
-                            content: data.message,
-                            timestamp: data.timestamp || new Date().toLocaleTimeString(),
-                            is_read: isCurrentUser
-                        };
-                        addMessageToChat(message);
-                        if (!isCurrentUser) readMessages(state.currentRoomId);
-                        scrollToBottom();
-                    } else if (!inCurrentRoom && !isCurrentUser) {
-                        flashChatButton();
-                    }
-                }
+                loadMessages(state.currentRoomId)
+                progressBar.style.width = '100%';
+                setTimeout(() => uploadProgress.style.display = 'none', 500);
             } catch (error) {
-                console.error('WebSocket message error:', error);
-                showToast('Error processing message');
+                console.error('Image upload failed:', error);
+                showToast('Failed to upload image');
+                uploadProgress.style.display = 'none';
             }
-        };
-
-        state.globalSocket.onclose = (e) => {
-            console.log('WebSocket closed:', e.code, e.reason);
-            clearInterval(state.pingInterval);
-            if (e.code === 1000) {
-                updateConnectionStatus('Offline');
-                return;
-            }
-
-            if (e.code === 4001) {
-                showToast('Authentication required. Please log in.');
-                return;
-            }
-
-            updateConnectionStatus('Reconnecting...');
-            if (state.reconnectAttempts < state.maxReconnectAttempts) {
-                state.reconnectAttempts++;
-                const delay = Math.min(3000 * Math.pow(2, state.reconnectAttempts), 30000);
-                setTimeout(connectGlobalWebSocket, delay);
-            } else {
-                updateConnectionStatus('Disconnected', true);
-                showToast('Connection lost. Please refresh.');
-            }
-        };
-
-        state.globalSocket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            updateConnectionStatus('Connection error', true);
-            showToast('WebSocket connection error');
-        };
-    }
-
-    function addMessageToChat(message) {
-        if (message.message_type === 'image') {
-            elements.chatMessages.appendChild(renderImageMessage(message));
-        } else {
-            const isCurrentUser = String(message.sender) === state.currentUserId;
+        }
+    
+        function renderImageMessage(message) {
+            const isCurrentUser = String(message.sender_id) === state.currentUserId;
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isCurrentUser ? 'sent' : 'received'}`;
-
+            messageElement.dataset.messageId = message.id;
+    
             const senderDiv = document.createElement('div');
             senderDiv.className = 'message-sender';
             senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Support');
-
+    
             const contentDiv = document.createElement('div');
-            contentDiv.textContent = message.content;
-
+            contentDiv.textContent = message.content || '';
+    
             const timeDiv = document.createElement('div');
             timeDiv.className = 'message-time';
             timeDiv.textContent = message.timestamp;
-
+    
             messageElement.appendChild(senderDiv);
             messageElement.appendChild(contentDiv);
+    
+            if (message.image_url) {
+                const img = document.createElement('img');
+                img.src = message.image_url;
+                img.className = 'message-image';
+                img.alt = 'Uploaded image';
+                img.addEventListener('click', () => {
+                    if (elements.imagePreviewModal) {
+                        elements.imagePreviewModal.querySelector('img').src = img.src;
+                        elements.imagePreviewModal.style.display = 'flex';
+                    }
+                });
+                messageElement.appendChild(img);
+            }
+    
             messageElement.appendChild(timeDiv);
-
+    
             if (isCurrentUser) {
                 const statusDiv = document.createElement('div');
                 statusDiv.className = `message-status ${message.is_read ? 'text-success' : 'text-white'}`;
                 statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
                 messageElement.appendChild(statusDiv);
             }
-
-            elements.chatMessages.appendChild(messageElement);
+    
+            return messageElement;
         }
-    }
-
-    function showNoMessagesPlaceholder() {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'text-center p-4 text-white';
-        placeholder.textContent = 'No messages yet. Start the conversation!';
-        elements.chatMessages.appendChild(placeholder);
-    }
-
-    async function sendMessage() {
-        const message = elements.chatInput.value.trim();
-        if (!message || !state.currentRoomId) return;
-
-        try {
-            if (!state.globalSocket || state.globalSocket.readyState !== WebSocket.OPEN) {
-                throw new Error('WebSocket not connected');
+    
+        function showCommunityBadge(chatroom) {
+            if (chatroom.chat_type === 'community') {
+                const badge = document.createElement('span');
+                badge.className = 'community-badge';
+                badge.textContent = 'Community';
+                return badge.outerHTML;
             }
-
-            elements.chatInput.value = '';
-            state.globalSocket.send(JSON.stringify({
-                type: 'chat',
-                message,
-                room_id: state.currentRoomId
-            }));
-            await loadMessages(state.currentRoomId);
-            scrollToBottom();
-        } catch (error) {
-            console.error('Failed to send message:', error);
-            showToast('Failed to send message');
+            return '';
         }
-    }
-
-    async function fetchUnreadCounts() {
-        try {
-            const response = await fetch('/api/chat/notifications/', { credentials: 'include' });
-            if (!response.ok) throw new Error('Failed to fetch notifications');
-            const notifications = await response.json();
-            const totalUnread = notifications.reduce((sum, notif) => sum + (notif.count || 0), 0);
-
-            elements.unreadCount.textContent = totalUnread;
-            elements.unreadCount.style.display = totalUnread > 0 ? 'flex' : 'none';
-        } catch (error) {
-            console.error('Failed to fetch unread counts:', error);
+    
+        async function initChat() {
+            try {
+                // Connect to WebSocket immediately on page load
+                connectGlobalWebSocket();
+                // Fetch unread counts immediately and set interval for continuous updates
+                fetchUnreadCounts();
+                setInterval(fetchUnreadCounts, 10000); // Reduced interval to 10 seconds for more frequent updates
+                toggleChat(state.isChatOpen);
+    
+                const [privateResponse, communityResponse] = await Promise.all([
+                    fetch('/api/chat/rooms/list/', { credentials: 'include' }),
+                    fetch('/api/chat/community/rooms/', { credentials: 'include' })
+                ]);
+    
+                if (!privateResponse.ok || !communityResponse.ok) {
+                    throw new Error('Failed to load chatrooms');
+                }
+    
+                const [privateRooms, communityRooms] = await Promise.all([
+                    privateResponse.json(),
+                    communityResponse.json()
+                ]);
+                console.log("Private chatrooms are: ", privateRooms, "Community Chat rooms are: ", communityRooms);
+    
+                const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                    const aTime = new Date(a.last_message?.timestamp || a.created_at);
+                    const bTime = new Date(b.last_message?.timestamp || b.created_at);
+                    return bTime - aTime;
+                });
+                console.log("All rooms are: ", allRooms);
+    
+                renderChatrooms(allRooms);
+            } catch (error) {
+                console.error('Error initializing chat:', error);
+                showToast('Failed to load conversations');
+            }
         }
-    }
-
-    function handleTyping() {
-        if (state.typingTimer) clearTimeout(state.typingTimer);
-
-        if (elements.chatInput.value.trim().length > 0) {
+    
+        function toggleChat(open) {
+            if (!open) {
+                resetChatState();
+            } else {
+                state.isChatOpen = true;
+                elements.chatContainer.style.display = 'flex';
+                showChatroomList();
+            }
+        }
+        if (elements.closeChat) {
+            elements.closeChat.addEventListener('click', () => {
+                toggleChat(false); 
+            });
+        }
+    
+        async function showChatroomList() {
+            state.currentView = 'chatrooms';
+            elements.chatroomList.style.display = 'block';
+            elements.chatMessages.style.display = 'none';
+            elements.messageInput.style.display = 'none';
+            elements.backButton.style.display = 'none';
+            elements.chatHeader.textContent = 'Chat Support';
+    
+            try {
+                const [privateResponse, communityResponse] = await Promise.all([
+                    fetch('/api/chat/rooms/list/', { credentials: 'include' }),
+                    fetch('/api/chat/community/rooms/', { credentials: 'include' })
+                ]);
+    
+                if (!privateResponse.ok || !communityResponse.ok) {
+                    throw new Error('Failed to load chatrooms');
+                }
+    
+                const [privateRooms, communityRooms] = await Promise.all([
+                    privateResponse.json(),
+                    communityResponse.json()
+                ]);
+                console.log("Private chatrooms are: ", privateRooms, "Community Chat rooms are: ", communityRooms);
+    
+                const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                    const aTime = new Date(a.last_message?.timestamp || a.created_at);
+                    const bTime = new Date(b.last_message?.timestamp || b.created_at);
+                    return bTime - aTime;
+                });
+                renderChatrooms(allRooms);
+            } catch (error) {
+                console.error('Error loading chatrooms:', error);
+                showToast('Failed to load conversations');
+            }
+        }
+    
+        async function readMessages(roomId) {
+            try {
+                const csrfToken = getCSRFToken();
+                const response = await fetch(`/api/chat/rooms/${roomId}/read/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error('Failed to mark messages as read');
+                fetchUnreadCounts();
+            } catch (error) {
+                console.warn('Failed to mark messages as read:', error);
+            }
+        }
+    
+        function renderChatrooms(chatrooms) {
+            elements.chatroomsContainer.innerHTML = '';
+            console.log("Chatrooms are: ", chatrooms);
+    
+            if (!chatrooms || !chatrooms.length) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'p-3 text-center text-white';
+                emptyMsg.textContent = 'No conversations yet';
+                elements.chatroomsContainer.appendChild(emptyMsg);
+                return;
+            }
+    
+            chatrooms.forEach(chatroom => {
+                const chatroomElement = document.createElement('div');
+                chatroomElement.className = `chatroom-item ${chatroom.unread_count > 0 ? 'unread' : ''}`;
+                let name = '';
+                let avatarContent = '';
+    
+                if (chatroom.chat_type === 'community') {
+                    name = chatroom.community?.name || 'Community Chat';
+                    avatarContent = 'C';
+                } else if (state.userRole === 'customer') {
+                    name = chatroom.subject;
+                    avatarContent = 'A';
+                } else {
+                    name = `${chatroom.customer_name} - ${chatroom.subject}`;
+                    avatarContent = chatroom.customer_name ? chatroom.customer_name.charAt(0).toUpperCase() : 'S';
+                }
+    
+                const avatarDiv = document.createElement('div');
+                avatarDiv.style.cssText = 'width:30px; height:30px; border-radius:50%; background-color:white; color:black; justify-content:center; display:grid; align-items:center; text-align:center;';
+                avatarDiv.textContent = avatarContent;
+    
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'chatroom-title';
+                titleDiv.textContent = name || 'Support Team';
+    
+                const badge = showCommunityBadge(chatroom);
+                if (badge) titleDiv.insertAdjacentHTML('beforeend', badge);
+    
+                if (chatroom.unread_count > 0) {
+                    const unreadSpan = document.createElement('span');
+                    unreadSpan.className = 'chatroom-unread-count';
+                    unreadSpan.textContent = chatroom.unread_count;
+                    titleDiv.appendChild(unreadSpan);
+                }
+    
+                const lastMessageDiv = document.createElement('div');
+                lastMessageDiv.className = 'text-white';
+                lastMessageDiv.style.cssText = 'font-size: 0.8rem; margin-top: 4px;';
+                if (chatroom.last_message) {
+                    const lastMessageSpan = document.createElement('span');
+                    lastMessageSpan.className = chatroom.unread_count > 0 ? 'fw-semibold' : '';
+                    lastMessageSpan.textContent = `${chatroom.last_message.sender_name || 'System'}: ${
+                        chatroom.last_message.message_type === 'image' ? '[Image]' : 
+                        chatroom.last_message.content.substring(0, 40) + (chatroom.last_message.content.length > 40 ? '...' : '')
+                    }`;
+                    lastMessageDiv.appendChild(lastMessageSpan);
+                } else {
+                    lastMessageDiv.textContent = 'No messages yet';
+                }
+    
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'text-white text-end';
+                timeDiv.style.cssText = 'font-size: 0.75rem; min-width: 50px;';
+                timeDiv.textContent = chatroom.last_message ? chatroom.last_message.timestamp : '';
+    
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'd-flex flex-column flex-grow-1';
+                contentDiv.appendChild(titleDiv);
+                contentDiv.appendChild(lastMessageDiv);
+    
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'd-flex flex-row';
+                rowDiv.style.gap = '20px';
+                rowDiv.appendChild(avatarDiv);
+                rowDiv.appendChild(contentDiv);
+    
+                chatroomElement.appendChild(rowDiv);
+                chatroomElement.appendChild(timeDiv);
+    
+                chatroomElement.addEventListener('click', () => {
+                    const roomName = chatroom.chat_type === 'community' ? 
+                        (chatroom.community?.name || 'Community Chat') :
+                        (state.userRole === 'customer' ? 
+                            chatroom.subject : 
+                            `${chatroom.customer_name} - ${chatroom.subject}`) || 'Support';
+                    openChatroom(chatroom.id, roomName);
+                });
+    
+                elements.chatroomsContainer.appendChild(chatroomElement);
+            });
+        }
+    
+        async function openChatroom(roomId, roomName) {
+            state.currentView = 'messages';
+            state.currentRoomId = roomId;
+            state.currentRoomName = roomName;
+    
+            elements.chatroomList.style.display = 'none';
+            elements.chatMessages.style.display = 'flex';
+            elements.messageInput.style.display = 'block';
+            elements.backButton.style.display = 'block';
+            elements.chatHeader.textContent = roomName;
+    
+            // Clear rendered message IDs when opening a new room
+            state.renderedMessageIds.clear();
+            await loadMessages(roomId);
+            readMessages(roomId);
+    
+            // Join the room via WebSocket
             if (state.globalSocket?.readyState === WebSocket.OPEN) {
                 state.globalSocket.send(JSON.stringify({
-                    type: 'typing',
-                    is_typing: true,
+                    type: 'join',
                     room_id: state.currentRoomId
                 }));
             }
-
-            state.typingTimer = setTimeout(() => {
+        }
+    
+        async function loadMessages(roomId) {
+            if (!roomId) return;
+    
+            try {
+                const response = await fetch(`/api/chat/rooms/${roomId}/messages/`, { credentials: 'include' });
+                if (!response.ok) throw new Error('Failed to load messages');
+                const messages = await response.json();
+                elements.chatMessages.innerHTML = '';
+                state.renderedMessageIds.clear();
+    
+                if (!messages.length) {
+                    showNoMessagesPlaceholder();
+                } else {
+                    messages.forEach(addMessageToChat);
+                    scrollToBottom();
+                }
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+                showToast('Failed to load messages');
+            }
+        }
+    
+        async function createNewChatRoom(subject) {
+            try {
+                const csrfToken = getCSRFToken();
+                const response = await fetch('/api/chat/rooms/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ subject })
+                });
+    
+                if (!response.ok) throw new Error('Failed to create chat room');
+                const newChatRoom = await response.json();
+                closeModal();
+                showChatroomList();
+                openChatroom(newChatRoom.id, subject);
+            } catch (error) {
+                console.error('Error creating chat room:', error);
+                showToast('Failed to create chat room');
+            }
+        }
+    
+        function playNotification() {
+            try {
+                const sound = new Audio('/static/sounds/notification.mp3');
+                sound.play().catch(e => console.log('Notification sound error:', e));
+            } catch (e) {
+                console.log('Audio error:', e);
+            }
+        }
+    
+        function connectGlobalWebSocket() {
+            if (state.globalSocket) {
+                state.globalSocket.close();
+                clearInterval(state.pingInterval);
+            }
+    
+            const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const wsUrl = `${protocol}${window.location.host}/ws/chat/global/`;
+            state.globalSocket = new WebSocket(wsUrl);
+    
+            state.globalSocket.onopen = () => {
+                console.log('Global WebSocket connected');
+                state.reconnectAttempts = 0;
+                updateConnectionStatus('Online');
+                state.pingInterval = setInterval(() => {
+                    if (state.globalSocket.readyState === WebSocket.OPEN) {
+                        state.globalSocket.send(JSON.stringify({ type: 'ping' }));
+                    }
+                }, 25000);
+    
+                if (state.currentRoomId) {
+                    state.globalSocket.send(JSON.stringify({
+                        type: 'join',
+                        room_id: state.currentRoomId
+                    }));
+                }
+            };
+    
+            state.globalSocket.onmessage = async (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    console.log("WebSocket message received:", data);
+    
+                    if (data.type === 'pong') return;
+                    if (data.type === 'error') {
+                        showToast(data.error);
+                        return;
+                    }
+    
+                    if (data.type === 'typing') {
+                        if (data.sender_id !== state.currentUserId && state.currentRoomId === data.room_id) {
+                            elements.typingIndicator.textContent = 'Someone is typing...';
+                            setTimeout(() => elements.typingIndicator.textContent = '', 3000);
+                        }
+                        return;
+                    }
+    
+                    if (data.type === 'chat') {
+                        console.log("Processing chat message:", data, "and current room is :",state.currentRoomId);
+                        if (data.room_id === state.currentRoomId) {
+                            loadMessages(data.room_id);
+                            scrollToBottom();
+                            readMessages(data.room_id);
+                        } else {
+                            // Update unread counts for other rooms
+                            fetchUnreadCounts();
+                            // Show custom toast for new message
+                            showToast(`New message received in ${data.room_name}`);
+                            if (!state.isChatOpen) {
+                                flashChatButton();
+                                playNotification();
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('WebSocket message error:', error);
+                    showToast('Error processing message');
+                }
+            };
+    
+            state.globalSocket.onclose = (e) => {
+                console.log('WebSocket closed:', e);
+                clearInterval(state.pingInterval);
+                
+                if (e.code === 1000) {
+                    updateConnectionStatus('Offline');
+                    return;
+                }
+        
+                updateConnectionStatus('Reconnecting...');
+                if (state.reconnectAttempts < state.maxReconnectAttempts) {
+                    state.reconnectAttempts++;
+                    const delay = Math.min(3000 * Math.pow(2, state.reconnectAttempts), 30000);
+                    setTimeout(connectGlobalWebSocket, delay);
+                } else {
+                    updateConnectionStatus('Disconnected', true);
+                    showToast('Connection lost. Please refresh.');
+                }
+            };
+    
+            state.globalSocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus('Connection error', true);
+                showToast('WebSocket connection error');
+            };
+        }
+    
+        function addMessageToChat(message) {
+            // Prevent rendering duplicate messages
+            if (state.renderedMessageIds.has(message.id)) {
+                console.log('Skipping duplicate message:', message.id);
+                return;
+            }
+            state.renderedMessageIds.add(message.id);
+    
+            if (message.message_type === 'image') {
+                elements.chatMessages.appendChild(renderImageMessage(message));
+            } else {
+                const isCurrentUser = String(message.sender_id) === state.currentUserId;
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${isCurrentUser ? 'sent' : 'received'}`;
+                messageElement.dataset.messageId = message.id;
+    
+                const senderDiv = document.createElement('div');
+                senderDiv.className = 'message-sender';
+                senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Support');
+    
+                const contentDiv = document.createElement('div');
+                contentDiv.textContent = message.content;
+    
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = message.timestamp;
+    
+                messageElement.appendChild(senderDiv);
+                messageElement.appendChild(contentDiv);
+                messageElement.appendChild(timeDiv);
+    
+                if (isCurrentUser) {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = `message-status ${message.is_read ? 'text-success' : 'text-white'}`;
+                    statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
+                    messageElement.appendChild(statusDiv);
+                }
+    
+                elements.chatMessages.appendChild(messageElement);
+            }
+        }
+    
+        function showNoMessagesPlaceholder() {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'text-center p-4 text-white';
+            placeholder.textContent = 'No messages yet. Start the conversation!';
+            elements.chatMessages.appendChild(placeholder);
+        }
+    
+        async function sendMessage() {
+            const message = elements.chatInput.value.trim();
+            if (!message || !state.currentRoomId) return;
+    
+            try {
+                if (!state.globalSocket || state.globalSocket.readyState !== WebSocket.OPEN) {
+                    throw new Error('WebSocket not connected');
+                }
+    
+                elements.chatInput.value = '';
+                state.globalSocket.send(JSON.stringify({
+                    type: 'chat',
+                    message,
+                    room_id: state.currentRoomId
+                }));
+                scrollToBottom();
+            } catch (error) {
+                console.error('Failed to send message:', error);
+                showToast('Failed to send message');
+            }
+        }
+    
+        async function fetchUnreadCounts() {
+            try {
+                const response = await fetch('/api/chat/notifications/', { credentials: 'include' });
+                if (!response.ok) throw new Error('Failed to fetch notifications');
+                const notifications = await response.json();
+                const totalUnread = notifications.reduce((sum, notif) => sum + (notif.count || 0), 0);
+    
+                elements.unreadCount.textContent = totalUnread;
+                elements.unreadCount.style.display = totalUnread > 0 ? 'flex' : 'none';
+            } catch (error) {
+                console.error('Failed to fetch unread counts:', error);
+            }
+        }
+    
+        function handleTyping() {
+            if (state.typingTimer) clearTimeout(state.typingTimer);
+    
+            if (elements.chatInput.value.trim().length > 0) {
+                if (state.globalSocket?.readyState === WebSocket.OPEN) {
+                    state.globalSocket.send(JSON.stringify({
+                        type: 'typing',
+                        is_typing: true,
+                        room_id: state.currentRoomId
+                    }));
+                }
+    
+                state.typingTimer = setTimeout(() => {
+                    elements.typingIndicator.textContent = '';
+                }, state.typingDelay);
+            } else {
                 elements.typingIndicator.textContent = '';
-            }, state.typingDelay);
-        } else {
-            elements.typingIndicator.textContent = '';
+            }
         }
-    }
-
-    function scrollToBottom() {
-        elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
-    }
-
-    function getCSRFToken() {
-        // Try meta tag first
-        const metaTag = document.querySelector('meta[name="csrf-token"]');
-        if (metaTag) return metaTag.getAttribute('content');
-
-        // Fallback to cookie
-        const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
-        return cookieValue ? cookieValue.pop() : null;
-    }
-
-    function showToast(message) {
-        console.log('Showing toast:', message);
-        if (!elements.toastNotification) {
-            console.error('Toast notification element not found');
-            return;
+    
+        function scrollToBottom() {
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
         }
-        elements.toastNotification.textContent = message;
-        elements.toastNotification.classList.add('show');
-        setTimeout(() => {
-            elements.toastNotification.classList.remove('show');
-        }, 3000);
-    }
-
-    function updateConnectionStatus(status, isError = false) {
-        elements.connectionStatus.textContent = status;
-        elements.connectionStatus.className = isError ? 
-            'bg-danger bg-opacity-25 text-white px-2 py-1 rounded-pill' : 
-            'px-2 py-1 rounded-pill';
-    }
-
-    function openModal() {
-        elements.newChatModal.style.display = 'flex';
-        elements.chatSubjectInput.value = '';
-        elements.chatSubjectInput.focus();
-    }
-
-    function closeModal() {
-        elements.newChatModal.style.display = 'none';
-    }
-
-    function flashChatButton() {
-        elements.chatButton.classList.add('flash');
-        setTimeout(() => elements.chatButton.classList.remove('flash'), 1000);
-    }
-
-    function attachEventListeners() {
-        if (elements.newChatButton) {
-            elements.newChatButton.addEventListener('click', openModal);
+    
+        function getCSRFToken() {
+            const metaTag = document.querySelector('meta[name="csrf-token"]');
+            if (metaTag) return metaTag.getAttribute('content');
+    
+            const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : null;
         }
-        if (elements.modalCancelButton) {
-            elements.modalCancelButton.addEventListener('click', closeModal);
-        }
-        if (elements.modalCreateButton) {
-            elements.modalCreateButton.addEventListener('click', () => {
-                const subject = elements.chatSubjectInput.value.trim();
-                if (subject) createNewChatRoom(subject);
-                else showToast('Please enter a subject');
-            });
+    
+        function showToast(message) {
+            console.log('Showing toast:', message);
+            if (!elements.toastNotification) {
+                console.error('Toast notification element not found');
+                return;
+            }
+            elements.toastNotification.textContent = message;
+            elements.toastNotification.classList.add('show');
+            setTimeout(() => {
+                elements.toastNotification.classList.remove('show');
+            }, 3000);
         }
 
-        if (elements.chatButton) {
-            elements.chatButton.addEventListener('click', () => toggleChat(!state.isChatOpen));
+        function resetChatState() {
+            state.currentRoomId = null;
+            state.currentRoomName = null;
+            state.isChatOpen = false;
+            state.currentView = 'chatrooms';
+            state.renderedMessageIds.clear();
+        
+            // Reset UI elements
+            elements.chatContainer.style.display = 'none';
+            elements.chatroomList.style.display = 'block';
+            elements.chatMessages.style.display = 'none';
+            elements.messageInput.style.display = 'none';
+            elements.backButton.style.display = 'none';
+            elements.chatHeader.textContent = 'Chat Support';
+            elements.chatInput.value = ''; // Clear input field
+            elements.typingIndicator.textContent = ''; // Clear typing indicator
+            elements.chatMessages.innerHTML = ''; // Clear messages
+            closeModal();
+            showChatroomList();
         }
-        if (elements.closeChat) {
-            elements.closeChat.addEventListener('click', () => toggleChat(false));
+    
+        function updateConnectionStatus(status, isError = false) {
+            elements.connectionStatus.textContent = status;
+            elements.connectionStatus.className = isError ? 
+                'bg-danger bg-opacity-25 text-white px-2 py-1 rounded-pill' : 
+                'px-2 py-1 rounded-pill';
         }
-        if (elements.backButton) {
-            elements.backButton.addEventListener('click', showChatroomList);
+    
+        function openModal() {
+            elements.newChatModal.style.display = 'flex';
+            elements.chatSubjectInput.value = '';
+            elements.chatSubjectInput.focus();
         }
-
-        if (elements.sendButton) {
-            elements.sendButton.addEventListener('click', sendMessage);
+    
+        function closeModal() {
+            elements.newChatModal.style.display = 'none';
         }
-        if (elements.chatInput) {
-            elements.chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            elements.chatInput.addEventListener('input', handleTyping);
+    
+        function flashChatButton() {
+            elements.chatButton.classList.add('flash');
+            setTimeout(() => elements.chatButton.classList.remove('flash'), 1000);
         }
-
-        if (elements.imageUploadBtn) {
-            elements.imageUploadBtn.addEventListener('click', () => {
-                elements.fileInput.click();
-            });
-        }
-        if (elements.fileInput) {
-            elements.fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    handleImageUpload(file);
-                    e.target.value = ''; // Reset input
-                }
-            });
-        }
-
-        if (elements.closePreview) {
-            elements.closePreview.addEventListener('click', () => {
-                elements.imagePreviewModal.style.display = 'none';
-            });
-        }
-        if (elements.imagePreviewModal) {
-            elements.imagePreviewModal.addEventListener('click', (e) => {
-                if (e.target === elements.imagePreviewModal) {
+    
+        function attachEventListeners() {
+            if (elements.newChatButton) {
+                elements.newChatButton.addEventListener('click', openModal);
+            }
+            if (elements.modalCancelButton) {
+                elements.modalCancelButton.addEventListener('click', closeModal);
+            }
+            if (elements.modalCreateButton) {
+                elements.modalCreateButton.addEventListener('click', () => {
+                    const subject = elements.chatSubjectInput.value.trim();
+                    if (subject) createNewChatRoom(subject);
+                    else showToast('Please enter a subject');
+                });
+            }
+    
+            if (elements.chatButton) {
+                elements.chatButton.addEventListener('click', () => toggleChat(!state.isChatOpen));
+            }
+            if (elements.closeChat) {
+                elements.closeChat.addEventListener('click', () => toggleChat(false));
+            }
+            if (elements.backButton) {
+                elements.backButton.addEventListener('click', showChatroomList);
+            }
+    
+            if (elements.sendButton) {
+                elements.sendButton.addEventListener('click', sendMessage);
+            }
+            if (elements.chatInput) {
+                elements.chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+                elements.chatInput.addEventListener('input', handleTyping);
+            }
+    
+            if (elements.imageUploadBtn) {
+                elements.imageUploadBtn.addEventListener('click', () => {
+                    elements.fileInput.click();
+                });
+            }
+            if (elements.fileInput) {
+                elements.fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        handleImageUpload(file);
+                        e.target.value = ''; // Reset input
+                    }
+                });
+            }
+    
+            if (elements.closePreview) {
+                elements.closePreview.addEventListener('click', () => {
                     elements.imagePreviewModal.style.display = 'none';
-                }
-            });
+                });
+            }
+            if (elements.imagePreviewModal) {
+                elements.imagePreviewModal.addEventListener('click', (e) => {
+                    if (e.target === elements.imagePreviewModal) {
+                        elements.imagePreviewModal.style.display = 'none';
+                    }
+                });
+            }
         }
-    }
-
-    // Initialize chat on page load
-    attachEventListeners();
-    initChat();
-});
+    
+        // Initialize chat on page load
+        attachEventListeners();
+        initChat();
+    });
 </script>

@@ -535,12 +535,35 @@ def send_welcome_message(chatroom, user):
     try:
         admin_user = CustomUser.objects.filter(is_staff=True).first()
 
-        Message.objects.create(
+        welcome_message = Message.objects.create(
             chat_room=chatroom,
             sender=admin_user,
             content=f"Welcome {user.get_full_name() or user.email} to the {chatroom.community.name} community!",
             message_type='text'
         )
+
+        notification = ChatNotification.objects.create(
+                        user = user,
+                        chat_room = chatroom,
+                        count = 1,
+                    )
+                    
+        channel_layer = channels.layers.get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+                        f"chat_{chatroom.id}",
+                        {
+                            "type": "chat_message",
+                            "message": {
+                                "room_id": chatroom.id,
+                                "sender_id": admin_user.id,
+                                "sender_name": "Support Team",
+                                "sender_role": "admin",
+                                "message": welcome_message.content,
+                                "timestamp": welcome_message.timestamp.isoformat(),
+                                "is_read": welcome_message.is_read,
+                            }
+                        }
+                    )
     except Exception as e:
         logger.error(f"Error sending welcome message: {str(e)}", exc_info=True)
         raise
@@ -582,7 +605,6 @@ def get_register(request):
 
                     admin_user= CustomUser.objects.filter(is_staff=True).first()
                     
-                    # chatroom creation functionality
                     chatroom = ChatRoom.objects.create(
                         customer=user,
                         admin=admin_user,
@@ -592,7 +614,6 @@ def get_register(request):
                     )
                     
                     
-                    # Create the welcome message
                     welcome_message = Message.objects.create(
                         chat_room=chatroom,
                         sender=admin_user,
@@ -629,6 +650,7 @@ def get_register(request):
                     html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
                     send_activation_email(request, user, request.POST['password1'])
                     # EmailThread(subject, html_content, recipient_list, sender).start()
+                    add_user_to_community(user)
                     
                     return JsonResponse({"message": 'Successfully added. Please check mailbox for password.', 'is_success': True})
                 except Exception as e:
@@ -645,6 +667,22 @@ def get_register(request):
     # If not POST method
     else:
         register_page(request)
+
+def add_user_to_community(user):
+        community = PostCommunity.objects.first()
+        if not community:
+            return JsonResponse({
+                            "message": "No community exists.",
+                            "is_success": False
+                        }, status=400)
+        PostCommunityJoiners.objects.create(
+                                user=user,
+                                community=community,
+                                is_active=True
+                            )
+
+                            
+        add_user_to_community_chatroom(user, community)
 
 
 def activate(request, uidb64, token):

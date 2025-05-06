@@ -15,7 +15,8 @@ from django.core.files.base import ContentFile
 from datetime import datetime
 import os
 from backend.models import CustomUser
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
@@ -135,6 +136,7 @@ class ImageUploadView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            print("Saving image file .....")
             image_file = request.FILES.get('image')
             room_id = request.POST.get('room_id')
             
@@ -187,6 +189,26 @@ class ImageUploadView(APIView):
                     )
                     if not created:
                         notification.increment()
+            
+            # Broadcast the message to the WebSocket group
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'chat_{room_id}',
+                {
+                    'type': 'chat_message',
+                    'id': str(message.id),
+                    'message': message.content,
+                    'sender_id': str(message.sender.id),
+                    'sender_name': message.sender.get_full_name() or message.sender.email,
+                    'sender_role': 'admin' if message.sender.is_staff else 'customer',
+                    'timestamp': message.timestamp.isoformat(),
+                    'is_read': message.is_read,
+                    'room_id': str(message.chat_room.id),
+                    'room_name': chat_room.community.name if chat_room.chat_type == ChatRoom.COMMUNITY else chat_room.subject,
+                    'message_type': message.message_type,
+                    'image_url': file_url
+                }
+            )
             
             return Response({
                 'image_url': file_url,

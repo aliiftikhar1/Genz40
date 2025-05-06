@@ -69,7 +69,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 room = await self.get_room(room_id)
                 
                 await self.channel_layer.group_send(
-                    room.group_name,
+                    self.room_group_name,
                     {
                         'type': 'chat_message',
                         'message': {
@@ -162,7 +162,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message_data['image_url'] = await self.get_image_url(message_obj)
             
             await self.channel_layer.group_send(
-                f'chat_{message_obj.chat_room.id}',
+                self.room_group_name,
                 {
                     'type': 'chat_message',
                     **message_data
@@ -326,6 +326,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                 raise ValueError("No data provided")
                 
             data = json.loads(text_data)
+            logger.debug(f"Received WebSocket data: {data}")
             
             if data.get('type') == 'ping':
                 await self.send(json.dumps({'type': 'pong'}))
@@ -345,27 +346,63 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                     )
                 return
 
-            message = data.get('message', '').strip()
-            room_id = data.get('room_id')
-            if message and room_id:
-                message_obj = await self.save_message(message, room_id)
-                room_name = await self.get_room_name(room_id)
-                await self.channel_layer.group_send(
-                    f'chat_{room_id}',
-                    {
-                        'type': 'chat_message',
-                        'id': str(message_obj.id),
-                        'message': message_obj.content,
-                        'sender_id': str(self.user.id),
-                        'sender_name': await self.get_user_display_name(self.user),
-                        'sender_role': 'admin' if self.user.is_staff else 'customer',
-                        'timestamp': message_obj.timestamp.isoformat(),
-                        'is_read': message_obj.is_read,
-                        'room_id': room_id,
-                        'room_name': room_name or 'Support',
-                        'message_type': message_obj.message_type
-                    }
-                )
+            if data.get('type') == 'join':
+                room_id = data.get('room_id')
+                if room_id:
+                    await self.channel_layer.group_add(
+                        f'chat_{room_id}',
+                        self.channel_name
+                    )
+                return;
+
+            # if data.get('type') == 'image':
+            #     room_id = data.get('room_id')
+            #     image_url = data.get('image_url')
+            #     content = data.get('content', 'Image shared')
+            #     if room_id and image_url:
+            #         message_obj = await self.save_image_message(room_id, content, image_url)
+            #         room_name = await self.get_room_name(room_id)
+            #         await self.channel_layer.group_send(
+            #             f'chat_{room_id}',
+            #             {
+            #                 'type': 'chat_message',
+            #                 'id': str(message_obj.id),
+            #                 'message': message_obj.content,
+            #                 'sender_id': str(self.user.id),
+            #                 'sender_name': await self.get_user_display_name(self.user),
+            #                 'sender_role': 'admin' if self.user.is_staff else 'customer',
+            #                 'timestamp': message_obj.timestamp.isoformat(),
+            #                 'is_read': message_obj.is_read,
+            #                 'room_id': room_id,
+            #                 'room_name': room_name or 'Support',
+            #                 'message_type': message_obj.message_type,
+            #                 'image_url': image_url
+            #             }
+            #         )
+            #     return;
+
+            if data.get('type') == 'chat':
+                message = data.get('message', '').strip()
+                room_id = data.get('room_id')
+                if message and room_id:
+                    message_obj = await self.save_message(message, room_id)
+                    room_name = await self.get_room_name(room_id)
+                    await self.channel_layer.group_send(
+                        f'chat_{room_id}',
+                        {
+                            'type': 'chat_message',
+                            'id': str(message_obj.id),
+                            'message': message_obj.content,
+                            'sender_id': str(self.user.id),
+                            'sender_name': await self.get_user_display_name(self.user),
+                            'sender_role': 'admin' if self.user.is_staff else 'customer',
+                            'timestamp': message_obj.timestamp.isoformat(),
+                            'is_read': message_obj.is_read,
+                            'room_id': room_id,
+                            'room_name': room_name or 'Support',
+                            'message_type': message_obj.message_type
+                        }
+                    )
 
         except json.JSONDecodeError:
             await self.send_error('Invalid JSON format')
@@ -437,6 +474,42 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
             chat_room=room,
             sender=self.user,
             content=message
+        )
+        room.update_timestamp()
+        
+        if room.chat_type == ChatRoom.COMMUNITY:
+            for member in room.members.exclude(id=self.user.id):
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=member,
+                    chat_room=room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        else:
+            recipient = room.admin if self.user == room.customer else room.customer
+            if recipient:
+                notification, created = ChatNotification.objects.get_or_create(
+                    user=recipient,
+                    chat_room=room,
+                    defaults={'count': 1}
+                )
+                if not created:
+                    notification.increment()
+        return message_obj
+
+    @database_sync_to_async
+    def save_image_message(self, room_id, content, image_url):
+        room = ChatRoom.objects.get(id=room_id)
+        if room.chat_type == ChatRoom.COMMUNITY:
+            if not room.members.filter(id=self.user.id).exists():
+                raise ValueError("User is not a member of this community")
+        message_obj = Message.objects.create(
+            chat_room=room,
+            sender=self.user,
+            content=content,
+            message_type=Message.IMAGE,
+            image=image_url
         )
         room.update_timestamp()
         
