@@ -633,8 +633,8 @@ def get_register(request):
                         {
                             "type": "chat_message",
                             "message": {
-                                "room_id": chatroom.id,
-                                "sender_id": admin_user.id,
+                                "room_id": str(chatroom.id),
+                                "sender_id": str(admin_user.id),
                                 "sender_name": "Support Team",
                                 "sender_role": "admin",
                                 "message": welcome_message.content,
