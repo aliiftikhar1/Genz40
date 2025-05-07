@@ -738,9 +738,10 @@ adminFileInput?.addEventListener('change', (e) => {
         };
 
         adminSocket.onmessage = async (e) => {
+            
             try {
                 const data = JSON.parse(e.data);
-
+                console.log("On Message - ",data)
                 if (data.type === 'pong') return;
                 if (data.type === 'error') {
                     showAdminErrorMessage(data.error);
@@ -758,8 +759,11 @@ adminFileInput?.addEventListener('change', (e) => {
                 }
 
                 if (data.type === 'chat') {
+                    console.log("Current message data is : ",data);
                     const isCurrentUser = data.sender_id === currentAdminUserId;
                     const inCurrentRoom = currentAdminRoomId === data.room_id;
+
+                    console.log("Current User - ",isCurrentUser," Current Room - ",inCurrentRoom);
                     
                     // Add message to chat if in current room
                     if (inCurrentRoom) {
