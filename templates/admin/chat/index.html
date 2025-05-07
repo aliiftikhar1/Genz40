@@ -622,6 +622,13 @@ adminFileInput?.addEventListener('change', (e) => {
 
     // Open a chat room in the main area
     async function openAdminChatRoom(roomId, roomName) {
+        if (adminSocket?.readyState === WebSocket.OPEN) {
+            adminSocket.send(JSON.stringify({
+                type: 'join',
+                room_id: roomId
+            }));
+        }
+
         currentAdminRoomId = roomId;
         currentAdminRoomName = roomName;
         
@@ -636,11 +643,12 @@ adminFileInput?.addEventListener('change', (e) => {
         adminMessageArea.appendChild(loadingMsg);
         
         loadChatRommMessages(roomId)
+        
     }
 
     // Add a message to the chat area
     function addAdminMessageToChat(message) {
-    const isCurrentUser = String(message.sender) === currentAdminUserId;
+    const isCurrentUser = String(message.sender_id) === currentAdminUserId;
 
     // Remove empty state
     const emptyState = adminMessageArea.querySelector('.admin-empty-state');
@@ -735,7 +743,16 @@ adminFileInput?.addEventListener('change', (e) => {
                     adminSocket.send(JSON.stringify({ type: 'ping' }));
                 }
             }, 25000);
+
+            // 🚨 Join the current room if already selected
+            if (currentAdminRoomId) {
+                adminSocket.send(JSON.stringify({
+                    type: 'join',
+                    room_id: currentAdminRoomId
+                }));
+            }
         };
+
 
         adminSocket.onmessage = async (e) => {
             
