@@ -650,6 +650,7 @@ adminFileInput?.addEventListener('change', (e) => {
     // Add a message to the chat area
     function addAdminMessageToChat(message) {
     const isCurrentUser = message.sender_id === currentAdminUserId;
+    console.log("Sender id is ",message.sender_id, "Current admin id ",currentAdminUserId)
 
     console.log("Current User - ",isCurrentUser);
 
