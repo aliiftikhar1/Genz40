@@ -1,6 +1,12 @@
+{%load static%}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
+    #chat-icon{
+        width:2rem;
+        height:2rem;
+        object-fit:cover;
+    }
     #chat-widget {
         position: fixed;
         bottom: 15px;
@@ -394,7 +400,7 @@
             background-color: #000000;
             position: fixed;
             bottom: 5rem;
-            right: 1rem;
+            right: 0rem;
             z-index: 1000;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -520,7 +526,9 @@
 <div id="chat-widget" data-user-role="{{ user_data.role|escapejs }}" data-user-id="{{ user_data.user_id }}" data-is-authenticated="{{ user_data.is_authenticated|yesno:'true,false' }}">
     {% if user_data.is_authenticated %}
     <div id="chat-button" class="shadow">
-        <i class="fas fa-comment" aria-hidden="true"></i>
+        <img id='chat-icon' src="{% static 'icons/chaticon.png' %}" />
+
+        {% comment %} <i class="fas fa-comment" aria-hidden="true"></i> {% endcomment %}
         <span id="unread-count" style="display: none;">0</span>
     </div>
     {% if user_data.role == 'customer' %}
@@ -543,9 +551,9 @@
         </div>
 
         <div id="chatroom-list">
-            <button id="new-chat-button" aria-label="Create new chat">
+            {% comment %} <button id="new-chat-button" aria-label="Create new chat">
                 <i class="fas fa-plus" aria-hidden="true"></i>
-            </button>
+            </button> {% endcomment %}
             <div id="chatrooms-container"></div>
         </div>
 

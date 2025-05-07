@@ -1,4 +1,10 @@
+{% load static %}
 <style>
+    #unregister-chat-icon{
+        width:2rem;
+        height:2rem;
+        object-fit:cover;
+    }
     #unregister-chat-widget {
         position: fixed;
         bottom: 15px;
@@ -173,7 +179,7 @@
             background-color: #000000;
             position: fixed;
             bottom: 5rem;
-            right: 1rem;
+            right: 0rem;
             z-index: 1000;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -191,7 +197,8 @@
     <!-- Simplified condition: show for all users, adjust as needed -->
     
     <div id="unregister-chat-button">
-        <i class="fas fa-comment"></i>
+        <img id='unregister-chat-icon' src="{% static 'icons/chaticon.png' %}" />
+        {% comment %} <i class="fas fa-comment"></i> {% endcomment %}
     </div>
  
 

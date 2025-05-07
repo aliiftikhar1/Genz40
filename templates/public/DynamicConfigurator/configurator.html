@@ -96,6 +96,7 @@
                                     id="{{ feature.name|slugify }}"
                                     name="{{ feature.name|slugify }}"
                                     type="checkbox"
+                                    data-section="{{ section.name }}"
                                     {% if feature.checked %}checked{% endif %}
                                     {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
@@ -138,6 +139,7 @@
                                       id="{{ feature.name|slugify }}_option1"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option1 }}"
                                       {% if feature.checked %}checked{% endif %}
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
@@ -163,6 +165,7 @@
                                       id="{{ feature.name|slugify }}_option2"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option2 }}"
                                       {% if feature.checked %}checked{% endif %}
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
@@ -211,6 +214,7 @@
                                     id="{{ feature.name|slugify }}"
                                     name="{{ feature.name|slugify }}"
                                     type="checkbox"
+                                      data-section="{{ section.name }}"
                                     {% if feature.checked %}checked{% endif %}
                                     {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
@@ -247,6 +251,7 @@
                                       id="{{ feature.name|slugify }}_option1"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option1 }}"
                                       {% if feature.checked %}checked{% endif %}
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
@@ -269,6 +274,7 @@
                                       id="{{ feature.name|slugify }}_option2"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option2 }}"
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
                                       class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
@@ -314,6 +320,7 @@
                                     id="{{ feature.name|slugify }}"
                                     name="{{ feature.name|slugify }}"
                                     type="checkbox"
+                                      data-section="{{ section.name }}"
                                     {% if feature.checked %}checked{% endif %}
                                     {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
                                     class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
@@ -350,6 +357,7 @@
                                       id="{{ feature.name|slugify }}_option1"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option1 }}"
                                       {% if feature.checked %}checked{% endif %}
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
@@ -372,6 +380,7 @@
                                       id="{{ feature.name|slugify }}_option2"
                                       name="{{ feature.name|slugify }}"
                                       type="radio"
+                                      data-section="{{ section.name }}"
                                       value="{{ feature.option2 }}"
                                       {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
                                       class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
@@ -448,7 +457,7 @@
                   <span>Due Today</span>
                   <span>${{ package.reserveAmount }}</span>
                 </div>
-                <button type="submit" id="{{ package.package_type }}_reserve_button" class="mt-4 w-full bg-transparent border border-white text-white py-3 rounded-md hover: transition duration-300">
+                <button type="submit" id="{{ package.package_type }}_reserve_button" class="mt-4 w-full bg-transparent border border-white text-white py-3 rounded-md cursor-pointer hover: transition duration-300">
                   Reserve
                 </button>
               </div>
@@ -609,6 +618,7 @@ function handlePackageSubmit(packageType,package_id) {
 
 
   const checked = document.querySelectorAll(`#${packageType}Form input[type="checkbox"]:checked:not([disabled])`);
+
   const checkboxFeatures = Array.from(checked).map(cb => {
     const featureId = cb.getAttribute('data-feature-id');
     return featureId;
@@ -1307,98 +1317,113 @@ function handleSignUpSubmit(e) {
       const featuresList = document.getElementById(`${packageType}_features_list`);
       const showMoreBtn = document.getElementById(`${packageType}_show_more_btn`);
       if (!featuresList || !showMoreBtn) return;
-      
+    
       // Clear current list
       featuresList.innerHTML = '';
-      
+    
       // Get all checked features
       const checkboxes = Array.from(document.querySelectorAll(`#${packageType}Form .feature-checkbox:checked`));
       const radios = Array.from(document.querySelectorAll(`#${packageType}Form .feature-radio:checked`));
-      
-      // Combine all features
+    
       const allFeatures = [];
-      
-      // Add checkbox features
+    
+      // Collect checkbox features
       checkboxes.forEach(checkbox => {
         const featureName = checkbox.getAttribute('data-feature-name');
         const price = checkbox.getAttribute('data-price');
         const included = checkbox.disabled && checkbox.checked;
-        
-        if (featureName) {
-          allFeatures.push({
-            type: 'checkbox',
-            name: featureName,
-            price: price,
-            included: included,
-            element: checkbox
-          });
-        }
+        const section = checkbox.getAttribute('data-section') || 'General';
+    
+        allFeatures.push({
+          type: 'checkbox',
+          name: featureName,
+          price: price,
+          included: included,
+          section: section,
+          element: checkbox
+        });
       });
-      
-      // Add radio features
+    
+      // Collect radio features
       radios.forEach(radio => {
         const featureName = radio.getAttribute('data-feature-name');
         const price = radio.getAttribute('data-price');
         const included = radio.getAttribute('data-included') === 'True';
         const option = radio.getAttribute('data-option');
-        
-        if (featureName) {
-          allFeatures.push({
-            type: 'radio',
-            name: `${featureName} (${option === 'option1' ? radio.value : radio.value})`,
-            price: price,
-            included: included,
-            element: radio
-          });
+        const section = radio.getAttribute('data-section') || 'General';
+    
+        allFeatures.push({
+          type: 'radio',
+          name: `${featureName} (${radio.value})`,
+          price: price,
+          included: included,
+          section: section,
+          element: radio
+        });
+      });
+    
+      // Group features by section
+      const featuresBySection = {};
+      allFeatures.forEach(feature => {
+        if (!featuresBySection[feature.section]) {
+          featuresBySection[feature.section] = [];
         }
+        featuresBySection[feature.section].push(feature);
       });
-      
-      // Sort features by price (highest first) then alphabetically
-      allFeatures.sort((a, b) => {
-        const priceDiff = (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0);
-        if (priceDiff !== 0) return priceDiff;
-        return a.name.localeCompare(b.name);
-      });
-      
-      // Determine how many features to show initially
+    
       const showAll = showMoreBtn.getAttribute('data-show-all') === 'true';
-      const featuresToShow = showAll ? allFeatures.length : Math.min(DEFAULT_FEATURES_TO_SHOW, allFeatures.length);
-      
-      // Display features
-      allFeatures.slice(0, featuresToShow).forEach(feature => {
-        const li = document.createElement('li');
-        li.className = 'flex justify-between feature-item';
-        li.innerHTML = `
-          <span>${feature.name}</span>
-          ${feature.included ? '<span class="text-lime-400">Included</span>' : 
-                             feature.price > 0 ? `<span class="text-indigo-400">+$${parseInt(feature.price).toLocaleString()}</span>` : ''}
-        `;
-        featuresList.appendChild(li);
-      });
-      
-      // Handle "Show More" button
-      if (allFeatures.length > DEFAULT_FEATURES_TO_SHOW) {
+      const DEFAULT_FEATURES_TO_SHOW = 5;
+      let shownCount = 0;
+      const maxToShow = showAll ? Infinity : DEFAULT_FEATURES_TO_SHOW;
+    
+      for (const [section, features] of Object.entries(featuresBySection)) {
+        if (shownCount >= maxToShow) break;
+    
+        const sectionHeader = document.createElement('li');
+        sectionHeader.innerHTML = `<strong class="text-indigo-300">${section}</strong>`;
+        sectionHeader.className = 'mt-3';
+        featuresList.appendChild(sectionHeader);
+    
+        for (const feature of features) {
+          if (shownCount >= maxToShow) break;
+          const li = document.createElement('li');
+          li.className = 'flex justify-between feature-item';
+          li.innerHTML = `
+            <span>${feature.name}</span>
+            ${feature.included ? '<span class="text-lime-400">Included</span>' :
+              feature.price > 0 ? `<span class="text-indigo-400">+$${parseInt(feature.price).toLocaleString()}</span>` : ''}
+          `;
+          featuresList.appendChild(li);
+          shownCount++;
+        }
+      }
+    
+      // Show/hide Show More button
+      const totalFeatures = allFeatures.length;
+      if (totalFeatures > DEFAULT_FEATURES_TO_SHOW) {
         showMoreBtn.classList.remove('hidden');
-        showMoreBtn.textContent = showAll ? 'Show Less' : `Show More (${allFeatures.length - DEFAULT_FEATURES_TO_SHOW})`;
+        showMoreBtn.textContent = showAll
+          ? 'Show Less'
+          : `Show More (${totalFeatures - DEFAULT_FEATURES_TO_SHOW})`;
         showMoreBtn.onclick = () => {
-          const currentlyShowingAll = showMoreBtn.getAttribute('data-show-all') === 'true';
-          showMoreBtn.setAttribute('data-show-all', !currentlyShowingAll);
+          showMoreBtn.setAttribute('data-show-all', !showAll);
           updateSelectedFeatures(packageType);
         };
       } else {
         showMoreBtn.classList.add('hidden');
       }
-      
-      // Show/hide container based on whether there are features
+    
+      // Show/hide the summary container
       const container = document.getElementById(`${packageType}_selected_features`);
       if (container) {
-        if (allFeatures.length > 0) {
+        if (totalFeatures > 0) {
           container.classList.remove('hidden');
         } else {
           container.classList.add('hidden');
         }
       }
     }
+    
   
     // Initialize for each package type
     {% for package in packages %}

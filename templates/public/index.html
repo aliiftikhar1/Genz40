@@ -19,51 +19,6 @@
         text-align:start;
     }
 
-    /* Hero Section */
-    .herosection {
-        padding: 2rem 1rem;
-    }
-    .hero-container {
-        margin-top: 4rem;
-        position: relative;
-    }
-    .hero-image-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 1rem;
-    }
-    .car-image-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .car-image {
-        max-width: 100%;
-        width: 120%;
-        transform: translateX(10%);
-    }
-    .custom-input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ccc;
-        border-radius: 28px;
-        background: rgba(255, 255, 255, 0.5);
-        color: #000;
-    }
-    .custom-input::placeholder { color: #ccc; }
-
-    /* Specs Section */
-    .specs-container {
-        padding: 2rem 0;
-    }
-    .progress {
-        height: 8px;
-        background-color: #333;
-    }
-    .progress-bar {
-        background-color: #28a745;
-    }
 
     /* Services Section */
     .services-section {
@@ -346,87 +301,8 @@
 {% endblock header %}
 
 {% block content %}
-<div class="position-relative text-white overflow-hidden rounded hero-container" style="background:black;"
-{% comment %} style="background: linear-gradient(0deg, rgba(39,47,49,1) 0%, rgba(119,145,151,1) 100%);"> {% endcomment %}
-    <!-- Hero Section -->
-    <div class="container  herosection">
-        <div class=" hero-image-container align-items-center position-relative">
-            <!-- Left content -->
-            <div class="col-lg-6 mb-4 mb-lg-0 z-index-1">
-                <h1 class="display-3 fw-bold mb-3 " >
-                    Stay true to your<br>essence.
-                </h1>
-                <p class="mb-4" id="description" >
-                    since the 1500s, when an unknown printer took a galley of type
-                    and scrambled it to make a type specimen book. It has survived
-                    not only five centuries, but also
-                </p>
-                <div class="" style="position: relative;">
-                    {% for item in nav_items %}
-                    {% if forloop.first %}
-    
-                
-                <input id="email-desktop-first" type="email" class="custom-input" style="color: black;width: 100%; border-radius: 28px;" placeholder="Email" aria-label="Email">
-                <button id="getStartedBtnFirst" style="position: absolute; top: 0px; right: 0px;padding-top: 0.83rem; padding-bottom: 0.83rem;" class=" btn btn-info text-white px-4  rounded-pill d-inline-flex align-items-center" type="submit">
-                    Get Started
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                    </svg>
-                </button>
-                {% endif %}
-                {% endfor %}
-            </div>
-            </div>
-            
-            <!-- Right content with car image -->
-            <div class="col-lg-6 position-relative car-image-container">
-                <img src="{{ section_1.image.url }}" alt="Racing Car" class="img-fluid car-image">
-            </div>
-        </div>
-    </div>
-    
-    <!-- Car specs section -->
-    <div class="container pb-4 text-white specs-container">
-        <div class="row">
-            <!-- Top Speed -->
-            <div class="col-6 col-md-3 text-center mb-4 mb-md-0">
-                <p class="small text-white mb-1">Top Speed</p>
-                <p class="fs-3 fw-bold mb-2">212 <span class="small">MPH</span></p>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            
-            <!-- Max Power -->
-            <div class="col-6 col-md-3 text-center mb-4 mb-md-0">
-                <p class="small text-white mb-1">Max Power</p>
-                <p class="fs-3 fw-bold mb-2">710 <span class="small">BHP</span></p>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            
-            <!-- Engine -->
-            <div class="col-6 col-md-3 text-center mb-4 mb-md-0">
-                <p class="small text-white mb-1">Engine</p>
-                <p class="fs-3 fw-bold mb-2">2640 <span class="small">cc</span></p>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            
-            <!-- 0-60 MPH -->
-            <div class="col-6 col-md-3 text-center">
-                <p class="small text-white mb-1">0 - 60 MPH</p>
-                <p class="fs-3 fw-bold mb-2">5.4 <span class="small">secs</span></p>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+<div class="position-relative text-white overflow-hidden rounded" style="background:black;">
+{% include 'public/component/carousel_component.html' %}
 <!-- Second Section -->
 {% comment %} <section class="services-section text-white bg-black">
     <div class="container">

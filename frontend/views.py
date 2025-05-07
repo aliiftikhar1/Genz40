@@ -66,6 +66,29 @@ def index(request):
     section_1 = get_object_or_404(PostLandingPageImages, section=1)
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
+
+    car_list = []
+    car_list.append({
+            'image': section_1.image.url,
+            'top_speed': '212 MPH',        # Make sure these fields exist
+            'max_power': '710 BHP',
+            'engine': '2640 cc',
+            'acceleration': '5.4 secs',
+        })
+    car_list.append({
+            'image': section_2.image.url,
+            'top_speed': '250 MPH',        # Make sure these fields exist
+            'max_power': '610 BHP',
+            'engine': '2040 cc',
+            'acceleration': '5.9 secs',
+        })
+    car_list.append({
+            'image': section_3.image.url,
+            'top_speed': '412 MPH',        # Make sure these fields exist
+            'max_power': '810 BHP',
+            'engine': '2840 cc',
+            'acceleration': '4.4 secs',
+        })
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
     # ip = get_country_info(request)
@@ -80,6 +103,7 @@ def index(request):
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
+        'car_sections': car_list,
         'random_password': random_password,
         'items': items
     }
@@ -98,12 +122,35 @@ def home(request):
     # country_code = data.get('country')
     # # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
     # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    car_list = []
+    car_list.append({
+            'image': section_1.image.url,
+            'top_speed': '212 MPH',        # Make sure these fields exist
+            'max_power': '710 BHP',
+            'engine': '2640 cc',
+            'acceleration': '5.4 secs',
+        })
+    car_list.append({
+            'image': section_2.image.url,
+            'top_speed': '250 MPH',        # Make sure these fields exist
+            'max_power': '610 BHP',
+            'engine': '2040 cc',
+            'acceleration': '5.9 secs',
+        })
+    car_list.append({
+            'image': section_3.image.url,
+            'top_speed': '412 MPH',        # Make sure these fields exist
+            'max_power': '810 BHP',
+            'engine': '2840 cc',
+            'acceleration': '4.4 secs',
+        })
     context = {
         # 'country_code': country_code,
         # 'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
+        'car_sections': car_list,
         'random_password': random_password,
         'items': items
     }
