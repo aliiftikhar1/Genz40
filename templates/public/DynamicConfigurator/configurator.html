@@ -946,9 +946,12 @@ function showSignUpForm(package_type) {
                class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
       </div>
       
-      <div class="col-span-2 relative group">
+      <div class="col-span-2 relative group focus-within:opacity-100">
         <!-- Tooltip -->
-  <div class=" top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg  transition-opacity duration-300 pointer-events-none">
+  <div class="top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg opacity-0 transition-opacity duration-500
+             group-hover:opacity-100 group-focus-within:opacity-100
+             hidden group-hover:block group-focus-within:block
+             pointer-events-none">
     Password must contain at least:
     <ul class="list-disc pl-4 mt-1 grid grid-cols-2" id="password-rules">
       <li id="rule-uppercase" class="text-red-400">1 uppercase letter</li>
