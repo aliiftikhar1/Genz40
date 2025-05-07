@@ -4,6 +4,14 @@
 {% load frontend_custom_filters %}
 
 {% block content %}
+<style>
+  .opacity-50 {
+    opacity: 0.5;
+  }
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
+</style>
 <section class="relative bg-black">
   <div class="absolute md:sticky max-w-fit top-2 z-10 left-2 px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
     <a class="flex justify-center w-auto items-center" href="{% url 'index' %}">
@@ -939,6 +947,17 @@ function showSignUpForm(package_type) {
       </div>
       
       <div class="col-span-2 relative group">
+        <!-- Tooltip -->
+  <div class=" top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg  transition-opacity duration-300 pointer-events-none">
+    Password must contain at least:
+    <ul class="list-disc pl-4 mt-1 grid grid-cols-2" id="password-rules">
+      <li id="rule-uppercase" class="text-red-400">1 uppercase letter</li>
+      <li id="rule-lowercase" class="text-red-400">1 lowercase letter</li>
+      <li id="rule-number" class="text-red-400">1 number</li>
+      <li id="rule-special" class="text-red-400">1 special character</li>
+      <li id="rule-length" class="text-red-400">Minimum 8 characters</li>
+    </ul>
+  </div>
   <label for="signup-password" class="block text-sm font-medium text-white">Password</label>
   <div class="relative mt-1">
     <input type="password" id="signup-password" name="password" required 
@@ -956,17 +975,7 @@ function showSignUpForm(package_type) {
     </button>
   </div>
 
-  <!-- Tooltip -->
-  <div class="absolute top-full mt-1 left-0 z-10 w-[260px] bg-gray-800 text-white text-xs rounded p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-    Password must contain at least:
-    <ul class="list-disc pl-4 mt-1">
-      <li>1 uppercase letter</li>
-      <li>1 lowercase letter</li>
-      <li>1 number</li>
-      <li>1 special character</li>
-      <li>Minimum 8 characters</li>
-    </ul>
-  </div>
+  
 </div>
 
       
@@ -995,7 +1004,7 @@ function showSignUpForm(package_type) {
   setupPasswordToggle();
   document.getElementById('signup-form').addEventListener('submit', handleSignUpSubmit);
   handlePasswordChange();
-  
+  validatePasswordLive();
   document.getElementById('show-login-form').addEventListener('click', (e) => {
     e.preventDefault();
     showLoginForm(package_type);
@@ -1047,6 +1056,52 @@ function handlePasswordChange() {
     passwordInput2.value = passwordValue; // Update the second hidden password field
   });
 }
+
+function validatePasswordLive() {
+  const passwordInput = document.getElementById('signup-password');
+  const continueBtn = document.querySelector('#signup-form button[type="submit"]');
+
+  const rules = {
+    uppercase: document.getElementById('rule-uppercase'),
+    lowercase: document.getElementById('rule-lowercase'),
+    number: document.getElementById('rule-number'),
+    special: document.getElementById('rule-special'),
+    length: document.getElementById('rule-length'),
+  };
+
+  function checkAllRules() {
+    const value = passwordInput.value;
+    const checks = {
+      uppercase: /[A-Z]/.test(value),
+      lowercase: /[a-z]/.test(value),
+      number: /\d/.test(value),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      length: value.length >= 8,
+    };
+
+    let allValid = true;
+
+    for (const key in rules) {
+      if (checks[key]) {
+        rules[key].classList.remove('text-red-400');
+        rules[key].classList.add('text-green-400');
+      } else {
+        rules[key].classList.remove('text-green-400');
+        rules[key].classList.add('text-red-400');
+        allValid = false;
+      }
+    }
+
+    continueBtn.disabled = !allValid;
+    continueBtn.classList.toggle('opacity-50', !allValid);
+    continueBtn.classList.toggle('cursor-not-allowed', !allValid);
+  }
+
+  passwordInput.addEventListener('input', checkAllRules);
+  checkAllRules();  // Initial state
+}
+
+
 
 // Login submit handler
 function handleLoginSubmit(e) {
