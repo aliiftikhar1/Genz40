@@ -447,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let adminTypingTimer = null;
     const adminTypingDelay = 1000;
     const currentAdminUserId = '{{ user_data.user_id }}';
+    console.log("current User id is : ",currentAdminUserId)
 
     adminImageUploadBtn?.addEventListener('click', () => {
     adminFileInput?.click();
@@ -648,7 +649,10 @@ adminFileInput?.addEventListener('change', (e) => {
 
     // Add a message to the chat area
     function addAdminMessageToChat(message) {
-    const isCurrentUser = String(message.sender_id) === currentAdminUserId;
+    const isCurrentUser = message.sender_id === currentAdminUserId;
+
+    console.log("Current User - ",isCurrentUser," Current Room - ",inCurrentRoom);
+
 
     // Remove empty state
     const emptyState = adminMessageArea.querySelector('.admin-empty-state');
