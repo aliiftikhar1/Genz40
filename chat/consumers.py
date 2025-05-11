@@ -80,7 +80,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'image_url': data['image_url'],
                             'content': data.get('content', ''),
                             'timestamp': str(datetime.now()),
-                        }
+                        },
+                        'source': 'web'
                     }
                 )
             elif data.get('type') == 'message':
@@ -153,9 +154,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender_role': 'admin' if message_obj.sender and message_obj.sender.is_staff else 'customer',
                 'timestamp': message_obj.timestamp.isoformat(),
                 'is_read': message_obj.is_read,
-                'room_id': str(message_obj.chat_room.id),
+                'room_id': message_obj.chat_room.id,
                 'room_name': await self.get_room_name(message_obj.chat_room.id) or 'Support',
                 'message_type': message_obj.message_type,
+                'source': 'web'
             }
             
             if message_obj.message_type == Message.IMAGE and message_obj.image:
@@ -217,7 +219,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_role': 'admin' if msg.sender and msg.sender.is_staff else 'customer',
             'timestamp': msg.timestamp.isoformat(),
             'is_read': msg.is_read,
-            'room_id': str(msg.chat_room.id),
+            'room_id': msg.chat_room.id,
             'room_name': msg.chat_room.community.name if msg.chat_room.chat_type == ChatRoom.COMMUNITY else msg.chat_room.subject,
             'message_type': msg.message_type,
             'image_url': f"{settings.MEDIA_URL}{msg.image.name}" if msg.message_type == Message.IMAGE and msg.image else None
@@ -271,7 +273,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return room.subject
 
     async def chat_message(self, event):
-        await self.send(text_data=json.dumps({
+        # Process messages from both web and mobile
+        message_data = {
             'type': 'chat',
             'id': event['id'],
             'message': event['message'],
@@ -282,9 +285,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'is_read': event['is_read'],
             'room_id': event['room_id'],
             'room_name': event['room_name'],
-            'message_type': event['message_type'],
-            'image_url': event.get('image_url')
-        }))
+            'message_type': event['message_type']
+        }
+        
+        # Add image_url if present
+        if event.get('image_url'):
+            message_data['image_url'] = event['image_url']
+            
+        await self.send(text_data=json.dumps(message_data))
+
+    async def typing_message(self, event):
+        # Only process typing events from mobile if we're in web consumer
+        if event.get('source') == 'mobile':
+            await self.send(text_data=json.dumps({
+                'type': 'typing',
+                'is_typing': event['is_typing'],
+                'sender_id': event['sender_id'],
+                'room_id': event['room_id']
+            }))
 
 class GlobalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):

@@ -25,8 +25,8 @@ from genz40 import custom_sortable_urls
 from django.urls import path, re_path
 from chat import views
 from chat.consumers import ChatConsumer
-from chat.urls import websocket_urlpatterns
-
+from chat.urls import websocket_urlpatterns as chat_websocket_urlpatterns
+from mobileChat.urls import websocket_urlpatterns as mobile_websocket_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,10 +34,12 @@ urlpatterns = [
     path('', include('frontend.urls')),
     path('auth/', include('backend.urls')),
     path('api/chat/', include('chat.urls')),
-    
-   
+    path('mobile/chat/', include('mobileChat.urls'))
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Combine both web and mobile WebSocket URL patterns
+websocket_urlpatterns = chat_websocket_urlpatterns + mobile_websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

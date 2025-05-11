@@ -1117,6 +1117,12 @@
     
                     if (data.type === 'chat') {
                         console.log("Processing chat message:", data, "and current room is :",state.currentRoomId);
+                        console.log("Data room id is: ", data.room_id, "and current room id is: ", state.currentRoomId);
+                        let currentroom = false;
+                        if(data.room_id === state.currentRoomId) {
+                            currentroom = true;
+                        }
+                        console.log("Current room is: ", currentroom);
                         if (data.room_id === state.currentRoomId) {
                             loadMessages(data.room_id);
                             scrollToBottom();

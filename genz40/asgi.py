@@ -19,7 +19,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'genz40.settings')
 django_asgi_app = get_asgi_application()
 
 # Import chat.routing *after* Django is initialized
-from chat.routing import websocket_urlpatterns
+from chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
+from mobileChat.urls import websocket_urlpatterns as mobile_websocket_urlpatterns
+
+# Combine WebSocket URL patterns
+websocket_urlpatterns = chat_websocket_urlpatterns + mobile_websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

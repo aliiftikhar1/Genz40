@@ -203,7 +203,7 @@ class ImageUploadView(APIView):
                     'sender_role': 'admin' if message.sender.is_staff else 'customer',
                     'timestamp': message.timestamp.isoformat(),
                     'is_read': message.is_read,
-                    'room_id': str(message.chat_room.id),
+                    'room_id': message.chat_room.id,
                     'room_name': chat_room.community.name if chat_room.chat_type == ChatRoom.COMMUNITY else chat_room.subject,
                     'message_type': message.message_type,
                     'image_url': file_url
