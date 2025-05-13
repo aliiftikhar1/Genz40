@@ -1265,6 +1265,10 @@ def customer_message(request):
     return render(request, 'customer/message/message.html', {'is_footer_required': True})
 
 @login_required
+def customer_community_message(request):
+    return render(request, 'customer/message/communityChat.html', {'is_footer_required': True})
+
+@login_required
 def email_verify_from_dashboard(request):
     if request.user.is_authenticated:
         current_site = get_current_site(request)

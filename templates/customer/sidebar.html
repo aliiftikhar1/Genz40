@@ -37,19 +37,21 @@
                 </a>
             </li>
             
-            <!-- <li class="navbar-item account-menu px-0 mt-2">
-                <a href="account-chat.html" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+            <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'customer_message' %}active{% endif %}">
+                <a href="{% url 'customer_message' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
                     <span class="h4 mb-0"><i class="uil uil-comment"></i></span>
                     <h6 class="mb-0 ms-2">Chat</h6>
                 </a>
-            </li> -->
-            
-            <!-- <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'customer_message' %}active{% endif %}">
-                <a href="{% url 'customer_message' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+            </li>
+
+            <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'customer_community_message' %}active{% endif %}">
+                <a href="{% url 'customer_community_message' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
                     <span class="h4 mb-0"><i class="uil uil-envelope-star"></i></span>
-                    <h6 class="mb-0 ms-2">Messages</h6>
+                    <h6 class="mb-0 ms-2">Community Chats</h6>
                 </a>
-            </li> -->
+            </li>
+            
+            
             
             <li class="navbar-item account-menu px-0 mt-2">
                 <a href="{% url 'logout' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
