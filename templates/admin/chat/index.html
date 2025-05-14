@@ -548,12 +548,17 @@ adminFileInput?.addEventListener('change', (e) => {
                 communityResponse.json()
             ]);
 
+            console.log("Private rooms:", privateRooms);
+            console.log("Community rooms:", communityRooms);
+
+            // Combine and sort all rooms
             const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
                 const aTime = new Date(a.last_message?.timestamp || a.created_at);
                 const bTime = new Date(b.last_message?.timestamp || b.created_at);
                 return bTime - aTime;
             });
 
+            console.log("All rooms:", allRooms);
             renderAdminChatRooms(allRooms);
         } catch (error) {
             console.error('Error loading admin chatrooms:', error);
@@ -565,7 +570,7 @@ adminFileInput?.addEventListener('change', (e) => {
     function renderAdminChatRooms(chatrooms) {
         adminChatList.innerHTML = '';
 
-        if (chatrooms.length === 0) {
+        if (!chatrooms || chatrooms.length === 0) {
             const emptyMsg = document.createElement('div');
             emptyMsg.className = 'p-3 text-center text-white';
             emptyMsg.textContent = 'No conversations yet';
@@ -590,7 +595,8 @@ adminFileInput?.addEventListener('change', (e) => {
             }
 
             lastMessagePreview = chatroom.last_message ? 
-                chatroom.last_message.content.substring(0, 30) + (chatroom.last_message.content.length > 30 ? '...' : '') : 
+                (chatroom.last_message.message_type === 'image' ? '[Image]' : 
+                chatroom.last_message.content?.substring(0, 30) + (chatroom.last_message.content?.length > 30 ? '...' : '')) : 
                 'No messages yet';
             
             chatItem.innerHTML = `
@@ -604,7 +610,7 @@ adminFileInput?.addEventListener('change', (e) => {
                         <div class="admin-chat-preview">${lastMessagePreview}</div>
                     </div>
                     <div class="admin-chat-meta">
-                        <div class="admin-chat-time">${chatroom.last_message ? (chatroom.last_message.timestamp) : ''}</div>
+                        <div class="admin-chat-time">${chatroom.last_message ? formatTimestamp(chatroom.last_message.timestamp) : ''}</div>
                         ${chatroom.unread_count > 0 ? `<div class="admin-chat-unread">${chatroom.unread_count}</div>` : ''}
                     </div>
                 </div>
@@ -628,6 +634,13 @@ adminFileInput?.addEventListener('change', (e) => {
 
             adminChatList.appendChild(chatItem);
         });
+    }
+
+    // Helper function to format timestamp
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
+        return date.toLocaleString();
     }
 
     async function loadChatRommMessages(roomId){
@@ -685,8 +698,9 @@ adminFileInput?.addEventListener('change', (e) => {
 
     // Add a message to the chat area
     function addAdminMessageToChat(message) {
+        console.log("Current Message is : ",message)
     const isCurrentUser = message.sender === currentAdminUserId;
-    console.log("Message is : ",message," Sender id is ",message.sender_id, "Current admin id ",currentAdminUserId)
+    console.log("Details are : ",message," Sender id is ",message.sender, "Current admin id ",currentAdminUserId)
 
     console.log("Current User - ",isCurrentUser);
 

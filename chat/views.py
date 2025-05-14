@@ -237,7 +237,8 @@ class MessageListCreateView(generics.ListCreateAPIView):
         room_id = self.kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            if not chat_room.members.filter(id=self.request.user.id).exists():
+            # Allow admin users to access all community chat rooms
+            if not self.request.user.is_staff and not chat_room.members.filter(id=self.request.user.id).exists():
                 return Message.objects.none()
         return Message.objects.filter(
             chat_room_id=room_id
@@ -247,7 +248,8 @@ class MessageListCreateView(generics.ListCreateAPIView):
         room_id = self.kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            if not chat_room.members.filter(id=self.request.user.id).exists():
+            # Allow admin users to send messages in community chat rooms
+            if not self.request.user.is_staff and not chat_room.members.filter(id=self.request.user.id).exists():
                 raise ValueError("User is not a member of this community")
         message = serializer.save(
             sender=self.request.user, 
@@ -284,7 +286,8 @@ class UnreadMessagesView(generics.ListAPIView):
         room_id = self.kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            if not chat_room.members.filter(id=self.request.user.id).exists():
+            # Allow admin users to access all community chat rooms
+            if not self.request.user.is_staff and not chat_room.members.filter(id=self.request.user.id).exists():
                 return Message.objects.none()
         return Message.objects.filter(
             chat_room_id=room_id,
@@ -298,7 +301,8 @@ class MarkMessagesAsReadView(generics.UpdateAPIView):
         room_id = kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            if not chat_room.members.filter(id=request.user.id).exists():
+            # Allow admin users to access all community chat rooms
+            if not request.user.is_staff and not chat_room.members.filter(id=request.user.id).exists():
                 return Response(
                     {'error': 'User is not a member of this community'},
                     status=status.HTTP_403_FORBIDDEN

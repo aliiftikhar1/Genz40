@@ -190,12 +190,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             room = ChatRoom.objects.get(id=self.room_id)
             if room.chat_type == ChatRoom.COMMUNITY:
-                return room.members.filter(id=self.user.id).exists()
-            return ChatRoom.objects.filter(
-                id=self.room_id
-            ).filter(
-                Q(customer=self.user) | Q(admin=self.user)
-            ).exists()
+                # Allow admin users to access all community chat rooms
+                return self.user.is_staff or room.members.filter(id=self.user.id).exists()
+            return True
         except ChatRoom.DoesNotExist:
             return False
 
@@ -229,7 +226,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message, room_id):
         room = ChatRoom.objects.get(id=room_id)
         if room.chat_type == ChatRoom.COMMUNITY:
-            if not room.members.filter(id=self.user.id).exists():
+            # Allow admin users to send messages in community chat rooms
+            if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
         message_obj = Message.objects.create(
             chat_room=room,
@@ -486,7 +484,8 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message, room_id):
         room = ChatRoom.objects.get(id=room_id)
         if room.chat_type == ChatRoom.COMMUNITY:
-            if not room.members.filter(id=self.user.id).exists():
+            # Allow admin users to send messages in community chat rooms
+            if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
         message_obj = Message.objects.create(
             chat_room=room,
@@ -520,7 +519,8 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
     def save_image_message(self, room_id, content, image_url):
         room = ChatRoom.objects.get(id=room_id)
         if room.chat_type == ChatRoom.COMMUNITY:
-            if not room.members.filter(id=self.user.id).exists():
+            # Allow admin users to send messages in community chat rooms
+            if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
         message_obj = Message.objects.create(
             chat_room=room,
