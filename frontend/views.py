@@ -1733,7 +1733,7 @@ def reservation_details(request, id):
             in_mark_IV=True
         ).exclude(
             id__in=extra_features_ids + new_feature_ids
-        )
+        ).order_by('section__name')
 
         unselected_feature_ids = FeatureModel.objects.filter(
             disabled=False,
