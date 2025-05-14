@@ -388,10 +388,7 @@ $(document).ready(function() {
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response['message']);
-                    setTimeout(function() {
-                        location.href = "{% url 'customer_login' %}";
-                    }, 3000);
-                    
+                    redirectWithDelay("{% url 'customer_login' %}");
                     $('#login-form')[0].reset();
                 } else {
                     toastr.error(response['message']);

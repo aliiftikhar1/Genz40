@@ -832,14 +832,7 @@ document.querySelectorAll('.btn-delete-feature').forEach(button => {
 
 // Helper function to show toast messages
 function showToast(message, type = 'success') {
-    const toast = new bootstrap.Toast(document.getElementById('toastNotification'));
-    const toastBody = document.querySelector('#toastNotification .toast-body');
-    
-    toastBody.textContent = message;
-    document.getElementById('toastNotification').classList.remove('bg-success', 'bg-danger');
-    document.getElementById('toastNotification').classList.add(type === 'success' ? 'bg-success' : 'bg-danger');
-    
-    toast.show();
+    toastr[type](message);
 }
 </script>
 {% endblock %}

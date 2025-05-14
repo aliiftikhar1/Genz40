@@ -33,8 +33,62 @@
 
         <!-- Style Css-->
         <link href="{% static 'css/style-dark.min.css' %}" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
+        
         <!-- Toastr -->
-        <link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
+        <link href="{% static 'admin/plugins/toastr/toastr.css' %}" rel="stylesheet" type="text/css">
+
+        <style>
+            /* Custom Toastr Styles */
+            #toast-container > div {
+                opacity: 1;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-radius: 8px;
+                padding: 15px 15px 15px 50px;
+                width: 300px;
+                background-position: 15px center;
+                background-size: 24px;
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 1.4;
+            }
+
+            #toast-container > .toast-success {
+                background-color: #28a745;
+                color: #fff;
+            }
+
+            #toast-container > .toast-error {
+                background-color: #dc3545;
+                color: #fff;
+            }
+
+            #toast-container > .toast-info {
+                background-color: #17a2b8;
+                color: #fff;
+            }
+
+            #toast-container > .toast-warning {
+                background-color: #ffc107;
+                color: #000;
+            }
+
+            .toast-close-button {
+                color: #fff;
+                opacity: 0.8;
+                font-size: 18px;
+                padding: 0;
+                margin-right: 5px;
+            }
+
+            .toast-close-button:hover {
+                opacity: 1;
+            }
+
+            .toast-progress {
+                background-color: rgba(255, 255, 255, 0.3);
+                height: 3px;
+            }
+        </style>
 
         <style>
   

@@ -14,52 +14,7 @@ function getCookie(name) {
   }
   
   function showToast(message, type = "info") {
-    let toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) {
-      toastContainer = document.createElement("div");
-      toastContainer.id = "toast-container";
-      toastContainer.style.position = "fixed";
-      toastContainer.style.top = "20px";
-      toastContainer.style.right = "20px";
-      toastContainer.style.zIndex = "9999";
-      document.body.appendChild(toastContainer);
-    }
-  
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.style.minWidth = "250px";
-    toast.style.margin = "10px";
-    toast.style.padding = "15px";
-    toast.style.borderRadius = "4px";
-    toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
-    toast.style.animation = "fadeIn 0.5s, fadeOut 0.5s 2.5s forwards";
-  
-    switch (type) {
-      case "success":
-        toast.style.backgroundColor = "#4CAF50";
-        toast.style.color = "white";
-        break;
-      case "error":
-        toast.style.backgroundColor = "#F44336";
-        toast.style.color = "white";
-        break;
-      case "warning":
-        toast.style.backgroundColor = "#FF9800";
-        toast.style.color = "white";
-        break;
-      default:
-        toast.style.backgroundColor = "#2196F3";
-        toast.style.color = "white";
-    }
-  
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-  
-    setTimeout(() => {
-      if (toast && toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 3000);
+    toastr[type](message);
   }
   
   if (!document.getElementById("toast-styles")) {
@@ -465,7 +420,10 @@ function getCookie(name) {
         return res.json();
       })
       .then(data => {
-        showToast("Package Booked successfully!", "success");
+        toastr.success("Package Booked successfully!");
+        var newdata = new FormData();
+        console.log("Package id is : ", data)
+        newdata.append("package_id", data.id);
         window.location.href = "{% url 'reservation_checkout' '0' %}".replace('0', data.id);
       })
       .catch(err => {

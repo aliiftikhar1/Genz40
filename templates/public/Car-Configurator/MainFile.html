@@ -2830,7 +2830,7 @@ function submitRollerForm(event) {
       return res.json();
     })
     .then(data => {
-      showToast("Package Booked successfully!", "success");
+      toastr.success("Package Booked successfully!");
       var newdata = new FormData();
       console.log("Package id is : ", data)
       newdata.append("package_id", data.id);
@@ -2888,7 +2888,7 @@ function submitRollerForm(event) {
     })
     .catch(err => {
       console.error(err);
-      showToast("Failed to save configuration.", "error");
+      toastr.error("Failed to save configuration.");
     });
 }
 
@@ -2973,12 +2973,12 @@ function submitRollerForm(event) {
       })
       .then(data => {
         console.log("Data returned after booking package", data);
-        showToast("Package Booked successfully!", "success");
+        toastr.success("Package Booked successfully!");
         window.location.href = "{% url 'reservation_checkout' '0' %}".replace('0', data.id);
       })
       .catch(err => {
         console.error(err);
-        showToast("Failed to save configuration.", "error");
+        toastr.error("Failed to save configuration.");
       });
   }
 

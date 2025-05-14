@@ -1289,16 +1289,14 @@
         }
     
         function showToast(message) {
-            console.log('Showing toast:', message);
-            if (!elements.toastNotification) {
-                console.error('Toast notification element not found');
-                return;
+            const toast = document.getElementById('toast-notification');
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
             }
-            elements.toastNotification.textContent = message;
-            elements.toastNotification.classList.add('show');
-            setTimeout(() => {
-                elements.toastNotification.classList.remove('show');
-            }, 3000);
         }
 
         function resetChatState() {
