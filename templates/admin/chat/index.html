@@ -551,8 +551,13 @@ adminFileInput?.addEventListener('change', (e) => {
             console.log("Private rooms:", privateRooms);
             console.log("Community rooms:", communityRooms);
 
-            // Combine and sort all rooms
+            // Combine and sort all rooms - community rooms first, then by timestamp
             const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                // First sort by chat type (community first)
+                if (a.chat_type === 'community' && b.chat_type !== 'community') return -1;
+                if (a.chat_type !== 'community' && b.chat_type === 'community') return 1;
+                
+                // Then sort by timestamp
                 const aTime = new Date(a.last_message?.timestamp || a.created_at);
                 const bTime = new Date(b.last_message?.timestamp || b.created_at);
                 return bTime - aTime;
