@@ -1598,6 +1598,9 @@ def reservation_success(request, id, sessionId):
 
 
 
+from itertools import groupby
+from operator import attrgetter
+
 def reservation_details(request, id):
     """
     View the reservation checkout page.
@@ -1752,6 +1755,35 @@ def reservation_details(request, id):
     new_pending_features = booked_package.new_features.filter(status='pending')
     pending_features_total = booked_package.new_features.filter(status='pending').aggregate(total=Sum('amount'))['total'] or 0
     
+
+
+
+    # now i am group the features on the base of category
+    # Group included_features by section
+    included_features_grouped = []
+    for key, group in groupby(included_features.order_by('section__name'), key=attrgetter('section.name')):
+        included_features_grouped.append({
+            'section': key,
+            'features': list(group)
+        })
+
+    # Group extra_features_list by section
+    extra_features_grouped = []
+    if extra_features_list:
+        for key, group in groupby(sorted(extra_features_list, key=attrgetter('section.name')), key=attrgetter('section.name')):
+            extra_features_grouped.append({
+                'section': key,
+                'features': list(group)
+            })
+
+    # Group newly_added_features by section
+    newly_added_features_grouped = []
+    if newly_added_features.exists():
+        for key, group in groupby(newly_added_features.order_by('features__section__name'), key=lambda x: x.features.section.name if x.features else None):
+            newly_added_features_grouped.append({
+                'section': key,
+                'features': list(group)
+            })
     context = {
         'user_details': request.user,
         'booked_package': booked_package,
@@ -1771,6 +1803,10 @@ def reservation_details(request, id):
         'pending_features_total': pending_features_total,
         'extra_features_names': extra_features_list,
         'pending_features': pending_features,
+
+        'included_features_grouped': included_features_grouped,
+        'extra_features_grouped': extra_features_grouped,
+        'newly_added_features_grouped': newly_added_features_grouped,
     }
 
     return render(request, 'public/reservation_details.html', context)

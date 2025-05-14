@@ -63,6 +63,7 @@
                             <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
                             <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
                             <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
+                            <li><a class="sub-menu-item" href="{% url 'customer_community_message' %}">Community</a></li>
                             <!-- <li><a href="{% url 'customer_message' %}" class="sub-menu-item">Messages</a></li> -->
                             <li><a href="{% url 'logout' %}" class="sub-menu-item">Logout</a></li>
                         </ul>
@@ -78,11 +79,12 @@
                         </li>
                     {% endfor %}
                         <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
-                        <!-- <li class="sub-menu-item">
-                            <a class="nav-link" href="#">
+                        
+                        {% comment %} <li class="sub-menu-item">
+                            <a class="nav-link" href="{% url 'customer_community_message' %}">
                                 Community
                             </a>
-                        </li> -->
+                        </li> {% endcomment %}
                 {% endif %}
             </ul><!--end navigation menu-->
         </div><!--end navigation-->
@@ -117,6 +119,7 @@
                     <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
                     <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
                     <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
+                    <li><a href="{% url 'customer_community_message' %}" class="sub-menu-item">Community</a></li>
                     <!-- <li><a href="{% url 'customer_message' %}" class="sub-menu-item">Messages</a></li> -->
                     <li><a href="{% url 'logout' %}" class="sub-menu-item">Logout</a></li>
                 </ul>
@@ -162,6 +165,7 @@
                 </li>
                 {% endfor %}
 
+                <li><a href="{% url 'customer_community_message' %}" class="sub-menu-item">Community</a></li>
                 <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
                 <!-- <li><a href="#" class="sub-menu-item">Community</a></li> -->
             </ul><!--end navigation menu-->

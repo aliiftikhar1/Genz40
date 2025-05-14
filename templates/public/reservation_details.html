@@ -69,6 +69,19 @@
                 <div class="features-content" id="featuresContent">
                     <div class="row">
                         <div class="col-md-6">
+                            {% if included_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Included Features</h1>
+                                {% for group in included_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% comment %} <div class="col-md-6">
                             {% if included_features %}
                             <h1 style="font-size: 1.5rem;color:lime;">Included Features</h1>
                             <ul>
@@ -77,8 +90,32 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                        </div>
+                        </div> {% endcomment %}
                         <div class="col-md-6">
+                            {% if extra_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
+                                {% for group in extra_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.name }} - {{ feature.price|floatformat:0|intcomma }} $</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                            {% if newly_added_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Newly Added Features</h1>
+                                {% for group in newly_added_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.features.name }} - {{ feature.amount|floatformat:0|intcomma }} $</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% comment %} <div class="col-md-6">
                             {% if extra_features_names %}
                             <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
                             <ul>
@@ -97,7 +134,7 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                        </div>
+                        </div> {% endcomment %}
                     </div>
                    
                     
@@ -199,37 +236,35 @@
                                 <label>Select Features</label>
                                 <div class="feature-checkboxes">
                                     {% if reservation_features.count > 0 %}
-    {% regroup reservation_features by section as sectioned_features %}
-    
-    {% for section in sectioned_features %}
-        <h3 style="color: white; font-size: 22px; margin-top: 20px; margin-bottom: 10px;">
-            {{ section.grouper.name }}
-        </h3>
-
-        {% for feature in section.list %}
-            <div class="form-check"
-                 style="gap: 10px; display: flex; justify-content: start; align-content: center; border: 1px solid white; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
-                <input type="checkbox" 
-                       class="form-check-input feature-checkbox" 
-                       name="features[]" 
-                       style="width: 30px; height: 30px; margin-left: 5px;"
-                       value="{{ feature.name }}"
-                       data-id="{{ feature.id }}"
-                       data-amount="{{ feature.price }}"
-                       data-description="New Feature"
-                       id="feature-{{ feature.id }}">
-                <label class="form-check-label" style="font-size: 20px;" for="feature-{{ feature.id }}">
-                    {{ feature.name }} - ${{ feature.price }}
-                </label>
-            </div>
-        {% endfor %}
-    {% endfor %}
-{% else %}
-    <div class="no-features">
-        <i class="fas fa-info-circle"></i>
-        No more features available for selection
-    </div>
-{% endif %}
+                                        {% regroup reservation_features by section as sectioned_features %}
+                                    {% for section in sectioned_features %}
+                                        <h3 style="color: white; font-size: 22px; margin-top: 20px; margin-bottom: 10px;">
+                                            {{ section.grouper }}
+                                        </h3>
+                                        {% for feature in section.list %}
+                                            <div class="form-check"
+                                                style="gap: 10px; display: flex; justify-content: start; align-content: center; border: 1px solid white; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                                <input type="checkbox" 
+                                                    class="form-check-input feature-checkbox" 
+                                                    name="features[]" 
+                                                    style="width: 30px; height: 30px; margin-left: 5px;"
+                                                    value="{{ feature.name }}"
+                                                    data-id="{{ feature.id }}"
+                                                    data-amount="{{ feature.price }}"
+                                                    data-description="New Feature"
+                                                    id="feature-{{ feature.id }}">
+                                                <label class="form-check-label" style="font-size: 20px;" for="feature-{{ feature.id }}">
+                                                    {{ feature.name }} - ${{ feature.price }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="no-features">
+                                        <i class="fas fa-info-circle"></i>
+                                        No more features available for selection
+                                    </div>
+                                {% endif %}
 
                                 </div>
                             </div>
