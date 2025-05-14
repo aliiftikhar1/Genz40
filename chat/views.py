@@ -32,13 +32,21 @@ class CommunityChatRoomListView(generics.ListAPIView):
             if not user.is_authenticated:
                 logger.warning("User is not authenticated")
                 return ChatRoom.objects.none()
+
+            # If user is admin, return all community chat rooms
+            if user.is_staff:
+                queryset = ChatRoom.objects.filter(
+                    chat_type=ChatRoom.COMMUNITY
+                ).order_by('-updated_at')
+                logger.info(f"Admin user - returning all community chat rooms: {queryset.count()}")
+                return queryset
                 
-            # Fetch rooms where user is a member
+            # For regular users, fetch rooms where user is a member
             queryset = ChatRoom.objects.filter(
                 chat_type=ChatRoom.COMMUNITY,
                 members=user
             ).order_by('-updated_at')
-            logger.info(f"Chat rooms found: {queryset.count()}")
+            logger.info(f"Regular user - chat rooms found: {queryset.count()}")
             
             for room in queryset:
                 logger.debug(f"Room: {room.room_name}, Community: {room.community.name}")

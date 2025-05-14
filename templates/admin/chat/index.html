@@ -156,6 +156,15 @@
         text-overflow: ellipsis;
     }
 
+    .community-badge {
+        background-color: #4a6fdc;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 8px;
+    }
+
     .admin-chat-meta {
         display: flex;
         flex-direction: column;
@@ -525,14 +534,27 @@ adminFileInput?.addEventListener('change', (e) => {
     // Fetch chat rooms for admin
     async function fetchAdminChatRooms() {
         try {
-            const response = await fetch('/api/chat/rooms/list/', {
-                credentials: 'include'
+            const [privateResponse, communityResponse] = await Promise.all([
+                fetch('/api/chat/rooms/list/', { credentials: 'include' }),
+                fetch('/api/chat/community/rooms/', { credentials: 'include' })
+            ]);
+
+            if (!privateResponse.ok || !communityResponse.ok) {
+                throw new Error('Failed to load chatrooms');
+            }
+
+            const [privateRooms, communityRooms] = await Promise.all([
+                privateResponse.json(),
+                communityResponse.json()
+            ]);
+
+            const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                const aTime = new Date(a.last_message?.timestamp || a.created_at);
+                const bTime = new Date(b.last_message?.timestamp || b.created_at);
+                return bTime - aTime;
             });
 
-            if (!response.ok) throw new Error('Failed to load chatrooms');
-
-            const chatrooms = await response.json();
-            renderAdminChatRooms(chatrooms);
+            renderAdminChatRooms(allRooms);
         } catch (error) {
             console.error('Error loading admin chatrooms:', error);
             showAdminErrorMessage('Failed to load conversations');
@@ -555,16 +577,30 @@ adminFileInput?.addEventListener('change', (e) => {
             const chatItem = document.createElement('div');
             chatItem.className = `admin-chat-item ${chatroom.unread_count > 0 ? 'unread' : ''} ${currentAdminRoomId === chatroom.id ? 'active' : ''}`;
             
-            const customerInitial = chatroom.customer_name ? chatroom.customer_name.charAt(0).toUpperCase() : 'C';
-            const lastMessagePreview = chatroom.last_message ? 
+            let name = '';
+            let avatarContent = '';
+            let lastMessagePreview = '';
+
+            if (chatroom.chat_type === 'community') {
+                name = chatroom.community?.name || 'Community Chat';
+                avatarContent = 'C';
+            } else {
+                name = `${chatroom.customer_name || 'Customer'} - ${chatroom.subject}`;
+                avatarContent = chatroom.customer_name ? chatroom.customer_name.charAt(0).toUpperCase() : 'C';
+            }
+
+            lastMessagePreview = chatroom.last_message ? 
                 chatroom.last_message.content.substring(0, 30) + (chatroom.last_message.content.length > 30 ? '...' : '') : 
                 'No messages yet';
             
             chatItem.innerHTML = `
                 <div style="display: flex; align-items: center; width: 100%;">
-                    <div class="admin-chat-avatar">${customerInitial}</div>
+                    <div class="admin-chat-avatar">${avatarContent}</div>
                     <div class="admin-chat-info">
-                        <div class="admin-chat-name">${chatroom.customer_name || 'Customer'} - ${chatroom.subject}</div>
+                        <div class="admin-chat-name">
+                            ${name}
+                            ${chatroom.chat_type === 'community' ? '<span class="community-badge">Community</span>' : ''}
+                        </div>
                         <div class="admin-chat-preview">${lastMessagePreview}</div>
                     </div>
                     <div class="admin-chat-meta">
@@ -575,7 +611,7 @@ adminFileInput?.addEventListener('change', (e) => {
             `;
 
             chatItem.addEventListener('click', () => {
-                openAdminChatRoom(chatroom.id, `${chatroom.customer_name || 'Customer'} - ${chatroom.subject}`);
+                openAdminChatRoom(chatroom.id, name);
                 
                 // Highlight the selected chat
                 document.querySelectorAll('.admin-chat-item').forEach(item => {
