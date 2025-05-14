@@ -1701,7 +1701,7 @@ def reservation_details(request, id):
             in_mark_I=True
         ).exclude(
             id__in=extra_features_ids + new_feature_ids
-        )
+        ).order_by('section__name')
 
         unselected_feature_ids = FeatureModel.objects.filter(
             disabled=False,
@@ -1717,7 +1717,7 @@ def reservation_details(request, id):
                 in_mark_II=True
             ).exclude(
                 id__in=extra_features_ids + new_feature_ids
-            )
+            ).order_by('section__name')
 
             unselected_feature_ids = FeatureModel.objects.filter(
                 disabled=False,
