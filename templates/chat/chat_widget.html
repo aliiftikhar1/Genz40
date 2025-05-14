@@ -669,6 +669,28 @@
             setTimeout(() => elements.chatTooltip.classList.remove('show'), 5000);
         }
     
+        function getCSRFToken() {
+            // First try to get token from meta tag
+            const metaTag = document.querySelector('meta[name="csrf-token"]');
+            if (metaTag) {
+                return metaTag.getAttribute('content');
+            }
+            
+            // If not found in meta tag, try to get from cookie
+            const name = 'csrftoken';
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith(name + '='))
+                ?.split('=')[1];
+                
+            if (cookieValue) {
+                return decodeURIComponent(cookieValue);
+            }
+            
+            console.error('CSRF token not found');
+            return '';
+        }
+    
         async function handleImageUpload(file) {
             if (!file || !file.type.match('image.*')) {
                 showToast('Please select a valid image');
@@ -676,7 +698,7 @@
             }
         
             if (file.size > 5 * 1024 * 1024) {
-                showToast('Image size should be less than 5MB');
+                showToast('Image must be under 5MB');
                 return;
             }
         
@@ -696,13 +718,18 @@
             progressBar.style.width = '0%';
         
             try {
-                console.log("Going to upload image: ",formData)
+                const csrfToken = getCSRFToken();
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found');
+                }
+        
+                console.log("Going to upload image with CSRF token:", csrfToken);
                 const response = await fetch('/api/chat/upload-image/', {
                     method: 'POST',
                     body: formData,
                     credentials: 'include',
                     headers: {
-                        'X-CSRFToken': getCSRFToken(),
+                        'X-CSRFToken': csrfToken,
                     },
                 });
         
@@ -721,7 +748,7 @@
                         content: 'Image shared'
                     }));
                 }
-                loadMessages(state.currentRoomId)
+                loadMessages(state.currentRoomId);
                 progressBar.style.width = '100%';
                 setTimeout(() => uploadProgress.style.display = 'none', 500);
             } catch (error) {
@@ -1293,14 +1320,6 @@
     
         function scrollToBottom() {
             elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
-        }
-    
-        function getCSRFToken() {
-            const metaTag = document.querySelector('meta[name="csrf-token"]');
-            if (metaTag) return metaTag.getAttribute('content');
-    
-            const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
-            return cookieValue ? cookieValue.pop() : null;
         }
     
         function showToast(message) {

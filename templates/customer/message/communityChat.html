@@ -373,34 +373,104 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => loadMessages(currentRoomId), 300);
     }
 
+    function getCSRFToken() {
+        // First try to get token from meta tag
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            return metaTag.getAttribute('content');
+        }
+        
+        // If not found in meta tag, try to get from cookie
+        const name = 'csrftoken';
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+            
+        if (cookieValue) {
+            return decodeURIComponent(cookieValue);
+        }
+        
+        console.error('CSRF token not found');
+        return '';
+    }
+
     async function handleImageUpload(file) {
-        if (!file || !file.type.match('image.*')) return;
-        if (file.size > 5 * 1024 * 1024) return;
+        if (!file || !file.type.match('image.*')) {
+            showToast('Please select a valid image');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Image must be under 5MB');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('image', file);
         formData.append('room_id', currentRoomId);
+
         const progressBar = document.querySelector('.upload-progress-bar');
         const uploadProgress = document.querySelector('.upload-progress');
+
+        if (!progressBar || !uploadProgress) {
+            console.warn('Progress bar elements not found');
+            return;
+        }
+
         uploadProgress.style.display = 'block';
         progressBar.style.width = '0%';
+
         try {
+            const csrfToken = getCSRFToken();
+            if (!csrfToken) {
+                throw new Error('CSRF token not found');
+            }
+
+            console.log("Going to upload image with CSRF token:", csrfToken);
             const response = await fetch('/api/chat/upload-image/', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
-                headers: { 'X-CSRFToken': getCSRFToken() },
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
             });
-            if (!response.ok) throw new Error('Upload failed');
-            const data = await response.json();
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: 'image', room_id: currentRoomId, image_url: data.image_url, content: 'Image shared' }));
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
             }
-            setTimeout(() => loadMessages(currentRoomId), 300);
+
+            const data = await response.json();
+            
+            // Send message with image URL through WebSocket
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: 'image',
+                    room_id: currentRoomId,
+                    image_url: data.image_url,
+                    content: 'Image shared'
+                }));
+            }
+            loadMessages(currentRoomId);
             progressBar.style.width = '100%';
             setTimeout(() => uploadProgress.style.display = 'none', 500);
         } catch (error) {
+            console.error('Image upload failed:', error);
+            showToast('Failed to upload image');
             uploadProgress.style.display = 'none';
         }
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
     function handleTyping() {
@@ -415,12 +485,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function scrollToBottom() {
         elements.messages.scrollTop = elements.messages.scrollHeight;
-    }
-
-    function getCSRFToken() {
-        const name = 'csrftoken';
-        const cookieValue = document.cookie.match('(^|;)\s*' + name + '\s*=\s*([^;]+)');
-        return cookieValue ? cookieValue.pop() : '';
     }
 
     function markRead(roomId) {
