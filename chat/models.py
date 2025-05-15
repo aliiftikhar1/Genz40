@@ -117,3 +117,5 @@ class ChatNotification(models.Model):
         if self.count > 0:
             self.count = 0
             self.save(update_fields=['count', 'last_updated'])
+
+

@@ -16,8 +16,7 @@ def create_community_chatroom(sender, instance, created, **kwargs):
 @receiver(post_save, sender=PostCommunityJoiners)
 def notify_community_joiner(sender, instance, created, **kwargs):
     if created:
-        community = PostCommunity.objects.filter().first()
-        chat_room = ChatRoom.objects.filter(community=community).first()
+        chat_room = ChatRoom.objects.filter(community=instance.community).first()
         if chat_room:
             Message.objects.create(
                 chat_room=chat_room,

@@ -421,167 +421,66 @@
             </a>
         </div>
         
-        <div class="container">
-            <h1 class="hero-title text-center mb-5 mt-5">{{TitleData.heading}}</h1>
-            <div class="car-image-container">
-                <img src="{{ Images.0.url }}" alt="Red Shoreline LM Coupe" class="img-fluid">
+        <section>
+            <div class="container">
+                <!-- Dynamic Hero Title -->
+                <h1 class="hero-title text-center mb-5 mt-5">{{ TitleData.heading }}</h1>
+                
+                <!-- Title Image -->
+                {% if TitleData.title_image %}
+                    <div class="car-image-container">
+                        <img src="{{ TitleData.title_image }}" alt="Title Image" class="img-fluid">
+                    </div>
+                {% endif %}
+                
+                <!-- Subheading Text -->
+                <div class="logo-container text-center mt-4">
+                    <h2 class="shoreline-text">{{ TitleData.subheading }}</h2>
+                </div>
             </div>
-            <div class="logo-container text-center mt-4">
-                <h2 class="shoreline-text">{{TitleData.subheading}}</h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- First Description Section -->
-    <section class="description-section">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.0.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- Second Car Image Section -->
-    <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.1.url }}" alt="Silver Shoreline LM Coupe" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Second Description Section -->
-    <section class="description-section">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.1.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- Third Car Image Section -->
-    <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.2.url }}" alt="Green Shoreline LM Coupe" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Third Description Section -->
-    <section class="description-section">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.2.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- Interior Image Section -->
-    <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.3.url }}" alt="Interior of Shoreline LM Coupe" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Fourth Description Section -->
-    <section class="description-section">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.3.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- Comparison Image Section -->
-    <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.4.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Fifth Description Section -->
-    <section class="description-section mb-5">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.4.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-     <!-- Comparison Image Section -->
-     <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.5.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Sixth Description Section -->
-    <section class="description-section mb-5">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.5.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-     <!-- Comparison Image Section -->
-     <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.6.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Seventh Description Section -->
-    <section class="description-section mb-5">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.6.details}}
-                </h2>
-            </div>
-        </div>
-    </section>
-
-
-     <!-- Comparison Image Section -->
-     <section class="car-section">
-        <div class="container">
-            <div class="car-image-container">
-                <img src="{{ Images.7.url }}" alt="Comparison of chassis and completed car" class="img-fluid">
-            </div>
-        </div>
-    </section>
-
-    <!-- Tenth Description Section -->
-    <section class="description-section mb-5">
-        <div class="container">
-            <div class="description-card">
-                <h2 class="text-center">
-                    {{CardData.7.details}}
-                </h2>
-            </div>
-        </div>
+        </section>
+        
+        <!-- Loop Through Combined Data -->
+        {% for item in combined_data %}
+            {% if item.image and item.card %}
+                <!-- Paired Image + Text -->
+                <section class="car-section">
+                    <div class="container">
+                        <div class="car-image-container">
+                            <img src="{{ item.image.url }}" alt="Car Image" class="img-fluid">
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="description-section mb-5">
+                    <div class="container">
+                        <div class="description-card">
+                            <h2 class="text-center">{{ item.card.details }}</h2>
+                        </div>
+                    </div>
+                </section>
+                
+            {% elif item.image %}
+                <!-- Orphaned Image -->
+                <section class="car-section">
+                    <div class="container">
+                        <div class="car-image-container">
+                            <img src="{{ item.image.url }}" alt="Car Image" class="img-fluid">
+                        </div>
+                    </div>
+                </section>
+                
+            {% elif item.card %}
+                <!-- Orphaned Text -->
+                <section class="description-section mb-5">
+                    <div class="container">
+                        <div class="description-card">
+                            <h2 class="text-center">{{ item.card.details }}</h2>
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        {% endfor %}
     </section>
 
     <!-- Gallery Section -->

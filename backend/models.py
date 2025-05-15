@@ -1070,3 +1070,22 @@ class ReservationFeaturesPayment(models.Model):
 
 
 
+class LearnMoreContent(models.Model):
+    car = models.ForeignKey(PostNavItem, on_delete=models.CASCADE)
+    heading = models.CharField(max_length=255)
+    subheading = models.CharField(max_length=255)
+    title_image = models.ImageField(upload_to='learn_more_images/')
+    # Additional image fields
+    image1 = models.ImageField(upload_to='learn_more_images/', blank=True, null=True)
+    image2 = models.ImageField(upload_to='learn_more_images/', blank=True, null=True)
+    image3 = models.ImageField(upload_to='learn_more_images/', blank=True, null=True)
+    # Additional text fields
+    text1 = models.TextField(blank=True, null=True)
+    text2 = models.TextField(blank=True, null=True)
+    text3 = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.car.title} - {self.subheading}"
+

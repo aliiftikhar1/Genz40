@@ -952,7 +952,7 @@
                 let avatarContent = '';
     
                 if (chatroom.chat_type === 'community') {
-                    name = chatroom.community?.name || 'Community Chat';
+                    name = chatroom.subject || 'Community Chat';
                     avatarContent = 'C';
                 } else if (state.userRole === 'customer') {
                     name = chatroom.subject;

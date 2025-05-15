@@ -9,7 +9,7 @@ from backend.models import (
     CarConfiguration, BookedPackage, BookedPackageImage, DynamicPackages,
     FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus,
     PackageFeatureBuilder, PostCommunityJoiners, PostContactUs,
-    ReservationFeaturesPayment, ReservationNewFeatures
+    ReservationFeaturesPayment, ReservationNewFeatures, LearnMoreContent
 )
 
 # Custom User Admin
@@ -396,3 +396,11 @@ class ChatNotificationAdmin(admin.ModelAdmin):
     list_display = ('user', 'chat_room', 'count', 'last_updated')
     list_filter = ('last_updated',)
     raw_id_fields = ('user', 'chat_room')
+
+@admin.register(LearnMoreContent)
+class LearnMoreContentAdmin(admin.ModelAdmin):
+    list_display = ('car', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('car__title',)
+
+

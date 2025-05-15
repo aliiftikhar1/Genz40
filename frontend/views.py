@@ -19,6 +19,7 @@ from django.urls import path
 from django.views import View
 from django.urls import reverse
 from backend.models import BookedPackage, ReservationNewFeatures, ReservationFeaturesPayment, DynamicPackages, FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder
+from backend.models import LearnMoreContent
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -170,41 +171,63 @@ def tech_specs(request, slug):
 
 def learn_more(request, slug):
     items = get_object_or_404(PostNavItem, slug=slug)
-    allitems = PostNavItem.objects.all()  
+    allitems = PostNavItem.objects.all()
     package_details = DynamicPackages.objects.filter(car_model=items).order_by('position')
-    
-    # Existing image lists
-    markI_images = [
-        {"id": 1, "url": static('learn_more_images/Mark I/Turntable.41.png')},
-        {"id": 2, "url": static('learn_more_images/Mark I/Turntable.35.png')},
-        {"id": 3, "url": static('learn_more_images/Mark I/Turntable.36.png')},
-        {"id": 4, "url": static('learn_more_images/Mark I/Turntable.37.png')},
-        {"id": 5, "url": static('learn_more_images/Mark I/Turntable.38.png')},
-        {"id": 6, "url": static('learn_more_images/Mark I/Turntable.39.png')},
-        {"id": 7, "url": static('learn_more_images/Mark I/Turntable.40.png')},
-        {"id": 8, "url": static('learn_more_images/Mark I/Turntable.34.png')},
-    ]
-    markII_images = [
-        {"id": 1, "url": static('learn_more_images/Mark II/1.8.png')},
-        {"id": 2, "url": static('learn_more_images/Mark II/1.2.png')},
-        {"id": 3, "url": static('learn_more_images/Mark II/1.3.png')},
-        {"id": 4, "url": static('learn_more_images/Mark II/1.4.png')},
-        {"id": 5, "url": static('learn_more_images/Mark II/1.5.png')},
-        {"id": 6, "url": static('learn_more_images/Mark II/1.6.png')},
-        {"id": 7, "url": static('learn_more_images/Mark II/1.7.png')},
-        {"id": 8, "url": static('learn_more_images/Mark II/1.1.png')},
-    ]
-    markIV_images = [
-        {"id": 1, "url": static('learn_more_images/Mark IV/1.16.png')},
-        {"id": 2, "url": static('learn_more_images/Mark IV/1.10.png')},
-        {"id": 3, "url": static('learn_more_images/Mark IV/1.11.png')},
-        {"id": 4, "url": static('learn_more_images/Mark IV/1.12.png')},
-        {"id": 5, "url": static('learn_more_images/Mark IV/1.13.png')},
-        {"id": 6, "url": static('learn_more_images/Mark IV/1.14.png')},
-        {"id": 7, "url": static('learn_more_images/Mark IV/1.15.png')},
-        {"id": 8, "url": static('learn_more_images/Mark IV/1.9.png')},
-    ]
-    
+
+    # Fetch LearnMoreContent for the current car
+    learn_more_contents = LearnMoreContent.objects.filter(car=items)
+
+    # Prepare Images and CardData from database
+    Images = []
+    CardData = []
+
+    for content in learn_more_contents:
+        # Extract image1 to image3 dynamically
+        for i in range(1, 4):
+            img_field = getattr(content, f'image{i}')
+            if img_field:
+                Images.append({"id": len(Images) + 1, "url": img_field.url})
+
+        # Extract text1 to text3 dynamically
+        for i in range(1, 4):
+            txt_field = getattr(content, f'text{i}')
+            if txt_field:
+                CardData.append({"id": len(CardData) + 1, "details": txt_field})
+
+    # Combine images and card texts
+    combined_data = []
+    min_length = min(len(Images), len(CardData))
+
+    for i in range(min_length):
+        combined_data.append({
+            'image': Images[i],
+            'card': CardData[i]
+        })
+
+    # Append remaining items if lists are unequal
+    if len(Images) > len(CardData):
+        for i in range(min_length, len(Images)):
+            combined_data.append({'image': Images[i]})
+    elif len(CardData) > len(Images):
+        for i in range(min_length, len(CardData)):
+            combined_data.append({'card': CardData[i]})
+
+    # Load heading, subheading and title image from the first LearnMoreContent entry
+    TitleData = {
+        "heading": items.title,
+        "subheading": items.title,
+        "title_image": None
+    }
+
+    if learn_more_contents.exists():
+        first_content = learn_more_contents.first()
+        TitleData = {
+            "heading": first_content.heading or TitleData["heading"],
+            "subheading": first_content.subheading or TitleData["subheading"],
+            "title_image": first_content.title_image.url if first_content.title_image else None
+        }
+
+    # Gallery images (can be moved to DB later)
     markI_gallery = [
         {"id": 1, "url": static('learn_more_images/Gallery/Mark I/IMG_1883.png'), "label": "body"},
         {"id": 2, "url": static('learn_more_images/Gallery/Mark I/IMG_1884.png'), "label": "body"},
@@ -221,14 +244,14 @@ def learn_more(request, slug):
         {"id": 13, "url": static('learn_more_images/Gallery/Mark I/IMG_1909.png'), "label": "intermediate"},
         {"id": 14, "url": static('learn_more_images/Gallery/Mark I/IMG_1910.png'), "label": "intermediate"},
         {"id": 15, "url": static('learn_more_images/Gallery/Mark I/IMG_1911.png'), "label": "intermediate"},
-         {"id": 16, "url": static('learn_more_images/Gallery/Mark I/IMG_1912.png'), "label": "intermediate"},
+        {"id": 16, "url": static('learn_more_images/Gallery/Mark I/IMG_1912.png'), "label": "intermediate"},
         {"id": 17, "url": static('learn_more_images/Gallery/Mark I/IMG_1914.png'), "label": "intermediate"},
         {"id": 18, "url": static('learn_more_images/Gallery/Chassis/IMG_1916.jpg'), "label": "chassis"},
         {"id": 19, "url": static('learn_more_images/Gallery/Chassis/IMG_1917.jpg'), "label": "chassis"},
-         {"id": 20, "url": static('learn_more_images/Gallery/Chassis/IMG_1918.jpg'), "label": "chassis"},
+        {"id": 20, "url": static('learn_more_images/Gallery/Chassis/IMG_1918.jpg'), "label": "chassis"},
         {"id": 21, "url": static('learn_more_images/Gallery/Chassis/IMG_1919.jpg'), "label": "chassis"},
     ]
-    
+
     markII_gallery = [
         {"id": 1, "url": static('learn_more_images/Gallery/Mark II/IMG_1872.jpg'), "label": "body"},
         {"id": 2, "url": static('learn_more_images/Gallery/Mark II/IMG_1873.jpg'), "label": "body"},
@@ -245,86 +268,27 @@ def learn_more(request, slug):
         {"id": 13, "url": static('learn_more_images/Gallery/Chassis/IMG_1919.jpg'), "label": "chassis"},
     ]
 
-
-    markItitleData = {
-        "heading": "IMPROVED, REFINED & MORE POWERFUL",
-        "subheading": "Mark I"
-    }
-    markIItitleData = {
-        "heading": "Truly PERSONALIZED GT40",
-        "subheading": "Mark II"
-    }
-    markIVtitleData = {
-        "heading": "ENGINEERED FOR TRACK",
-        "subheading": "Mark IV"
-    }
-
-    markIcardData = [
-        {"id":1 , "details":"It's time to take the sports car back to its racing roots. For inspiration, we looked to the last purpose-built racecars that could still be driven on public roads: sports prototypes of the 1960s." },
-        {"id":2 , "details":"Genz Mark I combines heritage craftsmanship with modern engineering, delivering raw speed and timeless beauty in a single, thrilling package made for road and track adventures." },
-        {"id":3 , "details":"Designed with aerodynamic precision, Genz Mark I cuts through the air effortlessly, paying tribute to the sleek silhouettes of legendary 1960s endurance racers." },
-        {"id":4 , "details":"Every curve and line on Genz Mark I tells a story of racing dominance, a living piece of motorsport history reimagined for today’s drivers." },
-        {"id":5 , "details":"Lightweight materials and a hand-built chassis ensure Genz Mark I delivers an authentic, visceral driving experience that modern supercars have forgotten." },
-        {"id":6 , "details":"Powered by a roaring V8 engine, Genz Mark I offers the kind of unfiltered, pure mechanical performance that defined an entire generation of racers." },
-        {"id":7 , "details":"The cockpit of Genz Mark I blends vintage aesthetics with modern touches, offering both a nostalgic feel and cutting-edge performance instrumentation." },
-        {"id":8 , "details":"Genz Mark I was made for purists: no artificial filters, no compromises, just pure speed and the thrill of being one with the machine." },
-    ]
-
-    markIIcardData = [
-        {"id":1 , "details":"Genz Mark II refines the racing spirit with next-generation aerodynamics, carving out an edge over the competition without sacrificing its vintage soul." },
-        {"id":2 , "details":"Featuring advanced suspension tuning, Genz Mark II hugs every curve of the track, offering unmatched control and responsiveness to fearless drivers." },
-        {"id":3 , "details":"With its hand-stitched leather interior and minimalist dashboard, Genz Mark II bridges the gap between modern luxury and classic racer grit." },
-        {"id":4 , "details":"Equipped with adaptive cooling systems, Genz Mark II keeps the powertrain at peak performance, no matter how hard you push it." },
-        {"id":5 , "details":"The Genz Mark II’s lightweight aluminum frame ensures blistering acceleration, bringing an era of open-road racers roaring back to life." },
-        {"id":6 , "details":"An upgraded braking system provides race-level stopping power, so Genz Mark II drivers can command the road with absolute confidence." },
-        {"id":7 , "details":"Each Genz Mark II is tailored for passionate collectors, offering personalized tuning and performance settings for an individual driving masterpiece." },
-        {"id":8 , "details":"The fusion of retro race design and futuristic materials makes Genz Mark II not just a car, but a tribute to automotive excellence." },
-    ]
-
-    markIVcardData = [
-        {"id":1 , "details":"Genz Mark IV marks the future of classic sports cars, blending carbon-fiber strength with the unmistakable silhouette of its 1960s ancestors." },
-        {"id":2 , "details":"Inside Genz Mark IV, digital racing telemetry meets hand-crafted analog controls, giving drivers the best of both worlds at their fingertips." },
-        {"id":3 , "details":"A revolutionary active aero package adapts to speed and cornering forces, ensuring Genz Mark IV stays planted during the most aggressive drives." },
-        {"id":4 , "details":"Genz Mark IV’s hybrid-assisted powertrain delivers instant torque while maintaining the soul-stirring growl of a traditional race-bred engine." },
-        {"id":5 , "details":"Designed to dominate both street and circuit, Genz Mark IV is the pinnacle of reborn racing DNA with modern supercar intelligence." },
-        {"id":6 , "details":"The bold, low-slung design of Genz Mark IV is more than beautiful—it’s functional, channeling airflow for maximum stability and cooling." },
-        {"id":7 , "details":"Every Genz Mark IV is built by artisans, using both old-world techniques and 21st-century technology for an uncompromising sports machine." },
-        {"id":8 , "details":"Genz Mark IV is the ultimate tribute: a car where raw racing spirit meets future-ready technology, reimagining legends for a new era." },
-    ]
-
-    
     markIV_gallery = []
-    
-    Images = []
-    TitleData = {}
-    CardData = []
+
+    # Choose gallery based on slug
     GalleryImages = []
     if slug == 'Mark-I':
-        Images = markI_images
         GalleryImages = markI_gallery
-        TitleData = markItitleData
-        CardData = markIcardData
     elif slug == 'Mark-II':
-        Images = markII_images
         GalleryImages = markII_gallery
-        TitleData = markIItitleData
-        CardData = markIIcardData
     elif slug == 'Mark-IV':
-        Images = markIV_images
         GalleryImages = markIV_gallery
-        TitleData = markIVtitleData
-        CardData = markIVcardData
-    
+
     context = {
         'allitems': allitems,
         'items': items,
         'package_details': package_details,
-        'Images': Images,
         'GalleryImages': GalleryImages,
         'TitleData': TitleData,
-        'CardData': CardData
+        'combined_data': combined_data,
+        'learn_more_contents': learn_more_contents
     }
-    
+
     return render(request, 'public/LearnMore.html', context)
 
 def about(request):
@@ -454,73 +418,56 @@ def get_register_community(request):
     if request.method == 'POST':
         try:
             email = request.POST.get('email')
-            user_exists = CustomUser.objects.filter(email=email).exists()
+            phone_number = request.POST.get('phone_number')  # Added phone number check
 
-            with transaction.atomic():
-                if not user_exists:
-                    form = RegisterForm(request.POST)
-                    if form.is_valid():
-                        user = form.save(commit=False)
-                        user.set_password(request.POST['password1'])
-                        user.is_active = True
-                        user.save()
+            # Check if user already exists by email OR phone number
+            if CustomUser.objects.filter(email=email).exists() or \
+               CustomUser.objects.filter(phone_number=phone_number).exists():
+                return JsonResponse({
+                    "message": "User with this email or phone number already exists.",
+                    "is_success": False
+                }, status=400)
 
-                        # Add user to community
-                        community = PostCommunity.objects.first()
-                        if not community:
-                            return JsonResponse({
-                                "message": "No community exists.",
-                                "is_success": False
-                            }, status=400)
+            form = RegisterForm(request.POST)
+            if form.is_valid():
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.set_password(request.POST['password'])
+                    user.is_active = True
 
-                        PostCommunityJoiners.objects.create(
-                            user=user,
-                            community=community,
-                            is_active=True
-                        )
+                    # Format phone number if provided
+                    if user.phone_number:
+                        user.phone_number = ''.join(filter(str.isdigit, user.phone_number))[:14]
 
-                        # Add user to community chatroom
-                        add_user_to_community_chatroom(user, community)
+                    # Truncate zip_code if needed
+                    if hasattr(user, 'zip_code') and user.zip_code:
+                        user.zip_code = user.zip_code[:5]
 
-                        return JsonResponse({
-                            "message": "Thank You for Joining. You have been added to the community chatroom!",
-                            "is_success": True
+                    user.save()
+
+                    # Add user to all communities
+                    add_user_to_all_communities(user)
+
+                    # 🔥 Send activation/welcome email here
+                    try:
+                        html_content = render_to_string("email/welcome_email.html", {
+                            'user': user,
+                            'password': request.POST['password1']
                         })
-                    else:
-                        return JsonResponse({
-                            "message": "Registration failed. Please check the form data.",
-                            "is_success": False,
-                            "errors": form.errors
-                        }, status=400)
-                else:
-                    # Handle existing user
-                    user = CustomUser.objects.get(email=email)
-                    community = PostCommunity.objects.first()
-                    if not community:
-                        return JsonResponse({
-                            "message": "No community exists.",
-                            "is_success": False
-                        }, status=400)
+                        send_activation_email(request, user, request.POST['password1'])
+                    except Exception as e:
+                        logger.warning(f"Failed to send welcome email: {str(e)}")
 
-                    if not PostCommunityJoiners.objects.filter(user=user, community=community).exists():
-                        PostCommunityJoiners.objects.create(
-                            user=user,
-                            community=community,
-                            is_active=True
-                        )
-
-                        # Add user to community chatroom
-                        add_user_to_community_chatroom(user, community)
-
-                        return JsonResponse({
-                            "message": "Successfully added to the community and chatroom.",
-                            "is_success": True
-                        })
-                    else:
-                        return JsonResponse({
-                            "message": "Already joined the community.",
-                            "is_success": False
-                        })
+                    return JsonResponse({
+                        "message": "Thank You for Joining. You have been added to the community chatrooms! A welcome email has been sent.",
+                        "is_success": True
+                    })
+            else:
+                return JsonResponse({
+                    "message": "Registration failed. Please check the form data.",
+                    "is_success": False,
+                    "errors": form.errors
+                }, status=400)
 
         except Exception as e:
             logger.error(f"Error in community registration: {str(e)}", exc_info=True)
@@ -589,11 +536,13 @@ def send_welcome_message(chatroom, user):
             message_type='text'
         )
 
-        notification = ChatNotification.objects.create(
-                        user = user,
-                        chat_room = chatroom,
-                        count = 1,
-                    )
+        notification, created = ChatNotification.objects.get_or_create(
+            user=user,
+            chat_room=chatroom,
+            defaults={'count': 1}
+        )
+        if not created:
+            notification.increment()
                     
         channel_layer = channels.layers.get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -706,7 +655,7 @@ def get_register(request):
         send_activation_email(request, user, request.POST['password1'])
 
         # Add to community
-        add_user_to_community(user)
+        add_user_to_all_communities(user)
 
         return JsonResponse({
             "message": "Successfully added. Please check mailbox for password.",
@@ -721,22 +670,43 @@ def get_register(request):
             "is_success": False
         })
     
-def add_user_to_community(user):
+# def add_user_to_community(user):
+#     try:
+#         community = PostCommunity.objects.first()
+#         if not community:
+#             print("No community found")
+#             return
+
+#         PostCommunityJoiners.objects.create(
+#             user=user,
+#             community=community,
+#             is_active=True
+#         )
+
+#         add_user_to_community_chatroom(user, community)
+#     except Exception as e:
+#         print("Error in add_user_to_community:", str(e))
+
+def add_user_to_all_communities(user):
     try:
-        community = PostCommunity.objects.first()
-        if not community:
-            print("No community found")
+        communities = PostCommunity.objects.all()
+        if not communities.exists():
+            logger.warning("No communities found when adding user.")
             return
 
-        PostCommunityJoiners.objects.create(
-            user=user,
-            community=community,
-            is_active=True
-        )
 
-        add_user_to_community_chatroom(user, community)
+        for community in communities:
+            # Add user to each community if not already joined
+            joiner, created = PostCommunityJoiners.objects.get_or_create(
+                user=user,
+                community=community,
+                defaults={'is_active': True}
+            )
+            if created:
+                add_user_to_community_chatroom(user, community)
     except Exception as e:
-        print("Error in add_user_to_community:", str(e))
+        logger.error(f"Error adding user to all communities: {str(e)}", exc_info=True)
+        raise
 
 
 def activate(request, uidb64, token):

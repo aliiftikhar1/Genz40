@@ -19,6 +19,90 @@
         text-align:start;
     }
 
+    /* Password validation styles */
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .password-requirements-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .requirement {
+        color: #dc3545;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
+    }
+
+    /* Form input styles */
+    .form-control {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #fff;
+    }
+
+    .form-control:focus {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Mobile form input styles */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #fff;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="tel"]:focus {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    /* Password toggle icon styles */
+    .password-toggle, .confirm-password-toggle {
+        color: #fff;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover, .confirm-password-toggle:hover {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Password match message styles */
+    #community-password-match, #community-password-match-mobile {
+        transition: color 0.3s ease;
+    }
+
+    /* Submit button styles */
+    #community-submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 
     /* Services Section */
     .services-section {
@@ -297,6 +381,26 @@
         .faq-section { padding: 2rem 0; }
         .card-car-image-container { height: 12rem; }
     }
+
+    /* Autofill fix for Chrome, Safari, Edge */
+    input:-webkit-autofill,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -webkit-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    /* Autofill fix for Firefox */
+    input:-moz-autofill {
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -moz-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+    }
 </style>
 {% endblock header %}
 
@@ -490,7 +594,7 @@
                             </svg>
                         </button>
                         <div id="faq2" class="custom-faq-answer">
-                            We sell all our cars online through our platform. This let’s us keep the pricing as low as possible
+                            We sell all our cars online through our platform. This let's us keep the pricing as low as possible
                         </div>
                     </div>
                     
@@ -641,6 +745,40 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password" name="password" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                            <div class="password-requirements text-dark mt-2">
+                                                <p class="mb-1">Password must contain:</p>
+                                                <div class="password-requirements-grid">
+                                                    <div id="community-length" class="requirement">✓ At least 8 characters</div>
+                                                    <div id="community-uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                                    <div id="community-number" class="requirement">✓ At least 1 number</div>
+                                                    <div id="community-special" class="requirement">✓ At least 1 special character</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Confirm Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password-confirm" name="password_confirm" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                            <div id="community-password-match" class="mt-1 text-dark" style="font-size: 0.8rem;"></div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-12 mb-2">
                                         <label class="form-check-label text-dark">
                                             By continuing, you agree to our
@@ -652,7 +790,7 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                     </div>
                                     <div class="col-md-12 mb-0">
                                         <div class="d-grid">
-                                            <button type="submit" class="btn btn-success">
+                                            <button type="submit" class="btn btn-success" id="community-submit-btn">
                                                 Join now
                                                 <span class="spinner-border spinner-border-sm" id="pro"
                                                       role="status" aria-hidden="true"
@@ -787,6 +925,40 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-mobile" name="password" class="ps-5 bg-transparent text-dark" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div class="password-requirements text-dark mt-2">
+                                            <p class="mb-1">Password must contain:</p>
+                                            <div class="password-requirements-grid">
+                                                <div id="community-length-mobile" class="requirement">✓ At least 8 characters</div>
+                                                <div id="community-uppercase-mobile" class="requirement">✓ At least 1 uppercase letter</div>
+                                                <div id="community-number-mobile" class="requirement">✓ At least 1 number</div>
+                                                <div id="community-special-mobile" class="requirement">✓ At least 1 special character</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Confirm Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-confirm-mobile" name="password_confirm" class="ps-5 bg-transparent text-dark" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div id="community-password-match-mobile" class="mt-1 text-dark" style="font-size: 0.8rem;"></div>
+                                    </div>
+                                </div>
                                 <div class="col-md-12 mb-2">
                                     <label class="form-check-label text-dark">
                                         By continuing, you agree to our
@@ -875,6 +1047,10 @@ GENZCars supply every single part required to complete the car. Buy online or em
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response.message);
+                    // Redirect to login page after successful registration
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_login' %}");
+                    }, 2000); // Wait 2 seconds to show the success message
                 } else {
                     toastr.error(response.message);
                 }
@@ -882,7 +1058,11 @@ GENZCars supply every single part required to complete the car. Buy online or em
                 $('#pro').hide();
             },
             error: function (response) {
-                alert(response["error"]);
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
                 $('#pro').hide();
             }
         });
@@ -904,6 +1084,10 @@ GENZCars supply every single part required to complete the car. Buy online or em
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response.message);
+                    // Redirect to login page after successful registration
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_login' %}");
+                    }, 2000); // Wait 2 seconds to show the success message
                 } else {
                     toastr.error(response.message);
                 }
@@ -911,7 +1095,11 @@ GENZCars supply every single part required to complete the car. Buy online or em
                 $('#pro_mob').hide();
             },
             error: function (response) {
-                alert(response["error"]);
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
                 $('#pro_mob').hide();
             }
         });
@@ -1018,6 +1206,230 @@ GENZCars supply every single part required to complete the car. Buy online or em
         {% endif %}
         {% endfor %}
         window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+
+<script>
+    // Password validation for community form
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('community-password');
+        const confirmPasswordInput = document.getElementById('community-password-confirm');
+        const submitButton = document.getElementById('community-submit-btn');
+        const passwordMatch = document.getElementById('community-password-match');
+        
+        // Password requirement elements
+        const lengthReq = document.getElementById('community-length');
+        const uppercaseReq = document.getElementById('community-uppercase');
+        const numberReq = document.getElementById('community-number');
+        const specialReq = document.getElementById('community-special');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            // Check length
+            if(password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+            
+            // Check uppercase
+            if(/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+            
+            // Check number
+            if(/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+            
+            // Check special character
+            if(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                specialReq.classList.add('valid');
+            } else {
+                specialReq.classList.remove('valid');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('.password-toggle');
+        const confirmPasswordToggle = document.querySelector('.confirm-password-toggle');
+        
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        confirmPasswordToggle.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        // Initialize validation on page load
+        validatePassword();
+        checkPasswordMatch();
+        
+        // Add event listeners
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        // Handle autofill
+        passwordInput.addEventListener('change', validatePassword);
+        confirmPasswordInput.addEventListener('change', checkPasswordMatch);
+    });
+
+    // Password validation for mobile form
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('community-password-mobile');
+        const confirmPasswordInput = document.getElementById('community-password-confirm-mobile');
+        const submitButton = document.querySelector('#community-form-mobile button[type="submit"]');
+        const passwordMatch = document.getElementById('community-password-match-mobile');
+        
+        // Password requirement elements
+        const lengthReq = document.getElementById('community-length-mobile');
+        const uppercaseReq = document.getElementById('community-uppercase-mobile');
+        const numberReq = document.getElementById('community-number-mobile');
+        const specialReq = document.getElementById('community-special-mobile');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            // Check length
+            if(password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+            
+            // Check uppercase
+            if(/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+            
+            // Check number
+            if(/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+            
+            // Check special character
+            if(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                specialReq.classList.add('valid');
+            } else {
+                specialReq.classList.remove('valid');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('#community-form-mobile .password-toggle');
+        const confirmPasswordToggle = document.querySelector('#community-form-mobile .confirm-password-toggle');
+        
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        confirmPasswordToggle.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        // Initialize validation on page load
+        validatePassword();
+        checkPasswordMatch();
+        
+        // Add event listeners
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        // Handle autofill
+        passwordInput.addEventListener('change', validatePassword);
+        confirmPasswordInput.addEventListener('change', checkPasswordMatch);
     });
 </script>
 
