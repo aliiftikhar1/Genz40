@@ -452,15 +452,16 @@ def get_register_community(request):
                     try:
                         html_content = render_to_string("email/welcome_email.html", {
                             'user': user,
-                            'password': request.POST['password1']
+                            'password': request.POST['password']
                         })
-                        send_activation_email(request, user, request.POST['password1'])
+                        send_activation_email(request, user, request.POST['password'])
                     except Exception as e:
                         logger.warning(f"Failed to send welcome email: {str(e)}")
 
                     return JsonResponse({
                         "message": "Thank You for Joining. You have been added to the community chatrooms! A welcome email has been sent.",
-                        "is_success": True
+                        "is_success": True,
+                        "user_id": str(user.id)  # Convert UUID to string
                     })
             else:
                 return JsonResponse({
