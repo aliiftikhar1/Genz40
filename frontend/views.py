@@ -517,7 +517,12 @@ def add_user_to_community_chatroom(user, community):
         if not chatroom.members.filter(id=user.id).exists():
             chatroom.members.add(user)
             
-        send_welcome_message(chatroom, user)
+        try:
+            send_welcome_message(chatroom, user)
+        except Exception as e:
+            logger.error(f"Error sending welcome message: {str(e)}", exc_info=True)
+            # Continue even if welcome message fails
+            pass
 
     except Exception as e:
         logger.error(f"Error adding user to community chatroom: {str(e)}", exc_info=True)
@@ -547,20 +552,20 @@ def send_welcome_message(chatroom, user):
                     
         channel_layer = channels.layers.get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-                        f"chat_{chatroom.id}",
-                        {
-                            "type": "chat_message",
-                            "message": {
-                                "room_id": chatroom.id,
-                                "sender_id": admin_user.id,
-                                "sender_name": "Support Team",
-                                "sender_role": "admin",
-                                "message": welcome_message.content,
-                                "timestamp": welcome_message.timestamp.isoformat(),
-                                "is_read": welcome_message.is_read,
-                            }
-                        }
-                    )
+            f"chat_{str(chatroom.id)}",
+            {
+                "type": "chat_message",
+                "message": {
+                    "room_id": str(chatroom.id),
+                    "sender_id": str(admin_user.id) if admin_user else None,
+                    "sender_name": "Support Team",
+                    "sender_role": "admin",
+                    "message": welcome_message.content,
+                    "timestamp": welcome_message.timestamp.isoformat(),
+                    "is_read": welcome_message.is_read,
+                }
+            }
+        )
     except Exception as e:
         logger.error(f"Error sending welcome message: {str(e)}", exc_info=True)
         raise
@@ -695,7 +700,6 @@ def add_user_to_all_communities(user):
             logger.warning("No communities found when adding user.")
             return
 
-
         for community in communities:
             # Add user to each community if not already joined
             joiner, created = PostCommunityJoiners.objects.get_or_create(
@@ -704,7 +708,12 @@ def add_user_to_all_communities(user):
                 defaults={'is_active': True}
             )
             if created:
-                add_user_to_community_chatroom(user, community)
+                try:
+                    add_user_to_community_chatroom(user, community)
+                except Exception as e:
+                    logger.error(f"Error adding user to community chatroom: {str(e)}", exc_info=True)
+                    # Continue with other communities even if one fails
+                    continue
     except Exception as e:
         logger.error(f"Error adding user to all communities: {str(e)}", exc_info=True)
         raise
@@ -1105,7 +1114,7 @@ def stripe_webhook(request):
         send_mail(
         subject=mail_subject,
         message=plain_text,
-        from_email=settings.EMAIL_HOST_USER,
+        from_email=settings.EMAIL_FROM,
         recipient_list=[settings.ADMIN_EMAIL],
         html_message=html_content, 
          )
