@@ -444,11 +444,63 @@ def get_register_community(request):
                         user.zip_code = user.zip_code[:5]
 
                     user.save()
+                    # Automatically log in the user after successful registration
+                    from django.contrib.auth import login, authenticate
+
+                    # Authenticate the user (using email as username)
+                    user = authenticate(request, username=user.email, password=request.POST['password'])
+                    if user is not None:
+                        login(request, user)
+
+                    admin_user = CustomUser.objects.filter(is_staff=True).first()
+
+                    # Create chatroom
+                    chatroom = ChatRoom.objects.create(
+                        customer=user,
+                        admin=admin_user,
+                        room_name=f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
+                        subject="Genz40-Chat Support",
+                        created_at=timezone.now()
+                    )
+
+                    # Create welcome message
+                    welcome_message = Message.objects.create(
+                        chat_room=chatroom,
+                        sender=admin_user,
+                        content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
+                        timestamp=timezone.now(),
+                        is_read=False
+                    )
+
+                    # Create notification
+                    ChatNotification.objects.create(
+                        user=user,
+                        chat_room=chatroom,
+                        count=1,
+                    )
+
+                    # Send WebSocket welcome message
+                    channel_layer = channels.layers.get_channel_layer()
+                    async_to_sync(channel_layer.group_send)(
+                        f"chat_{str(chatroom.id)}",
+                        {
+                            "type": "chat_message",
+                            "message": {
+                                "room_id": str(chatroom.id),
+                                "sender_id": str(admin_user.id) if admin_user else None,
+                                "sender_name": "Support Team",
+                                "sender_role": "admin",
+                                "message": welcome_message.content,
+                                "timestamp": welcome_message.timestamp.isoformat(),
+                                "is_read": welcome_message.is_read,
+                            }
+                        }
+                    )
 
                     # Add user to all communities
                     add_user_to_all_communities(user)
 
-                    # 🔥 Send activation/welcome email here
+                    # Send activation/welcome email
                     try:
                         html_content = render_to_string("email/welcome_email.html", {
                             'user': user,
@@ -676,22 +728,6 @@ def get_register(request):
             "is_success": False
         })
     
-# def add_user_to_community(user):
-#     try:
-#         community = PostCommunity.objects.first()
-#         if not community:
-#             print("No community found")
-#             return
-
-#         PostCommunityJoiners.objects.create(
-#             user=user,
-#             community=community,
-#             is_active=True
-#         )
-
-#         add_user_to_community_chatroom(user, community)
-#     except Exception as e:
-#         print("Error in add_user_to_community:", str(e))
 
 def add_user_to_all_communities(user):
     try:
@@ -1244,9 +1280,12 @@ def profile_settings(request):
 def customer_message(request):
     return render(request, 'customer/message/message.html', {'is_footer_required': True})
 
-@login_required
+
 def customer_community_message(request):
-    return render(request, 'customer/message/communityChat.html', {'is_footer_required': True})
+    if request.user.is_authenticated:
+        return render(request, 'customer/message/communityChat.html', {'is_footer_required': True})
+    else:
+        return render(request, 'public/community_register.html', {'is_footer_required': True})
 
 @login_required
 def email_verify_from_dashboard(request):

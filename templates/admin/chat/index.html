@@ -615,7 +615,7 @@ adminFileInput?.addEventListener('change', (e) => {
                         <div class="admin-chat-preview">${lastMessagePreview}</div>
                     </div>
                     <div class="admin-chat-meta">
-                        <div class="admin-chat-time">${chatroom.last_message ? formatTimestamp(chatroom.last_message.timestamp) : ''}</div>
+                        <div class="admin-chat-time">${chatroom.last_message ? chatroom.last_message.timestamp : ''}</div>
                         ${chatroom.unread_count > 0 ? `<div class="admin-chat-unread">${chatroom.unread_count}</div>` : ''}
                     </div>
                 </div>

@@ -1047,9 +1047,9 @@ GENZCars supply every single part required to complete the car. Buy online or em
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response.message);
-                    // Redirect to login page after successful registration
+                    // Redirect to community chat page after successful registration
                     setTimeout(function() {
-                        window.location.replace("{% url 'customer_login' %}");
+                        window.location.replace("{% url 'customer_community_message' %}");
                     }, 2000); // Wait 2 seconds to show the success message
                 } else {
                     toastr.error(response.message);
@@ -1084,9 +1084,9 @@ GENZCars supply every single part required to complete the car. Buy online or em
             success: function (response) {
                 if (response.is_success) {
                     toastr.success(response.message);
-                    // Redirect to login page after successful registration
+                    // Redirect to COMMUNITY page after successful registration
                     setTimeout(function() {
-                        window.location.replace("{% url 'customer_login' %}");
+                        window.location.replace("{% url 'customer_community_message' %}");
                     }, 2000); // Wait 2 seconds to show the success message
                 } else {
                     toastr.error(response.message);
