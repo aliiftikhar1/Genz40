@@ -11,24 +11,129 @@
   .cursor-not-allowed {
     cursor: not-allowed;
   }
+  .navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+  }
+  .nav-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    position: relative;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #4f46e5;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  .nav-link.active {
+    color: #4f46e5;
+  }
+  .nav-link.active::after {
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .navbar {
+      width: 50%;
+      left: 1rem;
+      top: 1rem;
+    }
+    .nav-container {
+      background-color: rgb(0, 0, 0);
+      border-radius: 0.75rem;
+    }
+  }
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+    .mobile-menu-button {
+      display: block;
+    }
+  }
 </style>
 <section class="relative bg-black">
-  <div class="absolute md:sticky max-w-fit top-2 z-10 left-2 px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
-    <a class="flex justify-center w-auto items-center" href="{% url 'index' %}">
-      <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
-        GEN-Z 40 
-      </span>
-      <span class="h-5 md:h-10" style="
-          background-color: #ffff;
-          padding: 1px;
-          margin-left: 5px;
-          margin-right: 10px;
-        "></span>
-      <span>
-        <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" class="h-4 md:h-8" alt="" />
-      </span>
-    </a>
-  </div>
+  <nav class="navbar bg-black">
+    <div class="nav-container bg-black">
+      <!-- Logo Section -->
+      <div class="px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
+        <a class="flex items-center space-x-2" href="{% url 'index' %}">
+          <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
+            GEN-Z 40 
+          </span>
+          <span class="h-5 md:h-10" style="
+              background-color: #ffff;
+              padding: 1px;
+              margin-left: 5px;
+              margin-right: 10px;
+            "></span>
+          <span>
+            <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" class="h-4 md:h-8" alt="" />
+          </span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="nav-links">
+        <a href="{% url 'home' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/home/' %}active{% endif %}">
+          Home
+        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'index' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/index/' %}active{% endif %}">
+            Dashboard
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-button hidden text-white focus:outline-none" onclick="toggleMobileMenu()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-black/95 absolute top-full left-0 w-full py-2">
+      <div class="flex flex-col space-y-2 px-4">
+        <a href="{% url 'home' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/home/' %}active{% endif %}">
+          Home
+        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'index' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/index/' %}active{% endif %}">
+            Dashboard
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
   <div class="h-full w-full relative pt-12 md:pt-0">
     <div class="flex md:flex-row flex-col w-full  h-auto md:h-full  items-start gap-8 ">
       <div class="w-full h-auto md:h-screen  md:sticky top-0">
@@ -46,7 +151,7 @@
       </div>
 
       <div class="bg-black mt-[-50px] md:w-[65%] shadow-lg p-2 md:p-6 h-[100%]  ">
-        <div class="sticky top-0 md:top-0 bg-black p-2 z-10">
+        <div class="sticky top-12 md:top-0 bg-black p-2 z-10">
           <h2 class="text-3xl font-bold text-center text-white mb-3 md:mb-0">
             Configure Your {{car_model.title}}
           </h2>
@@ -72,12 +177,15 @@
         {% for package in packages %}
         <div class="tab-content {% if not forloop.first %}hidden{% endif %}" id="{{ package.package_type }}-content">
           <div class="package-configurator rounded-lg p-3 md:p-0">
-            <div class="mb-6">
+            <div class="mb-6 sm:mt-6">
               <h2 class="text-3xl font-extrabold text-white">
                 {{ package.name }} Package Configurator
               </h2>
               <p>{{ package.description }}</p>
-              <p class="text-gray-300 mt-2">Price: <span style="text-decoration: line-through;"> ${{ package.baseAmount }}</span>  ${{package.discountAmount}}</p>
+              <div class="mt-6 flex items-center gap-4">
+                <span class="text-xl text-gray-400 line-through">${{ package.baseAmount }}</span>
+                <span class="text-2xl font-bold text-white">${{package.discountAmount}}</span>
+              </div>
               <div class="mt-4 h-1 w-full"></div>
             </div>
 
@@ -270,7 +378,7 @@
                                       data-option="option1"
                                       data-feature-id="{{ feature.id }}"
                                     >
-                                    <label for="{{ feature.name|slugify }}_option1" class="ml-3 text-gray-300">
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
                                       {{ feature.option1 }}
                                       {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
                                         <span class="text-indigo-400">+${{ feature.option1_price }}</span>
@@ -292,7 +400,7 @@
                                       data-option="option2"
                                       data-feature-id="{{ feature.id }}"
                                     >
-                                    <label for="{{ feature.name|slugify }}_option2" class="ml-3 text-gray-300">
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
                                       {{ feature.option2 }}
                                       {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
                                         <span class="text-indigo-400">+${{ feature.option2_price }}</span>
@@ -881,38 +989,34 @@ function showSignUpForm(package_type) {
       
       <div class="col-span-2 relative group focus-within:opacity-100">
         <!-- Tooltip -->
-  <div class="top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg opacity-0 transition-opacity duration-500
-             group-hover:opacity-100 group-focus-within:opacity-100
-             hidden group-hover:block group-focus-within:block
-             pointer-events-none">
-    Password must contain at least:
-    <ul class="list-disc pl-4 mt-1 grid grid-cols-2" id="password-rules">
-      <li id="rule-uppercase" class="text-red-400">1 uppercase letter</li>
-      <li id="rule-lowercase" class="text-red-400">1 lowercase letter</li>
-      <li id="rule-number" class="text-red-400">1 number</li>
-      <li id="rule-special" class="text-red-400">1 special character</li>
-      <li id="rule-length" class="text-red-400">Minimum 8 characters</li>
-    </ul>
-  </div>
-  <label for="signup-password" class="block text-sm font-medium text-white">Password</label>
-  <div class="relative mt-1">
-    <input type="password" id="signup-password" name="password" required 
-           class="block w-full text-white border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-    <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 flex items-center" tabindex="-1">
-      <!-- Eye icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" id="eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      </svg>
-      <!-- Eye off icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-      </svg>
-    </button>
-  </div>
-
-  
-</div>
+        <div class="top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg"
+             id="password-rules-static">
+          Password must contain at least:
+          <ul class="list-disc pl-4 mt-1 grid grid-cols-2" id="password-rules">
+            <li id="rule-uppercase" class="text-red-400">1 uppercase letter</li>
+            <li id="rule-lowercase" class="text-red-400">1 lowercase letter</li>
+            <li id="rule-number" class="text-red-400">1 number</li>
+            <li id="rule-special" class="text-red-400">1 special character</li>
+            <li id="rule-length" class="text-red-400">Minimum 8 characters</li>
+          </ul>
+        </div>
+        <label for="signup-password" class="block text-sm font-medium text-white">Password</label>
+        <div class="relative mt-1">
+          <input type="password" id="signup-password" name="password" required 
+                 class="block w-full text-white border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+          <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 flex items-center" tabindex="-1">
+            <!-- Eye icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" id="eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <!-- Eye off icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
       
       
@@ -1502,4 +1606,27 @@ function handleSignUpSubmit(e) {
     }
   }
 </style>
+<script>
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+  }
+
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', function(event) {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    
+    if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+      mobileMenu.classList.add('hidden');
+    }
+  });
+
+  // Close mobile menu when window is resized to desktop size
+  window.addEventListener('resize', function() {
+    if (window.innerWidth >= 768) {
+      document.getElementById('mobile-menu').classList.add('hidden');
+    }
+  });
+</script>
 {% endblock script %}

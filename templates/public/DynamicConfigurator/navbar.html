@@ -169,3 +169,25 @@
     </div><!--end container-->
 </header><!--end header-->
 <!-- Navbar End -->
+
+<!-- Hamburger Button -->
+<button id="mobile-menu-toggle" class="md:hidden p-2 text-white">
+  <svg ...>...</svg>
+</button>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex flex-col items-center justify-center">
+  <a href="{% url 'index' %}" class="text-white text-2xl mb-4">Home</a>
+  <a href="{% url 'dashboard' %}" class="text-white text-2xl mb-4">Dashboard</a>
+  <!-- Add other links here -->
+  <button id="close-mobile-menu" class="text-white mt-8">Close</button>
+</div>
+
+<script>
+document.getElementById('mobile-menu-toggle').onclick = function() {
+  document.getElementById('mobile-menu').classList.remove('hidden');
+};
+document.getElementById('close-mobile-menu').onclick = function() {
+  document.getElementById('mobile-menu').classList.add('hidden');
+};
+</script>

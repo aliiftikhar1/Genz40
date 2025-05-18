@@ -230,6 +230,14 @@
         color: #ffffff;
     }
 
+    .admin-message-sender.admin {
+        color: #4a6fdc;
+    }
+
+    .admin-message-sender.customer {
+        color: var(--user-color, #ffffff);
+    }
+
     .admin-message-time {
         font-size: 0.7rem;
         color: #aaaaaa;
@@ -530,6 +538,15 @@ adminFileInput?.addEventListener('change', (e) => {
     });
 }
 
+    // Add the getUserColor function at the beginning of the script
+    function getUserColor(id) {
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+            '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+        ];
+        const index = String(id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[index % colors.length];
+    }
 
     // Fetch chat rooms for admin
     async function fetchAdminChatRooms() {
@@ -704,60 +721,73 @@ adminFileInput?.addEventListener('change', (e) => {
     // Add a message to the chat area
     function addAdminMessageToChat(message) {
         console.log("Current Message is : ",message)
-    const isCurrentUser = message.sender === currentAdminUserId;
-    console.log("Details are : ",message," Sender id is ",message.sender, "Current admin id ",currentAdminUserId)
+        const isCurrentUser = message.sender === currentAdminUserId;
+        console.log("Details are : ",message," Sender id is ",message.sender, "Current admin id ",currentAdminUserId)
+        console.log("Current User - ",isCurrentUser);
 
-    console.log("Current User - ",isCurrentUser);
+        // Remove empty state
+        const emptyState = adminMessageArea.querySelector('.admin-empty-state');
+        if (emptyState) emptyState.remove();
 
+        const messageElement = document.createElement('div');
+        messageElement.className = `admin-message ${isCurrentUser ? 'sent' : 'received'}`;
 
-    // Remove empty state
-    const emptyState = adminMessageArea.querySelector('.admin-empty-state');
-    if (emptyState) emptyState.remove();
+        const senderDiv = document.createElement('div');
+        senderDiv.className = 'admin-message-sender';
+        
+        // Determine sender role and apply appropriate styling
+        const isAdmin = message.sender_role === 'admin' || 
+                      (message.sender && message.sender.is_staff) ||
+                      (message.sender_email && message.sender_email.includes('admin'));
+        
+        if (isAdmin) {
+            senderDiv.classList.add('admin');
+        } else {
+            senderDiv.classList.add('customer');
+            // Use sender_id or sender's email as unique identifier for color
+            const colorId = message.sender_id || message.sender_email || message.sender_name;
+            senderDiv.style.setProperty('--user-color', getUserColor(colorId));
+        }
+        
+        senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Customer');
 
-    const messageElement = document.createElement('div');
-    messageElement.className = `admin-message ${isCurrentUser ? 'sent' : 'received'}`;
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'admin-message-time';
+        timeDiv.textContent = message.timestamp;
 
-    const senderDiv = document.createElement('div');
-    senderDiv.className = 'admin-message-sender';
-    senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Customer');
+        messageElement.appendChild(senderDiv);
 
-    const timeDiv = document.createElement('div');
-    timeDiv.className = 'admin-message-time';
-    timeDiv.textContent = message.timestamp;
+        // If it's an image message
+        if (message.message_type === 'image' && message.image_url) {
+            const img = document.createElement('img');
+            img.src = message.image_url;
+            img.alt = 'Uploaded image';
+            img.style.maxWidth = '300px';
+            img.style.borderRadius = '8px';
+            img.style.marginTop = '8px';
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', () => window.open(img.src, '_blank'));
+            messageElement.appendChild(img);
+        }
 
-    messageElement.appendChild(senderDiv);
+        // Add text content if exists
+        if (message.content && message.message_type !== 'image') {
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = message.content;
+            messageElement.appendChild(contentDiv);
+        }
 
-    // If it's an image message
-    if (message.message_type === 'image' && message.image_url) {
-        const img = document.createElement('img');
-        img.src = message.image_url;
-        img.alt = 'Uploaded image';
-        img.style.maxWidth = '300px';
-        img.style.borderRadius = '8px';
-        img.style.marginTop = '8px';
-        img.style.cursor = 'pointer';
-        img.addEventListener('click', () => window.open(img.src, '_blank'));
-        messageElement.appendChild(img);
+        messageElement.appendChild(timeDiv);
+
+        if (isCurrentUser) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `admin-message-status ${message.is_read ? 'text-success' : 'text-white'}`;
+            statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
+            messageElement.appendChild(statusDiv);
+        }
+
+        adminMessageArea.appendChild(messageElement);
     }
-
-    // Add text content if exists
-    if (message.content && message.message_type !== 'image') {
-        const contentDiv = document.createElement('div');
-        contentDiv.textContent = message.content;
-        messageElement.appendChild(contentDiv);
-    }
-
-    messageElement.appendChild(timeDiv);
-
-    if (isCurrentUser) {
-        const statusDiv = document.createElement('div');
-        statusDiv.className = `admin-message-status ${message.is_read ? 'text-success' : 'text-white'}`;
-        statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
-        messageElement.appendChild(statusDiv);
-    }
-
-    adminMessageArea.appendChild(messageElement);
-}
 
 
     // Mark messages as read

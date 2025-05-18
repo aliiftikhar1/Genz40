@@ -1075,6 +1075,17 @@ class LearnMoreContent(models.Model):
     heading = models.CharField(max_length=255)
     subheading = models.CharField(max_length=255)
     title_image = models.ImageField(upload_to='learn_more_images/')
+    title_image_front = models.ImageField(upload_to='learn_more_images/')
+    # Car stats fields
+    acceleration = models.CharField(max_length=20, blank=True, null=True)  # e.g., "3.9"
+    acceleration_unit = models.CharField(max_length=10, blank=True, null=True, default="s")
+    acceleration_desc = models.CharField(max_length=100, blank=True, null=True, default="Acceleration 0 - 100 km/h with Sport Chrono Package")
+    power_kw = models.CharField(max_length=10, blank=True, null=True)  # e.g., "290"
+    power_ps = models.CharField(max_length=10, blank=True, null=True)  # e.g., "394"
+    power_desc = models.CharField(max_length=100, blank=True, null=True, default="Power (kW)/Power (PS)")
+    top_speed = models.CharField(max_length=10, blank=True, null=True)  # e.g., "294"
+    top_speed_unit = models.CharField(max_length=10, blank=True, null=True, default="km/h")
+    top_speed_desc = models.CharField(max_length=100, blank=True, null=True, default="Top speed")
     # Additional image fields
     image1 = models.ImageField(upload_to='learn_more_images/', blank=True, null=True)
     image2 = models.ImageField(upload_to='learn_more_images/', blank=True, null=True)
@@ -1088,4 +1099,3 @@ class LearnMoreContent(models.Model):
     
     def __str__(self):
         return f"{self.car.title} - {self.subheading}"
-

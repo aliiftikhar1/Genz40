@@ -288,6 +288,9 @@
                                                       role="status" aria-hidden="true"
                                                       style="display: none;"></span>
                                             </button>
+                                            <button type="button" class="btn btn-outline-success mt-2" id="signin-btn" style="display: none;" onclick="window.location.href='{% url 'customer_login' %}'">
+                                                Sign In
+                                            </button>
                                         </div>
                                     </div>
                                 </div><!-- row end -->
@@ -472,6 +475,9 @@
                                                   role="status" aria-hidden="true"
                                                   style="display: none;"></span>
                                         </button>
+                                        <button type="button" class="btn btn-outline-success mt-2" id="signin-btn-mobile" style="display: none;" onclick="window.location.href='{% url 'customer_login' %}'">
+                                            Sign In
+                                        </button>
                                     </div>
                                 </div>
                             </div><!-- row end -->
@@ -527,6 +533,9 @@
                     }, 2000);
                 } else {
                     toastr.error(response.message);
+                    if (response.message && response.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn').show();
+                    }
                 }
                 $('#community-form')[0].reset();
                 $('#pro').hide();
@@ -534,6 +543,9 @@
             error: function (response) {
                 if (response.responseJSON) {
                     toastr.error(response.responseJSON.message);
+                    if (response.responseJSON.message && response.responseJSON.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn').show();
+                    }
                 } else {
                     toastr.error("An error occurred during registration");
                 }
@@ -730,6 +742,9 @@
                     }, 2000);
                 } else {
                     toastr.error(response.message);
+                    if (response.message && response.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn-mobile').show();
+                    }
                 }
                 $('#community-form-mobile')[0].reset();
                 $('#pro_mob').hide();
@@ -737,6 +752,9 @@
             error: function (response) {
                 if (response.responseJSON) {
                     toastr.error(response.responseJSON.message);
+                    if (response.responseJSON.message && response.responseJSON.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn-mobile').show();
+                    }
                 } else {
                     toastr.error("An error occurred during registration");
                 }

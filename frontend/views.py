@@ -216,7 +216,17 @@ def learn_more(request, slug):
     TitleData = {
         "heading": items.title,
         "subheading": items.title,
-        "title_image": None
+        "title_image": None,
+        "title_image_front": None,
+        "acceleration": None,
+        "acceleration_unit": None,
+        "acceleration_desc": None,
+        "power_kw": None,
+        "power_ps": None,
+        "power_desc": None,
+        "top_speed": None,
+        "top_speed_unit": None,
+        "top_speed_desc": None
     }
 
     if learn_more_contents.exists():
@@ -224,7 +234,17 @@ def learn_more(request, slug):
         TitleData = {
             "heading": first_content.heading or TitleData["heading"],
             "subheading": first_content.subheading or TitleData["subheading"],
-            "title_image": first_content.title_image.url if first_content.title_image else None
+            "title_image": first_content.title_image.url if first_content.title_image else None,
+            "title_image_front": first_content.title_image_front.url if first_content.title_image_front else None,
+            "acceleration": first_content.acceleration,
+            "acceleration_unit": first_content.acceleration_unit,
+            "acceleration_desc": first_content.acceleration_desc,
+            "power_kw": first_content.power_kw,
+            "power_ps": first_content.power_ps,
+            "power_desc": first_content.power_desc,
+            "top_speed": first_content.top_speed,
+            "top_speed_unit": first_content.top_speed_unit,
+            "top_speed_desc": first_content.top_speed_desc
         }
 
     # Gallery images (can be moved to DB later)
@@ -419,12 +439,17 @@ def get_register_community(request):
         try:
             email = request.POST.get('email')
             phone_number = request.POST.get('phone_number')  # Added phone number check
+            user_phone_number = ''.join(filter(str.isdigit, phone_number))[:14]
 
             # Check if user already exists by email OR phone number
-            if CustomUser.objects.filter(email=email).exists() or \
-               CustomUser.objects.filter(phone_number=phone_number).exists():
+            if CustomUser.objects.filter(email=email).exists():
                 return JsonResponse({
-                    "message": "User with this email or phone number already exists.",
+                    "message": "User with this email already exists.",
+                    "is_success": False
+                }, status=400)
+            if CustomUser.objects.filter(phone_number=user_phone_number).exists():
+                return JsonResponse({
+                    "message": "User with this phone number already exists.",
                     "is_success": False
                 }, status=400)
 

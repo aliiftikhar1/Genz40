@@ -166,7 +166,14 @@
     font-weight: 600;
     font-size: 0.85rem;
     margin-bottom: 4px;
-    color: #fff;
+}
+
+.community-message-sender.admin {
+    color: #4a6fdc;
+}
+
+.community-message-sender.customer {
+    color: var(--user-color, #ffffff);
 }
 
 .community-message-time {
@@ -415,6 +422,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return '<span class="community-badge">Community</span>';
     }
 
+    function getUserColor(id) {
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+            '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+        ];
+        const index = String(id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[index % colors.length];
+    }
+
     async function loadRooms() {
         const res = await fetch('/api/chat/community/rooms/', { credentials: 'include' });
         const rooms = await res.json();
@@ -490,13 +506,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function addMessageToChat(message) {
         if (renderedMessageIds.has(message.id)) return;
         renderedMessageIds.add(message.id);
-        const isCurrentUser = String(message.sender_id) === userId;
+        const isCurrentUser = String(message.sender) === userId;
         const messageElement = document.createElement('div');
         messageElement.className = `community-message ${isCurrentUser ? 'sent' : 'received'}`;
         messageElement.dataset.messageId = message.id;
+
         const senderDiv = document.createElement('div');
         senderDiv.className = 'community-message-sender';
+        
+        // Determine sender role and apply appropriate styling
+        const isAdmin = message.sender_role === 'admin' || 
+                      (message.sender && message.sender.is_staff) ||
+                      (message.sender_email && message.sender_email.includes('admin'));
+        
+        if (isAdmin) {
+            senderDiv.classList.add('admin');
+        } else {
+            senderDiv.classList.add('customer');
+            // Use sender_id or sender's email as unique identifier for color
+            const colorId = message.sender_id || message.sender_email || message.sender_name;
+            senderDiv.style.setProperty('--user-color', getUserColor(colorId));
+        }
+        
         senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'User');
+
         const contentDiv = document.createElement('div');
         contentDiv.textContent = message.content || '';
         const timeDiv = document.createElement('div');

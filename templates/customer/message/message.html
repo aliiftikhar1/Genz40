@@ -125,7 +125,14 @@
         font-weight: 600;
         font-size: 0.85rem;
         margin-bottom: 4px;
-        color: #ffffff;
+    }
+
+    .private-message-sender.admin {
+        color: #4a6fdc;
+    }
+
+    .private-message-sender.customer {
+        color: var(--user-color, #ffffff);
     }
 
     .private-message-time {
@@ -442,6 +449,19 @@
             return;
         }
     
+        function getUserColor(id) {
+            if (!id) {
+                // Return a default color if no ID is provided
+                return '#ffffff';
+            }
+            const colors = [
+                '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+                '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+            ];
+            const index = String(id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return colors[index % colors.length];
+        }
+    
         async function handleImageUpload(file) {
             if (!file || !file.type.match('image.*')) {
                 showToast('Please select a valid image');
@@ -504,14 +524,29 @@
         }
     
         function renderImageMessage(message) {
-            const isCurrentUser = String(message.sender_id) === state.currentUserId;
+            const isCurrentUser = message.sender === state.currentUserId;
             const messageElement = document.createElement('div');
             messageElement.className = `private-message ${isCurrentUser ? 'sent' : 'received'}`;
             messageElement.dataset.messageId = message.id;
     
             const senderDiv = document.createElement('div');
             senderDiv.className = 'private-message-sender';
-            senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Support');
+            
+            // Determine sender role and apply appropriate styling
+            const isAdmin = message.sender_role === 'admin' || 
+                          (message.sender && message.sender.is_staff) ||
+                          (message.sender_email && message.sender_email.includes('admin'));
+            
+            if (isAdmin) {
+                senderDiv.classList.add('admin');
+            } else {
+                senderDiv.classList.add('customer');
+                // Use sender_id or sender's email as unique identifier for color
+                const colorId = message.sender_id || message.sender_email || message.sender_name || 'default';
+                senderDiv.style.setProperty('--user-color', getUserColor(colorId));
+            }
+            
+            senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Anonymous');
     
             const contentDiv = document.createElement('div');
             contentDiv.textContent = message.content || '';
@@ -522,6 +557,7 @@
     
             messageElement.appendChild(senderDiv);
             messageElement.appendChild(contentDiv);
+            messageElement.appendChild(timeDiv);
     
             if (message.image_url) {
                 const img = document.createElement('img');
@@ -865,6 +901,7 @@
         }
     
         function addMessageToChat(message) {
+            console.log("Message is: ", message);
             // Prevent rendering duplicate messages
             if (state.renderedMessageIds.has(message.id)) {
                 console.log('Skipping duplicate message:', message.id);
@@ -875,14 +912,29 @@
             if (message.message_type === 'image') {
                 elements.chatMessages.appendChild(renderImageMessage(message));
             } else {
-                const isCurrentUser = String(message.sender_id) === state.currentUserId;
+                const isCurrentUser = message.sender === state.currentUserId;
                 const messageElement = document.createElement('div');
                 messageElement.className = `private-message ${isCurrentUser ? 'sent' : 'received'}`;
                 messageElement.dataset.messageId = message.id;
     
                 const senderDiv = document.createElement('div');
                 senderDiv.className = 'private-message-sender';
-                senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Support');
+                
+                // Determine sender role and apply appropriate styling
+                const isAdmin = message.sender_role === 'admin' || 
+                              (message.sender && message.sender.is_staff) ||
+                              (message.sender_email && message.sender_email.includes('admin'));
+                
+                if (isAdmin) {
+                    senderDiv.classList.add('admin');
+                } else {
+                    senderDiv.classList.add('customer');
+                    // Use sender_id or sender's email as unique identifier for color
+                    const colorId = message.sender_id || message.sender_email || message.sender_name || 'default';
+                    senderDiv.style.setProperty('--user-color', getUserColor(colorId));
+                }
+                
+                senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Anonymous');
     
                 const contentDiv = document.createElement('div');
                 contentDiv.textContent = message.content;

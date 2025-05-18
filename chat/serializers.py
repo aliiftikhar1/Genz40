@@ -5,6 +5,7 @@ from django.utils.timesince import timesince
 class MessageSerializer(serializers.ModelSerializer):
     sender_email = serializers.EmailField(source='sender.email', read_only=True)
     sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
+    sender_role = serializers.SerializerMethodField()
     timestamp = serializers.SerializerMethodField()
     is_own = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
@@ -12,9 +13,14 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'chat_room', 'sender', 'sender_email', 'sender_name', 
-                 'content', 'message_type', 'image', 'image_url', 'timestamp', 
-                 'is_read', 'is_own']
+                 'sender_role', 'content', 'message_type', 'image', 'image_url', 
+                 'timestamp', 'is_read', 'is_own']
         read_only_fields = ['id', 'timestamp', 'is_read', 'sender', 'message_type']
+    
+    def get_sender_role(self, obj):
+        if obj.sender:
+            return 'admin' if obj.sender.is_staff else 'customer'
+        return None
     
     def get_timestamp(self, obj):
         return timesince(obj.timestamp) + ' ago'
