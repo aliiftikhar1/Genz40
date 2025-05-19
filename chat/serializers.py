@@ -9,13 +9,14 @@ class MessageSerializer(serializers.ModelSerializer):
     timestamp = serializers.SerializerMethodField()
     is_own = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
+    unread_by = serializers.SerializerMethodField()
     
     class Meta:
         model = Message
         fields = ['id', 'chat_room', 'sender', 'sender_email', 'sender_name', 
                  'sender_role', 'content', 'message_type', 'image', 'image_url', 
-                 'timestamp', 'is_read', 'is_own']
-        read_only_fields = ['id', 'timestamp', 'is_read', 'sender', 'message_type']
+                 'timestamp', 'unread_by', 'is_own']
+        read_only_fields = ['id', 'timestamp', 'unread_by', 'sender', 'message_type']
     
     def get_sender_role(self, obj):
         if obj.sender:
@@ -34,6 +35,9 @@ class MessageSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         return None
+    
+    def get_unread_by(self, obj):
+        return list(obj.unread_by) if obj.unread_by else []
     
     def validate(self, data):
         if self.context['request'].FILES.get('image'):

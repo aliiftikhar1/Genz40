@@ -167,13 +167,23 @@ class ImageUploadView(APIView):
             
             file_path = default_storage.save(filename, ContentFile(image_file.read()))
             file_url = f"/{file_path}"
-            
+
+            # Set unread_by for image message
+            if chat_room.chat_type == ChatRoom.COMMUNITY:
+                unread_by = list(chat_room.members.exclude(id=request.user.id).values_list('id', flat=True))
+            else:
+                if request.user == chat_room.customer:
+                    unread_by = [chat_room.admin.id] if chat_room.admin else []
+                else:
+                    unread_by = [chat_room.customer.id] if chat_room.customer else []
+
             message = Message.objects.create(
                 sender=request.user,
                 chat_room=chat_room,
                 content='Image shared',
                 message_type='image',
-                image=file_url
+                image=file_url,
+                unread_by=unread_by
             )
             
             chat_room.update_timestamp()
@@ -199,6 +209,7 @@ class ImageUploadView(APIView):
                         notification.increment()
             
             # Broadcast the message to the WebSocket group
+            print(f"[WebSocket] Broadcasting message to group chat_{room_id} with message id {message.id}")
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f'chat_{room_id}',
@@ -210,7 +221,7 @@ class ImageUploadView(APIView):
                     'sender_name': message.sender.get_full_name() or message.sender.email,
                     'sender_role': 'admin' if message.sender.is_staff else 'customer',
                     'timestamp': message.timestamp.isoformat(),
-                    'is_read': message.is_read,
+                    'unread_by': list(message.unread_by),  # send unread_by as list of user ids
                     'room_id': message.chat_room.id,
                     'room_name': chat_room.community.name if chat_room.chat_type == ChatRoom.COMMUNITY else chat_room.subject,
                     'message_type': message.message_type,
@@ -248,14 +259,21 @@ class MessageListCreateView(generics.ListCreateAPIView):
         room_id = self.kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            # Allow admin users to send messages in community chat rooms
             if not self.request.user.is_staff and not chat_room.members.filter(id=self.request.user.id).exists():
                 raise ValueError("User is not a member of this community")
+            # All members except sender
+            unread_by = list(chat_room.members.exclude(id=self.request.user.id).values_list('id', flat=True))
+        else:
+            # Private chat: the other participant
+            if self.request.user == chat_room.customer:
+                unread_by = [chat_room.admin.id] if chat_room.admin else []
+            else:
+                unread_by = [chat_room.customer.id] if chat_room.customer else []
         message = serializer.save(
             sender=self.request.user, 
-            chat_room=chat_room
+            chat_room=chat_room,
+            unread_by=unread_by
         )
-        
         chat_room.update_timestamp()
         
         if chat_room.chat_type == ChatRoom.COMMUNITY:
@@ -289,9 +307,10 @@ class UnreadMessagesView(generics.ListAPIView):
             # Allow admin users to access all community chat rooms
             if not self.request.user.is_staff and not chat_room.members.filter(id=self.request.user.id).exists():
                 return Message.objects.none()
+        # Only messages where the current user is in unread_by
         return Message.objects.filter(
             chat_room_id=room_id,
-            is_read=False
+            unread_by__contains=[str(self.request.user.id)]
         ).exclude(sender=self.request.user)
 
 class MarkMessagesAsReadView(generics.UpdateAPIView):
@@ -301,25 +320,24 @@ class MarkMessagesAsReadView(generics.UpdateAPIView):
         room_id = kwargs['room_id']
         chat_room = ChatRoom.objects.get(id=room_id)
         if chat_room.chat_type == ChatRoom.COMMUNITY:
-            # Allow admin users to access all community chat rooms
             if not request.user.is_staff and not chat_room.members.filter(id=request.user.id).exists():
                 return Response(
                     {'error': 'User is not a member of this community'},
                     status=status.HTTP_403_FORBIDDEN
                 )
-        
+        # Find all messages in this room where the user is in unread_by and is not the sender
         messages = Message.objects.filter(
             chat_room_id=room_id,
-            is_read=False
+            unread_by__contains=[str(request.user.id)]
         ).exclude(sender=request.user)
-        
-        messages.update(is_read=True)
-        
+        # Remove user from unread_by for each message
+        for msg in messages:
+            msg.mark_as_read(str(request.user.id))
+        # Reset notification count
         ChatNotification.objects.filter(
             user=request.user,
             chat_room_id=room_id
         ).update(count=0)
-        
         return Response({'status': 'messages marked as read'})
 
 class ChatNotificationListView(generics.ListAPIView):

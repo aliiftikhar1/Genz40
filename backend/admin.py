@@ -386,8 +386,8 @@ class ChatRoomAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('chat_room', 'sender', 'timestamp', 'is_read')
-    list_filter = ('is_read', 'timestamp')
+    list_display = ('chat_room', 'sender', 'timestamp')  # Removed 'is_read'
+    list_filter = ('timestamp',)  # Removed 'is_read'
     search_fields = ('content', 'sender__email')
     raw_id_fields = ('chat_room', 'sender')
 

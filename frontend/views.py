@@ -489,12 +489,13 @@ def get_register_community(request):
                     )
 
                     # Create welcome message
+                    unread_by = [user.id] if user else []
                     welcome_message = Message.objects.create(
                         chat_room=chatroom,
                         sender=admin_user,
                         content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
                         timestamp=timezone.now(),
-                        is_read=False
+                        unread_by=unread_by
                     )
 
                     # Create notification
@@ -517,7 +518,7 @@ def get_register_community(request):
                                 "sender_role": "admin",
                                 "message": welcome_message.content,
                                 "timestamp": welcome_message.timestamp.isoformat(),
-                                "is_read": welcome_message.is_read,
+                                "is_read": user.id not in welcome_message.unread_by,
                             }
                         }
                     )
@@ -639,7 +640,7 @@ def send_welcome_message(chatroom, user):
                     "sender_role": "admin",
                     "message": welcome_message.content,
                     "timestamp": welcome_message.timestamp.isoformat(),
-                    "is_read": welcome_message.is_read,
+                    "is_read": user.id not in welcome_message.unread_by,
                 }
             }
         )
@@ -697,12 +698,13 @@ def get_register(request):
         )
 
         # Create welcome message
+        unread_by = [user.id] if user else []
         welcome_message = Message.objects.create(
             chat_room=chatroom,
             sender=admin_user,
             content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
             timestamp=timezone.now(),
-            is_read=False
+            unread_by=unread_by
         )
 
         # Create notification
@@ -725,7 +727,7 @@ def get_register(request):
                     "sender_role": "admin",
                     "message": welcome_message.content,
                     "timestamp": welcome_message.timestamp.isoformat(),
-                    "is_read": welcome_message.is_read,
+                    "is_read": user.id not in welcome_message.unread_by,
                 }
             }
         )

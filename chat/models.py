@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.files.images import get_image_dimensions
 from backend.models import CustomUser
+from django.contrib.postgres.fields import ArrayField  # Only works with PostgreSQL
+
 
 def validate_image_size(image):
     """Validate image dimensions and size."""
@@ -67,16 +69,16 @@ class Message(models.Model):
     
     chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    unread_by = ArrayField(models.CharField(max_length=36), default=list, blank=True)
     content = models.TextField()
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPE_CHOICES, default=TEXT)
     image = models.ImageField(upload_to='chat_images/', null=True, blank=True, validators=[validate_image_size])
     timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['timestamp']
         indexes = [
-            models.Index(fields=['chat_room', 'is_read']),
+            models.Index(fields=['chat_room']),
             models.Index(fields=['timestamp']),
             models.Index(fields=['message_type']),
         ]
@@ -86,11 +88,11 @@ class Message(models.Model):
             return f"System message: {self.content}"
         return f"Message from {self.sender} at {self.timestamp}"
     
-    def mark_as_read(self):
-        """Mark message as read."""
-        if not self.is_read:
-            self.is_read = True
-            self.save(update_fields=['is_read'])
+    def mark_as_read(self, user_id):
+        """Mark message as read for a specific user by removing their id from unread_by."""
+        if user_id in self.unread_by:
+            self.unread_by.remove(user_id)
+            self.save(update_fields=['unread_by'])
 
 class ChatNotification(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -145,6 +145,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def broadcast_message(self, message_obj):
         try:
+            logger.info(f"Broadcasting message {message_obj.id} to group {self.room_group_name}")
             message_data = {
                 'type': 'chat',
                 'id': str(message_obj.id),
@@ -153,7 +154,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender_name': await self.get_user_display_name(message_obj.sender) if message_obj.sender else "System",
                 'sender_role': 'admin' if message_obj.sender and message_obj.sender.is_staff else 'customer',
                 'timestamp': message_obj.timestamp.isoformat(),
-                'is_read': message_obj.is_read,
+                'unread_by': list(message_obj.unread_by),  # Use string UUID for is_read
                 'room_id': message_obj.chat_room.id,
                 'room_name': await self.get_room_name(message_obj.chat_room.id) or 'Support',
                 'message_type': message_obj.message_type,
@@ -170,8 +171,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     **message_data
                 }
             )
+            logger.info(f"Message {message_obj.id} sent to group {self.room_group_name}")
         except Exception as e:
-            logger.error(f"Broadcast message error: {str(e)}")
+            logger.error(f"Broadcast message error: {str(e)}", exc_info=True)
 
     @database_sync_to_async
     def get_image_url(self, message_obj):
@@ -215,7 +217,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_name': msg.sender.get_full_name() or msg.sender.email if msg.sender else "System",
             'sender_role': 'admin' if msg.sender and msg.sender.is_staff else 'customer',
             'timestamp': msg.timestamp.isoformat(),
-            'is_read': msg.is_read,
+            'unread_by': list(msg.unread_by),  # Use string UUID for is_read
             'room_id': msg.chat_room.id,
             'room_name': msg.chat_room.community.name if msg.chat_room.chat_type == ChatRoom.COMMUNITY else msg.chat_room.subject,
             'message_type': msg.message_type,
@@ -224,38 +226,49 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, message, room_id):
-        room = ChatRoom.objects.get(id=room_id)
-        if room.chat_type == ChatRoom.COMMUNITY:
-            # Allow admin users to send messages in community chat rooms
-            if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
-                raise ValueError("User is not a member of this community")
-        message_obj = Message.objects.create(
-            chat_room=room,
-            sender=self.user,
-            content=message
-        )
-        room.update_timestamp()
-        
-        if room.chat_type == ChatRoom.COMMUNITY:
-            for member in room.members.exclude(id=self.user.id):
-                notification, created = ChatNotification.objects.get_or_create(
-                    user=member,
-                    chat_room=room,
-                    defaults={'count': 1}
-                )
-                if not created:
-                    notification.increment()
-        else:
-            recipient = room.admin if self.user == room.customer else room.customer
-            if recipient:
-                notification, created = ChatNotification.objects.get_or_create(
-                    user=recipient,
-                    chat_room=room,
-                    defaults={'count': 1}
-                )
-                if not created:
-                    notification.increment()
-        return message_obj
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+            if room.chat_type == ChatRoom.COMMUNITY:
+                if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
+                    raise ValueError("User is not a member of this community")
+                unread_by = [str(member.id) for member in room.members.exclude(id=self.user.id)]
+            else:
+                if self.user == room.customer and room.admin:
+                    unread_by = [str(room.admin.id)]
+                elif self.user == room.admin and room.customer:
+                    unread_by = [str(room.customer.id)]
+                else:
+                    unread_by = []
+            message_obj = Message.objects.create(
+                chat_room=room,
+                sender=self.user,
+                content=message,
+                unread_by=unread_by
+            )
+            room.update_timestamp()
+            if room.chat_type == ChatRoom.COMMUNITY:
+                for member in room.members.exclude(id=self.user.id):
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=member,
+                        chat_room=room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
+            else:
+                recipient = room.admin if self.user == room.customer else room.customer
+                if recipient:
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=recipient,
+                        chat_room=room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
+            return message_obj
+        except Exception as e:
+            logger.error(f"Error in save_message: {str(e)}", exc_info=True)
+            raise
 
     @database_sync_to_async
     def get_user_display_name(self, user):
@@ -271,7 +284,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return room.subject
 
     async def chat_message(self, event):
-        # Process messages from both web and mobile
+        logger.info(f"Sending chat_message event to frontend: {event}")
         message_data = {
             'type': 'chat',
             'id': event['id'],
@@ -280,7 +293,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_name': event['sender_name'],
             'sender_role': event['sender_role'],
             'timestamp': event['timestamp'],
-            'is_read': event['is_read'],
+            'unread_by': event['unread_by'],
             'room_id': event['room_id'],
             'room_name': event['room_name'],
             'message_type': event['message_type']
@@ -289,7 +302,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Add image_url if present
         if event.get('image_url'):
             message_data['image_url'] = event['image_url']
-            
+        # Defensive: ensure all required fields are present
+        required_fields = ['id', 'message', 'sender_id', 'sender_name', 'sender_role', 'timestamp', 'unread_by', 'room_id', 'room_name', 'message_type']
+        for field in required_fields:
+            if field not in message_data:
+                logger.error(f"Missing field in chat_message event: {field}. Event: {event}")
+                message_data[field] = None
         await self.send(text_data=json.dumps(message_data))
 
     async def typing_message(self, event):
@@ -369,63 +387,102 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
                         f'chat_{room_id}',
                         self.channel_name
                     )
-                return;
-
-            # if data.get('type') == 'image':
-            #     room_id = data.get('room_id')
-            #     image_url = data.get('image_url')
-            #     content = data.get('content', 'Image shared')
-            #     if room_id and image_url:
-            #         message_obj = await self.save_image_message(room_id, content, image_url)
-            #         room_name = await self.get_room_name(room_id)
-            #         await self.channel_layer.group_send(
-            #             f'chat_{room_id}',
-            #             {
-            #                 'type': 'chat_message',
-            #                 'id': str(message_obj.id),
-            #                 'message': message_obj.content,
-            #                 'sender_id': str(self.user.id),
-            #                 'sender_name': await self.get_user_display_name(self.user),
-            #                 'sender_role': 'admin' if self.user.is_staff else 'customer',
-            #                 'timestamp': message_obj.timestamp.isoformat(),
-            #                 'is_read': message_obj.is_read,
-            #                 'room_id': room_id,
-            #                 'room_name': room_name or 'Support',
-            #                 'message_type': message_obj.message_type,
-            #                 'image_url': image_url
-            #             }
-            #         )
-            #     return;
+                return
 
             if data.get('type') == 'chat':
                 message = data.get('message', '').strip()
                 room_id = data.get('room_id')
-                if message and room_id:
+                
+                if not message or not room_id:
+                    await self.send_error('Message and room_id are required')
+                    return
+                    
+                try:
+                    # Step 1: Save the message
+                    logger.debug(f"Attempting to save message in room {room_id}")
                     message_obj = await self.save_message(message, room_id)
+                    logger.debug(f"Message saved successfully with ID {message_obj.id}")
+
+                    # Step 2: Get room name
+                    logger.debug(f"Getting room name for room {room_id}")
                     room_name = await self.get_room_name(room_id)
+                    logger.debug(f"Room name retrieved: {room_name}")
+
+                    # Step 3: Prepare message data
+                    message_data = {
+                        'type': 'chat_message',
+                        'id': str(message_obj.id),
+                        'message': message_obj.content,
+                        'sender_id': str(self.user.id),
+                        'sender_name': await self.get_user_display_name(self.user),
+                        'sender_role': 'admin' if self.user.is_staff else 'customer',
+                        'timestamp': message_obj.timestamp.isoformat(),
+                        'unread_by': list(message_obj.unread_by),
+                        'room_id': room_id,
+                        'room_name': room_name or 'Support',
+                        'message_type': message_obj.message_type
+                    }
+                    logger.debug(f"Prepared message data: {message_data}")
+
+                    # Step 4: Broadcast to chat room
+                    logger.debug(f"Broadcasting message to chat_{room_id}")
                     await self.channel_layer.group_send(
                         f'chat_{room_id}',
-                        {
-                            'type': 'chat_message',
-                            'id': str(message_obj.id),
+                        message_data
+                    )
+                    logger.debug("Message broadcast successful")
+
+                    # Step 5: Send notifications
+                    logger.debug("Preparing to send notifications")
+                    room = await database_sync_to_async(ChatRoom.objects.get)(id=room_id)
+                    
+                    # Get member IDs using database_sync_to_async
+                    member_ids = await database_sync_to_async(list)(
+                        room.members.values_list('id', flat=True)
+                    )
+                    
+                    if room.admin:
+                        member_ids.append(room.admin.id)
+                    if room.customer:
+                        member_ids.append(room.customer.id)
+                    member_ids = set(str(uid) for uid in member_ids if str(uid) != str(self.user.id))
+                    logger.debug(f"Notification recipients: {member_ids}")
+
+                    for uid in member_ids:
+                        group_name = f'user_{uid}_global'
+                        notification_data = {
+                            'type': 'chat_notification',
+                            'room_id': room_id,
+                            'room_name': room_name or 'Support',
                             'message': message_obj.content,
                             'sender_id': str(self.user.id),
                             'sender_name': await self.get_user_display_name(self.user),
-                            'sender_role': 'admin' if self.user.is_staff else 'customer',
                             'timestamp': message_obj.timestamp.isoformat(),
-                            'is_read': message_obj.is_read,
-                            'room_id': room_id,
-                            'room_name': room_name or 'Support',
                             'message_type': message_obj.message_type
                         }
-                    )
+                        logger.debug(f"Sending notification to {group_name}")
+                        await self.channel_layer.group_send(
+                            group_name,
+                            notification_data
+                        )
+                    logger.debug("All notifications sent successfully")
+
+                except Exception as e:
+                    logger.error(f"Error processing chat message: {str(e)}", exc_info=True)
+                    # Try to send a more specific error message
+                    error_message = f"Failed to process message: {str(e)}"
+                    logger.error(error_message)
+                    await self.send_error(error_message)
+                    return
 
         except json.JSONDecodeError:
+            logger.error("Invalid JSON format in WebSocket message")
             await self.send_error('Invalid JSON format')
         except ValueError as e:
+            logger.error(f"Value error in WebSocket message: {str(e)}")
             await self.send_error(str(e))
         except Exception as e:
-            logger.error(f"Global receive error: {str(e)}")
+            logger.error(f"Unexpected error in WebSocket receive: {str(e)}", exc_info=True)
             await self.send_error('Internal server error')
 
     async def chat_message(self, event):
@@ -437,7 +494,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
             'sender_name': event['sender_name'],
             'sender_role': event['sender_role'],
             'timestamp': event['timestamp'],
-            'is_read': event['is_read'],
+            'unread_by': event['unread_by'],
             'room_id': event['room_id'],
             'room_name': event['room_name'],
             'message_type': event['message_type'],
@@ -450,6 +507,19 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
             'is_typing': event['is_typing'],
             'sender_id': event['sender_id'],
             'room_id': event['room_id']
+        }))
+
+    async def chat_notification(self, event):
+        # Send notification to the user's global socket
+        await self.send(text_data=json.dumps({
+            'type': 'notification',
+            'room_id': event['room_id'],
+            'room_name': event['room_name'],
+            'message': event['message'],
+            'sender_id': event['sender_id'],
+            'sender_name': event['sender_name'],
+            'timestamp': event['timestamp'],
+            'message_type': event['message_type']
         }))
 
     async def send_error(self, error):
@@ -482,38 +552,49 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, message, room_id):
-        room = ChatRoom.objects.get(id=room_id)
-        if room.chat_type == ChatRoom.COMMUNITY:
-            # Allow admin users to send messages in community chat rooms
-            if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
-                raise ValueError("User is not a member of this community")
-        message_obj = Message.objects.create(
-            chat_room=room,
-            sender=self.user,
-            content=message
-        )
-        room.update_timestamp()
-        
-        if room.chat_type == ChatRoom.COMMUNITY:
-            for member in room.members.exclude(id=self.user.id):
-                notification, created = ChatNotification.objects.get_or_create(
-                    user=member,
-                    chat_room=room,
-                    defaults={'count': 1}
-                )
-                if not created:
-                    notification.increment()
-        else:
-            recipient = room.admin if self.user == room.customer else room.customer
-            if recipient:
-                notification, created = ChatNotification.objects.get_or_create(
-                    user=recipient,
-                    chat_room=room,
-                    defaults={'count': 1}
-                )
-                if not created:
-                    notification.increment()
-        return message_obj
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+            if room.chat_type == ChatRoom.COMMUNITY:
+                if not self.user.is_staff and not room.members.filter(id=self.user.id).exists():
+                    raise ValueError("User is not a member of this community")
+                unread_by = [str(member.id) for member in room.members.exclude(id=self.user.id)]
+            else:
+                if self.user == room.customer and room.admin:
+                    unread_by = [str(room.admin.id)]
+                elif self.user == room.admin and room.customer:
+                    unread_by = [str(room.customer.id)]
+                else:
+                    unread_by = []
+            message_obj = Message.objects.create(
+                chat_room=room,
+                sender=self.user,
+                content=message,
+                unread_by=unread_by
+            )
+            room.update_timestamp()
+            if room.chat_type == ChatRoom.COMMUNITY:
+                for member in room.members.exclude(id=self.user.id):
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=member,
+                        chat_room=room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
+            else:
+                recipient = room.admin if self.user == room.customer else room.customer
+                if recipient:
+                    notification, created = ChatNotification.objects.get_or_create(
+                        user=recipient,
+                        chat_room=room,
+                        defaults={'count': 1}
+                    )
+                    if not created:
+                        notification.increment()
+            return message_obj
+        except Exception as e:
+            logger.error(f"Error in save_message: {str(e)}", exc_info=True)
+            raise
 
     @database_sync_to_async
     def save_image_message(self, room_id, content, image_url):
