@@ -18,10 +18,6 @@ from django.contrib.messages import constants as messages
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -40,16 +36,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'frontend',
-    
+    'corsheaders',
+    'django.contrib.humanize',
+    'rest_framework',
     'backend',
     'adminsortable2',
     'crispy_forms',
     'crispy_bootstrap5',
+    'chat',
+    'channels',
+    'rest_framework.authtoken',
+    'mobileChat'
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -57,6 +61,31 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.AuthRequiredMiddleware',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  
+"https://alviautomobiles.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://alviautomobiles.com",
+    "http://localhost:3000",
+]
+
 
 ROOT_URLCONF = 'genz40.urls'
 
@@ -78,12 +107,26 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'backend.context_processors.nav_items',
-                 'backend.context_processors.add_user_to_context',
+                'backend.context_processors.add_user_to_context',
                 
             ],
         },
     },
 ]
+
+# Configure ASGI application
+ASGI_APPLICATION = 'genz40.asgi.application'
+
+# For development, use in-memory channel layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+# CORS settings (if needed)
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 WSGI_APPLICATION = 'genz40.wsgi.application'
 
@@ -99,7 +142,7 @@ BASE_URL = '/'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config("POSTGRES_DB"),
         'USER': config("POSTGRES_USER"),
         'PASSWORD': config("POSTGRES_PASSWORD"),
@@ -172,6 +215,17 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_FROM = config("EMAIL_HOST_USER")
 ADMIN_EMAIL = config("ADMIN_EMAIL")
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_KEY = config("STRIPE_WEBHOOK_KEY")
+
+MAILCHIMP_API_KEY = config("MAILCHIMP_API_KEY")
+MAILCHIMP_LIST_ID = config("MAILCHIMP_LIST_ID")
+MAILCHIMP_SERVER_PREFIX = config('MAILCHIMP_SERVER_PREFIX')
+
+TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
+TWILIO_VERIFY_SERVICE_SID = config("TWILIO_VERIFY_SERVICE_SID")
+
 
 BASE_URL = 'http://127.0.0.1:8000/'
 
