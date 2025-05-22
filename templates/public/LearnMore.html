@@ -212,7 +212,7 @@
     }
     @media (max-width: 900px) {
         .car-stats-flex {
-            flex-direction: column;
+            flex-direction: column-reverse;
             gap: 1.2rem;
         }
         .car-stats-left, .car-stats-right {
@@ -233,6 +233,10 @@
         }
         .car-stat-main {
             font-size: 2rem;
+            justify-content: center !important;
+            text-align: center !important;
+            display: flex !important;
+            width: 100%;
         }
         .car-stat-value {
             font-size: 2rem;
@@ -245,6 +249,10 @@
         }
         .car-stat-desc {
             font-size: 0.95rem;
+        }
+        .car-stats-left {
+            align-items: center !important;
+            text-align: center !important;
         }
     }
     .car-stats-left {
@@ -264,7 +272,7 @@
         font-weight: 400;
         color: #111;
         display: flex;
-        align-items: center;
+        align-items: baseline;
         gap: 0.5rem;
     }
     .car-stat-value {
