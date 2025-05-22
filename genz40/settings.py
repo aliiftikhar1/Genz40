@@ -10,18 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 from django.contrib.messages import constants as messages
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,12 +50,9 @@ INSTALLED_APPS = [
     'adminsortable2',
     'crispy_forms',
     'crispy_bootstrap5',
-    'chat',
+     'chat',
     'channels',
-    'rest_framework.authtoken',
-    'mobileChat'
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,7 +65,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.AuthRequiredMiddleware',
 ]
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -107,26 +110,33 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'backend.context_processors.nav_items',
-                'backend.context_processors.add_user_to_context',
+                 'backend.context_processors.add_user_to_context',
                 
             ],
         },
     },
 ]
 
-# Configure ASGI application
+
 ASGI_APPLICATION = 'genz40.asgi.application'
 
-# For development, use in-memory channel layer
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
     },
 }
 
-# CORS settings (if needed)
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+
+#CHANNEL_LAYERS = {
+#    "default": {
+#        "BACKEND": "channels.layers.InMemoryChannelLayer",
+#    },
+#}
+
+
 
 WSGI_APPLICATION = 'genz40.wsgi.application'
 
@@ -142,7 +152,7 @@ BASE_URL = '/'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': config("POSTGRES_DB"),
         'USER': config("POSTGRES_USER"),
         'PASSWORD': config("POSTGRES_PASSWORD"),
@@ -187,9 +197,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'static'
+
 # static files
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'staticfiles']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
@@ -215,16 +226,24 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_FROM = config("EMAIL_HOST_USER")
 ADMIN_EMAIL = config("ADMIN_EMAIL")
+
+#Stripe Secret Keys
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_KEY = config("STRIPE_WEBHOOK_KEY")
 
+
+#Mail Chimp Keys
 MAILCHIMP_API_KEY = config("MAILCHIMP_API_KEY")
 MAILCHIMP_LIST_ID = config("MAILCHIMP_LIST_ID")
 MAILCHIMP_SERVER_PREFIX = config('MAILCHIMP_SERVER_PREFIX')
 
+
+#Twilio Keys
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
 TWILIO_VERIFY_SERVICE_SID = config("TWILIO_VERIFY_SERVICE_SID")
+
+
 
 
 BASE_URL = 'http://127.0.0.1:8000/'
