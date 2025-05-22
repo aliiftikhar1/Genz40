@@ -934,6 +934,7 @@ def save_booked_package(request):
     """
     data = request.data.copy() 
     data['user'] = request.user.id
+    data['package'] = data['package_id']
     print("The data for saving package is :",data)
     serializer = BookedPackageSerializer(data=data)
     if serializer.is_valid():

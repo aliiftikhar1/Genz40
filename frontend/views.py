@@ -212,11 +212,12 @@ def learn_more(request, slug):
         for i in range(min_length, len(CardData)):
             combined_data.append({'card': CardData[i]})
 
-    # Load heading, subheading and title image from the first LearnMoreContent entry
+    # Load heading, subheading and all title images from the first LearnMoreContent entry
     TitleData = {
         "heading": items.title,
         "subheading": items.title,
         "title_image": None,
+        "title_image_mobile": None,
         "title_image_front": None,
         "acceleration": None,
         "acceleration_unit": None,
@@ -235,6 +236,7 @@ def learn_more(request, slug):
             "heading": first_content.heading or TitleData["heading"],
             "subheading": first_content.subheading or TitleData["subheading"],
             "title_image": first_content.title_image.url if first_content.title_image else None,
+            "title_image_mobile": first_content.title_image_mobile.url if first_content.title_image_mobile else None,
             "title_image_front": first_content.title_image_front.url if first_content.title_image_front else None,
             "acceleration": first_content.acceleration,
             "acceleration_unit": first_content.acceleration_unit,
@@ -1516,8 +1518,13 @@ def process_reservation_payment(request):
                 'customer_id': customer.id,
                 'line_items': line_items,
                 'package_id': str(package_id),
-                'success_url': request.build_absolute_uri(f'/car/reservation_success/{package_id}/'),
-                'cancel_url': request.build_absolute_uri(f'/car/reservation-checkout/{package_id}/'),
+                'success_url': request.build_absolute_uri(
+                            f'/car/reservation_success/{package_id}/'
+                            ) + '{CHECKOUT_SESSION_ID}'+'/',
+                
+                'cancel_url': request.build_absolute_uri(
+                    f'/car/reservation-checkout/{package_id}/'
+                ),
                 'metadata': {
                     'product_name':booked_package.car_model.title,
                     'package_id': str(package_id),

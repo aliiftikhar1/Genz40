@@ -561,6 +561,16 @@
         background-color: #4a6fdc;
         border-radius: 2px;
     }
+    .unread-label {
+        background: #fffbe6;
+        color: #c77d00;
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-block;
+    }
 </style>
 
 <div id="chat-widget" data-user-role="{{ user_data.role|escapejs }}" data-user-id="{{ user_data.user_id }}" data-is-authenticated="{{ user_data.is_authenticated|yesno:'true,false' }}">
@@ -1150,13 +1160,13 @@
             state.currentView = 'messages';
             state.currentRoomId = roomId;
             state.currentRoomName = roomName;
-    
+        
             elements.chatroomList.style.display = 'none';
             elements.chatMessages.style.display = 'flex';
             elements.messageInput.style.display = 'block';
             elements.backButton.style.display = 'block';
             elements.chatHeader.textContent = roomName;
-    
+        
             // Clear rendered message IDs when opening a new room
             state.renderedMessageIds.clear();
             
@@ -1166,52 +1176,58 @@
                 const messages = await response.json();
                 elements.chatMessages.innerHTML = '';
                 state.renderedMessageIds.clear();
-
+        
                 if (!messages.length) {
                     showNoMessagesPlaceholder();
                 } else {
-                    // Find the first unread message
-                    const firstUnreadMessage = messages.find(msg => 
-                        Array.isArray(msg.unread_by) && 
-                        msg.unread_by.includes(state.currentUserId)
-                    );
-
-                    // Render all messages
-                    messages.forEach(addMessageToChat);
-
-                    if (firstUnreadMessage) {
-                        // Find the message element
-                        const messageElement = document.querySelector(`[data-message-id="${firstUnreadMessage.id}"]`);
-                        if (messageElement) {
-                            // Add unread class to the message
-                            messageElement.classList.add('unread');
-                            
-                            // Scroll to the message
-                            messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            
-                            // Show the floating label
-                            const label = document.getElementById('unread-message-label');
-                            label.style.top = `${messageElement.offsetTop}px`;
-                            label.classList.add('show');
-                            
-                            // Hide the label after 5 seconds
-                            setTimeout(() => {
-                                label.classList.remove('show');
-                                // Call read API after showing the label
-                                readMessages(roomId);
-                            }, 5000);
+                    // Find the index of the first unread message for the current user
+                    let firstUnreadIndex = -1;
+                    for (let i = 0; i < messages.length; i++) {
+                        const msg = messages[i];
+                        if (
+                            msg.sender_id !== state.currentUserId &&
+                            Array.isArray(msg.unread_by) &&
+                            msg.unread_by.includes(state.currentUserId)
+                        ) {
+                            firstUnreadIndex = i;
+                            break;
                         }
-                    } else {
-                        // If no unread messages, just scroll to bottom and mark as read
-                        scrollToBottom();
-                        readMessages(roomId);
                     }
+        
+                    messages.forEach((msg, idx) => {
+                        if (idx === firstUnreadIndex) {
+                            // Insert the "New unread messages" label just before this message
+                            const unreadLabel = document.createElement('div');
+                            unreadLabel.className = 'unread-label text-center my-2';
+                            unreadLabel.textContent = 'New unread messages';
+                            elements.chatMessages.appendChild(unreadLabel);
+                        }
+                        addMessageToChat(msg);
+                    });
+        
+                    // After DOM is updated, scroll to the first unread message (skip the label)
+                    setTimeout(() => {
+                        if (firstUnreadIndex !== -1) {
+                            // Find all message elements (skip the label)
+                            const messageElements = elements.chatMessages.querySelectorAll('.message');
+                            if (messageElements[firstUnreadIndex]) {
+                                messageElements[firstUnreadIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            } else {
+                                scrollToBottom();
+                            }
+                        } else {
+                            scrollToBottom();
+                        }
+                    }, 100);
+        
+                    // Now call readMessages API
+                    readMessages(roomId);
                 }
             } catch (error) {
                 console.error('Failed to load messages:', error);
                 showToast('Failed to load messages');
             }
-
+        
             // Join the room via WebSocket
             if (state.globalSocket?.readyState === WebSocket.OPEN) {
                 state.globalSocket.send(JSON.stringify({
@@ -1223,19 +1239,55 @@
     
         async function loadMessages(roomId) {
             if (!roomId) return;
-    
+        
             try {
                 const response = await fetch(`/api/chat/rooms/${roomId}/messages/`, { credentials: 'include' });
                 if (!response.ok) throw new Error('Failed to load messages');
                 const messages = await response.json();
                 elements.chatMessages.innerHTML = '';
                 state.renderedMessageIds.clear();
-    
+        
                 if (!messages.length) {
                     showNoMessagesPlaceholder();
                 } else {
-                    messages.forEach(addMessageToChat);
-                    scrollToBottom();
+                    // Find the index of the first unread message for the current user
+                    let firstUnreadIndex = -1;
+                    for (let i = 0; i < messages.length; i++) {
+                        const msg = messages[i];
+                        if (
+                            msg.sender_id !== state.currentUserId &&
+                            Array.isArray(msg.unread_by) &&
+                            msg.unread_by.includes(state.currentUserId)
+                        ) {
+                            firstUnreadIndex = i;
+                            break;
+                        }
+                    }
+        
+                    messages.forEach((msg, idx) => {
+                        if (idx === firstUnreadIndex) {
+                            // Insert the "New unread messages" label just before this message
+                            const unreadLabel = document.createElement('div');
+                            unreadLabel.className = 'unread-label text-center my-2';
+                            unreadLabel.textContent = 'New unread messages';
+                            elements.chatMessages.appendChild(unreadLabel);
+                        }
+                        addMessageToChat(msg);
+                    });
+        
+                    // Scroll to bottom for sent messages, or to first unread for received
+                    setTimeout(() => {
+                        if (firstUnreadIndex !== -1) {
+                            const messageElements = elements.chatMessages.querySelectorAll('.message');
+                            if (messageElements[firstUnreadIndex]) {
+                                messageElements[firstUnreadIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            } else {
+                                scrollToBottom();
+                            }
+                        } else {
+                            scrollToBottom();
+                        }
+                    }, 100);
                 }
             } catch (error) {
                 console.error('Failed to load messages:', error);
@@ -1306,7 +1358,7 @@
             state.globalSocket.onmessage = async (e) => {
                 try {
                     const data = JSON.parse(e.data);
-                    console.log("WebSocket message received:", data);
+                    console.log("WebSocket message received currently:", data);
     
                     if (data.type === 'pong') return;
                     if (data.type === 'error') {
@@ -1315,6 +1367,7 @@
                     }
     
                     if (data.type === 'typing') {
+                        {% comment %} console.log("sender id is: ",data.sender_id,"Current user is : ",state.currentUserId) {% endcomment %}
                         if (data.sender_id !== state.currentUserId && state.currentRoomId === data.room_id) {
                             elements.typingIndicator.textContent = 'Someone is typing...';
                             setTimeout(() => elements.typingIndicator.textContent = '', 3000);
@@ -1323,22 +1376,36 @@
                     }
     
                     if (data.type === 'chat') {
-                        console.log("Processing chat message:", data);
-                        if (data.room_id === state.currentRoomId) {
-                            loadMessages(data.room_id);
-                            scrollToBottom();
-                            readMessages(data.room_id);
-                        } else {
-                            // Update unread counts for other rooms
-                            fetchUnreadCounts();
-                            // Show custom toast for new message
-                            showToast(`New message received in ${data.room_name}`);
-                            if (!state.isChatOpen) {
-                                flashChatButton();
-                                playNotification();
-                            }
-                        }
-                    }
+                        {% comment %} console.log("current sender id is: ",data.sender_id,"Current user is : ",state.currentUserId) {% endcomment %}
+    // If the sender is the current user, do nothing (no notification)
+    if (String(data.sender_id) === String(state.currentUserId)) {
+        // Just load messages if this is the current room
+        if (data.room_id === state.currentRoomId) {
+            loadMessages(data.room_id);
+            scrollToBottom();
+            readMessages(data.room_id);
+        }
+        // Do not show notification
+        return;
+    }
+
+    // If the receiver has this chatroom open, just load messages (no notification)
+    if (data.room_id === state.currentRoomId) {
+        loadMessages(data.room_id);
+        scrollToBottom();
+        readMessages(data.room_id);
+        // Do not show notification
+        return;
+    }
+
+    // Otherwise, show notification
+    fetchUnreadCounts();
+    showToast(`New message received in ${data.room_name}`);
+    if (!state.isChatOpen) {
+        flashChatButton();
+        playNotification();
+    }
+}
 
                     if (data.type === 'notification') {
                         fetchUnreadCounts();

@@ -363,6 +363,17 @@
         from { transform: translateY(20px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
     }
+
+    .unread-label {
+        background: #fffbe6;
+        color: #c77d00;
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-block;
+    }
 </style>
 {% endblock %}
 
@@ -679,8 +690,46 @@ adminFileInput?.addEventListener('change', (e) => {
             if (messages.length === 0) {
                 showAdminNoMessages();
             } else {
-                messages.forEach(addAdminMessageToChat);
-                scrollAdminToBottom();
+                // Find the index of the first unread message for the current admin user
+                let firstUnreadIndex = -1;
+                for (let i = 0; i < messages.length; i++) {
+                    const msg = messages[i];
+                    // Check if current admin is in unread_by list (for received messages)
+                    if (
+                        msg.sender_id !== currentAdminUserId &&
+                        Array.isArray(msg.unread_by) &&
+                        msg.unread_by.includes(currentAdminUserId)
+                    ) {
+                        firstUnreadIndex = i;
+                        break;
+                    }
+                }
+
+                messages.forEach((msg, idx) => {
+                    if (idx === firstUnreadIndex) {
+                        // Insert the "New unread messages" label just before this message
+                        const unreadLabel = document.createElement('div');
+                        unreadLabel.className = 'unread-label text-center my-2';
+                        unreadLabel.textContent = 'New unread messages';
+                        adminMessageArea.appendChild(unreadLabel);
+                    }
+                    addAdminMessageToChat(msg);
+                });
+
+                // After DOM is updated, scroll to the first unread message (skip the label)
+                setTimeout(() => {
+                    if (firstUnreadIndex !== -1) {
+                        // Find all message elements (skip the label)
+                        const messageElements = adminMessageArea.querySelectorAll('.admin-message');
+                        if (messageElements[firstUnreadIndex]) {
+                            messageElements[firstUnreadIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            scrollAdminToBottom();
+                        }
+                    } else {
+                        scrollAdminToBottom();
+                    }
+                }, 100);
             }
             
             // Mark messages as read
@@ -690,7 +739,6 @@ adminFileInput?.addEventListener('change', (e) => {
             showAdminErrorMessage('Failed to load messages');
         }
     }
-
 
     // Open a chat room in the main area
     async function openAdminChatRoom(roomId, roomName) {

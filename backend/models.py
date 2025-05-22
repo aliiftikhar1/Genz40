@@ -1075,6 +1075,7 @@ class LearnMoreContent(models.Model):
     heading = models.CharField(max_length=255)
     subheading = models.CharField(max_length=255)
     title_image = models.ImageField(upload_to='learn_more_images/')
+    title_image_mobile = models.ImageField(upload_to='learn_more_images/')
     title_image_front = models.ImageField(upload_to='learn_more_images/')
     # Car stats fields
     acceleration = models.CharField(max_length=20, blank=True, null=True)  # e.g., "3.9"

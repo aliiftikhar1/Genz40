@@ -363,7 +363,7 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
             logger.debug(f"Received WebSocket data: {data}")
             
             if data.get('type') == 'ping':
-                await self.send(json.dumps({'type': 'pong'}))
+                await self.send(text_data=json.dumps({'type': 'pong'}))
                 return
 
             if data.get('type') == 'typing':
@@ -434,18 +434,8 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
 
                     # Step 5: Send notifications
                     logger.debug("Preparing to send notifications")
-                    room = await database_sync_to_async(ChatRoom.objects.get)(id=room_id)
-                    
-                    # Get member IDs using database_sync_to_async
-                    member_ids = await database_sync_to_async(list)(
-                        room.members.values_list('id', flat=True)
-                    )
-                    
-                    if room.admin:
-                        member_ids.append(room.admin.id)
-                    if room.customer:
-                        member_ids.append(room.customer.id)
-                    member_ids = set(str(uid) for uid in member_ids if str(uid) != str(self.user.id))
+                    # Get members who should receive notifications
+                    member_ids = await self.get_room_member_ids(room_id)
                     logger.debug(f"Notification recipients: {member_ids}")
 
                     for uid in member_ids:
@@ -529,26 +519,39 @@ class GlobalChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    def join_room_groups(self):
-        rooms = ChatRoom.objects.filter(
+    def get_user_rooms(self):
+        return list(ChatRoom.objects.filter(
             Q(customer=self.user) | Q(admin=self.user) | Q(members=self.user)
-        )
+        ))
+
+    async def join_room_groups(self):
+        rooms = await self.get_user_rooms()
         for room in rooms:
-            self.channel_layer.group_add(
+            await self.channel_layer.group_add(
+                f'chat_{room.id}',
+                self.channel_name
+            )
+
+    async def leave_room_groups(self):
+        rooms = await self.get_user_rooms()
+        for room in rooms:
+            await self.channel_layer.group_discard(
                 f'chat_{room.id}',
                 self.channel_name
             )
 
     @database_sync_to_async
-    def leave_room_groups(self):
-        rooms = ChatRoom.objects.filter(
-            Q(customer=self.user) | Q(admin=self.user) | Q(members=self.user)
-        )
-        for room in rooms:
-            self.channel_layer.group_discard(
-                f'chat_{room.id}',
-                self.channel_name
-            )
+    def get_room_member_ids(self, room_id):
+        room = ChatRoom.objects.get(id=room_id)
+        member_ids = list(room.members.values_list('id', flat=True))
+        
+        if room.admin:
+            member_ids.append(room.admin.id)
+        if room.customer:
+            member_ids.append(room.customer.id)
+            
+        # Convert to string and exclude the current user
+        return [str(uid) for uid in member_ids if str(uid) != str(self.user.id)]
 
     @database_sync_to_async
     def save_message(self, message, room_id):

@@ -17,11 +17,54 @@
         font-family: 'Playfair Display', serif;
     }
 
+    /* Top Buttons Responsive */
+    .top-btns-bar {
+        width: 100%;
+        margin: auto;
+        display: flex;
+        z-index: 500;
+        position: fixed;
+        top: 5rem;
+        left: 0;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+    @media (max-width: 768px) {
+        .top-btns-bar {
+            top: 3.2rem;
+            padding: 6px 2vw;
+        }
+        .prominent-btn {
+            font-size: 0.85rem !important;
+            padding: 6px 10px !important;
+        }
+    }
+    @media (max-width: 576px) {
+        .top-btns-bar {
+            top: 5rem;
+            padding: 4px 1vw;
+        }
+        .prominent-btn {
+            font-size: 0.75rem !important;
+            padding: 5px 6px !important;
+        }
+    }
+
     /* Hero Section */
     .hero-section {
         width: 100%;
-        padding: 6rem 0 3rem;
         background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+    }
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4.5rem 0 2rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .hero-section {
+            padding: 3.2rem 0 1.2rem;
+        }
     }
 
     .hero-title {
@@ -31,35 +74,56 @@
     }
 
     .car-image-container {
-        /* border:2px solid black; */
-        /* margin: 2.5rem 0; */
         text-align: center;
         transition: transform 0.3s ease;
     }
     .title-image-container {
         width: 100%;
-        height: 60vh;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-
     }
     .title-image-container img {
         width: 100%;
-        height: 100%;
+        max-width: 100%%;
+        height: auto;
         object-fit: cover;
         display: block;
-        object-position:bottom;
+        object-position: bottom;
+        height: 100%;
+    }
+    @media (max-width: 768px) {
+        .title-image-container img {
+            max-height: 220px;
+        }
+    }
+    @media (max-width: 576px) {
+        .title-image-container img {
+            max-height: 140px;
+        }
     }
 
     .car-image-container img {
-
         width: 100%;
-        max-width: 900px; /* Consistent max width */
-        height: 400px; /* Fixed height for uniformity */
-        object-fit: cover ; /* Ensures images fit without distortion */
+        max-width: 900px;
+        height: 400px;
+        object-fit: cover;
         object-position: 0% 47%;
     }
+    @media (max-width: 768px) {
+        .car-image-container img {
+            height: 220px;
+            max-width: 100%;
+        }
+    }
+    @media (max-width: 576px) {
+        .car-image-container img {
+            height: 120px;
+            max-width: 100%;
+        }
+    }
+
     /* Description Cards */
     .description-section {
         padding: 4rem 0;
@@ -73,6 +137,22 @@
         padding: 3rem;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    @media (max-width: 768px) {
+        .description-card {
+            padding: 1.2rem;
+        }
+        .description-card h2 {
+            font-size: 1.1rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .description-card {
+            padding: 0.7rem;
+        }
+        .description-card h2 {
+            font-size: 1rem;
+        }
     }
 
     .description-card:hover {
@@ -116,51 +196,118 @@
         color: #777;
     }
 
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.8rem;
+    /* Car Stats Responsive */
+    .car-stats-section {
+        width: 100%;
+        background: #fff;
+    }
+    .car-stats-flex {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 2rem;
+    }
+    @media (max-width: 900px) {
+        .car-stats-flex {
+            flex-direction: column;
+            gap: 1.2rem;
         }
-        
-        .car-image-container img {
-            height: 300px; /* Smaller height for tablets */
-            max-width: 100%;
+        .car-stats-left, .car-stats-right {
+            padding-left: 0;
+            width: 100%;
+            align-items: center;
         }
-
-        .description-card {
-            padding: 2rem;
-        }
-        
-        .description-card h2 {
-            font-size: 1.5rem;
-        }
-        
-        .shoreline-text {
-            font-size: 2.2rem;
+        .car-stats-image {
+            max-width: 220px;
         }
     }
-
     @media (max-width: 576px) {
-        .hero-title {
-            font-size: 2.2rem;
+        .car-stats-flex {
+            gap: 0.5rem;
         }
-        
-        .car-image-container img {
-            height: 200px; /* Smaller height for mobile */
-            max-width: 100%;
+        .car-stats-image {
+            max-width: 120px;
         }
-
-        .description-card {
-            padding: 1.5rem;
+        .car-stat-main {
+            font-size: 2rem;
         }
-        
-        .description-card h2 {
-            font-size: 1.3rem;
+        .car-stat-value {
+            font-size: 2rem;
         }
-        
-        .shoreline-text {
-            font-size: 1.8rem;
+        .car-stat-unit {
+            font-size: 1rem;
         }
+        .car-stat-divider {
+            font-size: 1.2rem;
+        }
+        .car-stat-desc {
+            font-size: 0.95rem;
+        }
+    }
+    .car-stats-left {
+        flex: 1 1 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 2vw;
+    }
+    .car-stat-block {
+        margin-bottom: 0.5rem;
+    }
+    .car-stat-main {
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #111;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+    .car-stat-value {
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #111;
+        line-height: 1;
+    }
+    .car-stat-unit {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #111;
+        margin-left: 0.2rem;
+    }
+    .car-stat-divider {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #111;
+        margin: 0 0.5rem;
+    }
+    .car-stat-desc {
+        font-size: 1.1rem;
+        color: #888;
+        margin-top: 0.2rem;
+        font-weight: 400;
+    }
+    .car-stats-btn {
+        margin-top: 1.5rem;
+        font-size: 1.1rem;
+        padding: 12px 32px;
+        border-radius: 6px;
+    }
+    .car-stats-right {
+        flex: 1 1 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .car-stats-image {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
     }
 
     .shadow {
@@ -216,6 +363,31 @@
         box-shadow: none;
     }
 
+    /* Gallery Responsive */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px 0;
+    }
+    @media (max-width: 992px) {
+        .gallery-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    @media (max-width: 768px) {
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+    }
+    @media (max-width: 576px) {
+        .gallery-grid {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+    }
+
     .modal-content {
         border-radius: 16px;
         overflow: hidden;
@@ -232,10 +404,16 @@
 
     .modal-img {
         width: 100%;
-        height:100%;
+        height: auto;
+        max-height: 80vh;
         object-fit: contain;
-        background-color: #000; /* Black background for better contrast */
+        background-color: #000;
         display: block;
+    }
+    @media (max-width: 576px) {
+        .modal-img {
+            max-height: 60vh;
+        }
     }
 
     .modal-footer {
@@ -247,11 +425,11 @@
 
     .modal-fullscreen .modal-content {
         border-radius: 0;
-        background-color: #000; /* Dark background for full-screen modal */
+        background-color: #000;
     }
 
     .modal-fullscreen .modal-header {
-        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent for visibility */
+        background-color: rgba(0, 0, 0, 0.8);
     }
 
     .modal-fullscreen .modal-footer {
@@ -329,254 +507,232 @@
         .nav-tabs .nav-link {
             padding: 16px 4px;
         }
-        .modal-img {
-            height: calc(100vh - 100px); /* Adjust for smaller screens */
-        }
     }
 
-    @media (max-width: 576px) {
-        .gallery-img,
-        .gallery-item-container {
-            height: 150px;
-        }
-        .modal-img {
-            height: calc(100vh - 80px); /* Further adjust for mobile */
-        }
+    #imageModal .modal-content {
+        width:100%;
+        height:100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        border: none;
     }
 
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        padding: 20px 0;
+    #imageModal .modal-header {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        border: none;
     }
 
-    @media (max-width: 768px) {
-        .gallery-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    #imageModal .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border: none;
+        background: transparent;
     }
 
-    .gallery-grid-item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 8px;
-        aspect-ratio: 1 / 1;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    #imageModal .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+        transition: opacity 0.2s;
     }
 
-    .gallery-grid-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    #imageModal .btn-close:hover {
+        opacity: 1;
     }
 
-    .gallery-grid-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+    #modalImage {
+        transition: transform 0.3s;
+        cursor: zoom-in;
     }
-    /* Add these styles to your existing CSS */
-#imageModal .modal-content {
-    width:100%;
-    height:100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    border: none;
-}
 
-#imageModal .modal-header {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1;
-    border: none;
-}
-
-#imageModal .modal-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border: none;
-    background: transparent;
-}
-
-#imageModal .btn-close {
-    filter: invert(1);
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
-
-#imageModal .btn-close:hover {
-    opacity: 1;
-}
-
-#modalImage {
-    transition: transform 0.3s;
-    cursor: zoom-in;
-}
-
-#modalImage.zoomed {
-    transform: scale(1.5);
-    cursor: zoom-out;
-}
-
-/* Make Technical Specs modal truly full width */
-#fullscreenModal .modal-dialog {
-    max-width: 100vw;
-    width: 100vw;
-    margin: 0;
-}
-
-#fullscreenModal .modal-content {
-    border-radius: 0;
-    width: 100vw;
-    min-height: 100vh;
-    padding: 0;
-}
-
-.btn-black, .btn-outline-black {
-    border-radius: 10px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-}
-
-.btn-black:hover, .btn-black:focus {
-    background: #fff;
-    color: #111 !important;
-    border: 2px solid #111;
-}
-
-.btn-outline-black:hover, .btn-outline-black:focus {
-    background: #111;
-    color: #fff !important;
-}
-
-.car-stats-section {
-    width: 100%;
-    background: #fff;
-}
-.car-stats-flex {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 2rem;
-}
-.car-stats-left {
-    flex: 1 1 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-    justify-content: center;
-    align-items: flex-start;
-    padding-left: 2vw;
-}
-.car-stat-block {
-    margin-bottom: 0.5rem;
-}
-.car-stat-main {
-    font-size: 3.5rem;
-    font-weight: 400;
-    color: #111;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-}
-.car-stat-value {
-    font-size: 3.5rem;
-    font-weight: 400;
-    color: #111;
-    line-height: 1;
-}
-.car-stat-unit {
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: #111;
-    margin-left: 0.2rem;
-}
-.car-stat-divider {
-    font-size: 2.5rem;
-    font-weight: 300;
-    color: #111;
-    margin: 0 0.5rem;
-}
-.car-stat-desc {
-    font-size: 1.1rem;
-    color: #888;
-    margin-top: 0.2rem;
-    font-weight: 400;
-}
-.car-stats-btn {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    padding: 12px 32px;
-    border-radius: 6px;
-}
-.car-stats-right {
-    flex: 1 1 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.car-stats-image {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-@media (max-width: 900px) {
-    .car-stats-flex {
-        flex-direction: column;
-        gap: 2rem;
+    #modalImage.zoomed {
+        transform: scale(1.5);
+        cursor: zoom-out;
     }
-    .car-stats-left, .car-stats-right {
-        padding-left: 0;
-        width: 100%;
-        align-items: center;
+
+    /* Make Technical Specs modal truly full width */
+    #fullscreenModal .modal-dialog {
+        max-width: 100vw;
+        width: 100vw;
+        margin: 0;
     }
-    .car-stats-image {
-        max-width: 320px;
+
+    #fullscreenModal .modal-content {
+        border-radius: 0;
+        width: 100vw;
+        min-height: 100vh;
+        padding: 0;
     }
-}
-.prominent-btn {
-    color: #111;
-    background: rgba(255, 255, 255, 0.158);
-    border: 2px solid #111;
-    border-radius: 10px;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-    backdrop-filter: blur(8px);
-    transition: all 0.25s cubic-bezier(.4,0,.2,1);
-    text-transform: uppercase;
-    outline: none;
-}
-.prominent-btn:hover, .prominent-btn:focus {
-    background: #111;
-    color: #fff;
-    border-color: #111;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
-    text-decoration: none;
-}
-@media (max-width: 600px) {
+
+    .btn-black, .btn-outline-black {
+        border-radius: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .btn-black:hover, .btn-black:focus {
+        background: #fff;
+        color: #111 !important;
+        border: 2px solid #111;
+    }
+
+    .btn-outline-black:hover, .btn-outline-black:focus {
+        background: #111;
+        color: #fff !important;
+    }
+
     .prominent-btn {
-        font-size: 0.95rem;
-        padding: 7px 14px;
-        border-radius: 8px;
+        color: #111;
+        background: rgba(255, 255, 255, 0.158);
+        border: 2px solid #111;
+        border-radius: 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        backdrop-filter: blur(8px);
+        transition: all 0.25s cubic-bezier(.4,0,.2,1);
+        text-transform: uppercase;
+        outline: none;
     }
-}
+    .prominent-btn:hover, .prominent-btn:focus {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+        text-decoration: none;
+    }
+    @media (max-width: 600px) {
+        .prominent-btn {
+            font-size: 0.95rem;
+            padding: 7px 14px;
+            border-radius: 8px;
+        }
+    }
+
+    /* --- Begin: Custom Responsive & Gallery Styles --- */
+    /* General spacing and font size for smallest screens */
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.1rem;
+        }
+        .shoreline-text {
+            font-size: 1.5rem;
+        }
+        .description-card {
+            padding: 0.4rem;
+            font-size: 0.97rem;
+        }
+        .car-stats-left {
+            gap: 1.2rem;
+            padding-left: 0;
+            align-items: center;
+            text-align: center;
+        }
+        .car-stat-main,
+        .car-stat-value {
+            font-size: 1.3rem;
+        }
+        .car-stat-desc {
+            font-size: 0.85rem;
+        }
+        .car-stats-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+        }
+    }
+
+    /* Gallery tweaks for touch & better image display */
+    .gallery-grid {
+        gap: 6px !important;
+        padding: 10px 0 !important;
+    }
+    .gallery-grid-item {
+        border-radius: 14px !important;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        margin-bottom: 8px !important;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .gallery-grid-item img,
+    .gallery-img {
+        width: 100%;
+        height: 165px !important;
+        border-radius: 14px;
+        object-fit: cover;
+        background: #eee;
+    }
+    @media (max-width: 768px) {
+        .gallery-grid-item img,
+        .gallery-img {
+            height: 130px !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .gallery-grid-item img,
+        .gallery-img {
+            height: 95px !important;
+            min-height: 80px;
+        }
+    }
+
+    /* Gallery tab buttons: easier to tap, no overflow */
+    @media (max-width: 576px) {
+        .nav-tabs {
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+        }
+        .nav-tabs .nav-link {
+            padding: 11px 7px;
+            min-width: 0;
+            font-size: 0.98rem;
+        }
+    }
+
+    /* Modal: full width, no cropping */
+    @media (max-width: 576px) {
+        .modal-content,
+        #imageModal .modal-content {
+            border-radius: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-height: 100vh !important;
+            padding: 0;
+        }
+        #imageModal .modal-header, #imageModal .modal-footer {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        #modalImage {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            max-height: 55vh !important;
+            object-fit: contain;
+            margin: 0 auto;
+        }
+    }
+
+    /* Make buttons and text inputs easier to tap */
+    .prominent-btn,
+    .btn,
+    button {
+        font-size: 1rem;
+    }
+    /* --- End: Custom Responsive & Gallery Styles --- */
 </style>
 {% endblock header %}
 
 {% block content %}
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" style="margin-top:2rem;">
     <!-- Hero Section -->
     <section class="hero-section">
-        <div style="width: 100%; margin: auto; display: flex; z-index:500 ; position: fixed; top: 5rem; left: 0; justify-content: space-between; align-items: center; padding: 10px;">
+        <div class="top-btns-bar">
             <a href="#exclusive-discount" class="btn btn-outline-black btn-md prominent-btn">
                 Get Exclusive Discount
             </a>
@@ -588,18 +744,21 @@
         <section>
             <div class="">
                 <!-- Title Image -->
-                {% if TitleData.title_image %}
+                {% if TitleData.title_image or TitleData.title_image_mobile %}
                     <div class="title-image-container">
-                        <img src="{{ TitleData.title_image }}" alt="Title Image" class="">
+                        {% if TitleData.title_image %}
+                            <img src="{{ TitleData.title_image }}" alt="Title Image" class="d-none d-md-block">
+                        {% endif %}
+                        {% if TitleData.title_image_mobile %}
+                            <img src="{{ TitleData.title_image_mobile }}" alt="Title Image Mobile" class="d-block d-md-none">
+                        {% endif %}
                     </div>
                 {% endif %}
                 
-                
                 <!-- Subheading Text -->
                 <div class="logo-container text-center mt-4">
-                     <!-- Dynamic Hero Title -->
-                <h1 class="hero-title text-center mb-2 mt-2">{{ TitleData.heading }}</h1>
-                
+                    <!-- Dynamic Hero Title -->
+                    <h1 class="hero-title text-center mb-2 mt-2">{{ TitleData.heading }}</h1>
                     <h2 class="shoreline-text">{{ TitleData.subheading }}</h2>
                 </div>
             </div>
@@ -639,7 +798,6 @@
                 </div>
             </div>
         </div>
-        
         
         <!-- Loop Through Combined Data -->
         {% for item in combined_data %}
@@ -727,18 +885,16 @@
     <!-- Full-Screen Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Image Title</h5>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+            <div class="modal-content bg-black">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-0">
-                    <img src="/placeholder.svg" alt="Gallery Image" class="modal-img" id="modalImage">
+                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                    <img src="" alt="Full Screen Image" class="img-fluid" id="modalImage" style="max-height: 100vh; object-fit: contain;">
                 </div>
-                {% comment %} <div class="modal-footer">
-                    <span class="badge bg-danger me-auto" id="modalCategory">Category</span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div> {% endcomment %}
+                <div class="modal-footer border-0 justify-content-center bg-black">
+                    <span class="badge bg-light text-dark" id="modalCategory"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -918,28 +1074,12 @@
         </div>
     </div>
 </div>
-<!-- Full-Screen Image Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-black">
-            <div class="modal-header border-0">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body d-flex align-items-center justify-content-center p-0">
-                <img src="" alt="Full Screen Image" class="img-fluid" id="modalImage" style="max-height: 100vh; object-fit: contain;">
-            </div>
-            <div class="modal-footer border-0 justify-content-center bg-black">
-                <span class="badge bg-light text-dark" id="modalCategory"></span>
-            </div>
-        </div>
-    </div>
-</div>
 
 {{ GalleryImages|json_script:"gallery-images" }}
 
 {% endblock content %}
-{% block script %}
 
+{% block script %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const images = JSON.parse(document.getElementById('gallery-images').textContent);
@@ -960,74 +1100,80 @@
                     // Show the modal
                     const modal = new bootstrap.Modal(document.getElementById('imageModal'));
                     modal.show();
-                    
-                    // Center the image in the modal
-                    centerModalImage();
+
+                    // Optionally reset zoom state if you use zoom
+                    const modalImg = document.getElementById('modalImage');
+                    if (modalImg.classList.contains('zoomed')) {
+                        modalImg.classList.remove('zoomed');
+                    }
                 });
             });
-            
-            // Handle window resize to keep image centered
-            window.addEventListener('resize', centerModalImage);
-        }
-        
-        function centerModalImage() {
-            const modalImage = document.getElementById('modalImage');
-            const modalBody = document.querySelector('#imageModal .modal-body');
-            if (modalImage && modalBody) {
-                const bodyHeight = modalBody.clientHeight;
-                const imgHeight = modalImage.naturalHeight;
-                
-                if (imgHeight > bodyHeight) {
-                    modalImage.style.maxHeight = '100vh';
-                } else {
-                    modalImage.style.maxHeight = 'none';
-                }
+
+            // Optional: Zoom functionality for modal image
+            const modalImg = document.getElementById('modalImage');
+            if (modalImg) {
+                modalImg.onclick = function () {
+                    this.classList.toggle('zoomed');
+                };
             }
         }
-        
+
         function initGallery(images) {
+            // Clear all containers
             document.getElementById('body-container').innerHTML = '';
             document.getElementById('chassis-container').innerHTML = '';
             document.getElementById('intermediate-container').innerHTML = '';
-            
+
             images.forEach(image => {
                 const galleryItem = createGalleryItem(image);
-                document.getElementById(`${image.label}-container`).appendChild(galleryItem);
+                const label = (image.label || '').toLowerCase();
+                if (document.getElementById(`${label}-container`)) {
+                    document.getElementById(`${label}-container`).appendChild(galleryItem);
+                }
             });
-            
+
             addModalEvents();
         }
-        
+
         function createGalleryItem(image) {
             const item = document.createElement('div');
             item.className = 'gallery-grid-item';
             item.dataset.id = image.id;
             item.dataset.category = image.label;
-            item.style.cursor = 'pointer'; // Add pointer cursor
-            
+            item.style.cursor = 'pointer';
+
             item.innerHTML = `
                 <img src="${image.url}" class="gallery-grid-img" alt="${capitalizeFirstLetter(image.label)} Image" loading="lazy">
             `;
-            
             return item;
         }
-        
+
         function updateTabCounts(images) {
             const counts = {
-                body: images.filter(img => img.label === 'body').length,
-                intermediate: images.filter(img => img.label === 'intermediate').length,
-                chassis: images.filter(img => img.label === 'chassis').length
+                body: images.filter(img => (img.label || '').toLowerCase() === 'body').length,
+                intermediate: images.filter(img => (img.label || '').toLowerCase() === 'intermediate').length,
+                chassis: images.filter(img => (img.label || '').toLowerCase() === 'chassis').length,
             };
-            console.log("Counts are", counts.body, counts.chassis,counts.intermediate)
-            
             document.getElementById('body-count').textContent = counts.body;
-            document.getElementById('chassis-count').textContent = counts.chassis;
             document.getElementById('intermediate-count').textContent = counts.intermediate;
-            
+            document.getElementById('chassis-count').textContent = counts.chassis;
         }
-        
+
         function capitalizeFirstLetter(string) {
+            if (!string) return '';
             return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Optional: Clean up modal image on close
+        const imageModal = document.getElementById('imageModal');
+        if (imageModal) {
+            imageModal.addEventListener('hidden.bs.modal', function () {
+                const modalImg = document.getElementById('modalImage');
+                if (modalImg) {
+                    modalImg.src = '';
+                    modalImg.classList.remove('zoomed');
+                }
+            });
         }
     });
 </script>
